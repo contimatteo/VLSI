@@ -50,7 +50,7 @@ var int: plate_length;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  CONSTRAINTS  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 constraint plate_length > 0;
-constraint plate_length < PLATE_WIDTH + N_CIRCUITS;
+constraint plate_length < 2;
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
