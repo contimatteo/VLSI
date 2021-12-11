@@ -1,4 +1,3 @@
-include "globals.mzn";
 include "my_cumulative.mzn";
 
 int: n_plates;
@@ -12,9 +11,11 @@ array[PLATES] of int: widths = [dims[i,1] | i in PLATES];
 
 int: max_length = sum(lengths);
 array[PLATES,1..2] of var 0..max_length: pos;
+array[int] of var int: x = [pos[p, 2] | p in PLATES];
+array[int] of var int: y = [pos[p, 1] | p in PLATES];
 
 %constraint cumulative([pos[i, 1] | i in PLATES], lengths, widths, width);
-constraint my_cumulative(n_plates, pos, lengths, widths, width);
+constraint my_cumulative(n_plates, x, y, lengths, widths, width);
 
 var int: tot_length = max(p in PLATES)(pos[p, 1] + lengths[p]);
 
@@ -22,8 +23,8 @@ solve minimize tot_length;
 
 
 output [
-    "Pos y = ", show([pos[p, 1] | p in PLATES]), "\n",
-    "Pos x = ", show([pos[p, 2] | p in PLATES]), "\n",
+    "Pos x = ", show(x), "\n",
+    "Pos y = ", show(y), "\n",
     "End = ", show([pos[p, 1]+lengths[p] | p in PLATES]), "\n",
     "Total lenght = ", show(tot_length), "\n"
     ];

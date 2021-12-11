@@ -1,15 +1,15 @@
 {
     "openFiles": [
-        "project_data_test.dzn",
-        "my_cumulative.mzn",
         "my_fzn_cumulative.mzn",
-        "project_davide.mzn"
+        "my_cumulative.mzn",
+        "project_davide.mzn",
+        "data.dzn"
     ],
-    "openTab": 3,
+    "openTab": 2,
     "projectFiles": [
+        "data.dzn",
         "my_cumulative.mzn",
         "my_fzn_cumulative.mzn",
-        "project_data_test.dzn",
         "project_davide.mzn"
     ],
     "selectedBuiltinConfigId": "org.gecode.gecode",
