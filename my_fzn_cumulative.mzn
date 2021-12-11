@@ -36,25 +36,25 @@ predicate fzn_cumulative_time(int: n_plates,
          set of int: PLATES = 
             {i | i in index_set(y) where ub(widths[i]) > 0 /\ ub(lengths[i]) > 0 },
             
-        int: y_min = min([ lb(y[i]) | i in PLATES ]), 
-        int: y_max  = max([ ub(y[i]) + ub(lengths[i]) | i in PLATES ]),
-        var int: y_sum = sum(t in PLATES)(y[t])
+        int: y_min = min([ lb(y[p]) | p in PLATES ]), 
+        int: y_max  = max([ ub(y[p]) + ub(lengths[p]) | p in PLATES ]),
+        var int: y_sum = sum(p in PLATES)(y[p])
     } in (
         forall( l in y_min..y_max ) (
             let{
                 array[int] of var int: is_plate_at_l = [
-                    bool2int(y[t] <= l /\ l < y[t] + lengths[t]) | t in PLATES
+                    bool2int(y[p] <= l /\ l < y[p] + lengths[p]) | p in PLATES
                     ]
             } in
                 forall(i,j in PLATES where i<j /\ is_plate_at_l[i]==1 /\ is_plate_at_l[j]==1)(
                     x[i] + widths[i] <= x[j] \/ x[j] + widths[j] <= x[i]
                 )
         ) /\
-        forall(t in PLATES)(x[t] + widths[t] <= b) 
+        forall(p in PLATES)(x[p] + widths[p] <= b) 
         /\
-        lex_lesseq(x, [b - x[t] - widths[t] | t in PLATES]) 
+        lex_lesseq(x, [b - x[p] - widths[p] | p in PLATES]) 
         /\
-        lex_lesseq(y, [y_sum - y[t] - lengths[t] | t in PLATES])
+        lex_lesseq(y, [y_sum - y[p] - lengths[p] | p in PLATES])
     );
 
 % to change (but not used, check why)
@@ -65,15 +65,18 @@ predicate fzn_cumulative_task(int: n_plates,
                               array[int] of var int: widths, 
                               var int: b) =
     let {
-        set of int: Tasks = 
-            {i | i in index_set(y) where ub(widths[i]) > 0 /\ ub(lengths[i]) > 0 }
+        set of int: PLATES = 
+            {i | i in index_set(y) where ub(widths[i]) > 0 /\ ub(lengths[i]) > 0 },
+        var int: y_sum = sum(p in PLATES)(y[p])
     } in (
-        forall( j in Tasks ) ( 
-            b >= widths[j] + sum( i in Tasks where i != j ) ( 
+        forall( j in PLATES ) ( 
+            b >= widths[j] + sum( i in PLATES where i != j ) ( 
                 bool2int(y[i] <= y[j] /\ y[j] < y[i] + lengths[i] ) * widths[i]
-            ) /\
-        forall( t in Tasks ) (
-            2 == x[t]
-            )
+        ) /\
+        forall(p in PLATES)(x[p] + widths[p] <= b) 
+        /\
+        lex_lesseq(x, [b - x[p] - widths[p] | p in PLATES]) 
+        /\
+        lex_lesseq(y, [y_sum - y[p] - lengths[p] | p in PLATES])
         )
     );
