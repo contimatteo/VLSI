@@ -32,8 +32,8 @@ int: GRID_MAX_Y = 19; % TODO: ...
 set of int: GRID_X_RANGE = GRID_MIN_X..GRID_MAX_X;
 set of int: GRID_Y_RANGE = GRID_MIN_Y..GRID_MAX_Y;
 
-int: plates_max_width = sum([CIRCUITS_DIM[i,1] | i in CIRCUITS]);
-int: plates_max_height = sum([CIRCUITS_DIM[i,2] | i in CIRCUITS]);
+int: plate_max_length = sum([CIRCUITS_DIM[i,2] | i in CIRCUITS]);
+array[CIRCUITS,1..2] of var 0..plate_max_length: circuits_xy;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  VARIABLES  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
