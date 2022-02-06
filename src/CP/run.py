@@ -1,6 +1,7 @@
 import minizinc
 
 from pathlib import Path
+from txt_to_dzn import txt_to_dzn
 
 
 ###
@@ -12,7 +13,7 @@ DIR_DATA = ROOT_CP.joinpath("data")
 DIR_MODELS = ROOT_CP.joinpath("models")
 DIR_SOLVERS = ROOT_CP.joinpath("solvers")
 
-FILE_DATA_URL = DIR_DATA.joinpath("input/ins-1.dzn")
+FILE_DATA_URL = DIR_DATA.joinpath("input/txt/ins-1.txt")
 FILE_MODEL_URL = DIR_MODELS.joinpath("v2.mzn")
 FILE_SOLVER_URL = DIR_SOLVERS.joinpath("geocode.mpc")
 
@@ -25,7 +26,8 @@ def load_model():
 
 
 def load_data(model):
-    model.add_file(str(FILE_DATA_URL))
+    FILE_DATA_URL_DZN = txt_to_dzn(FILE_DATA_URL)
+    model.add_file(str(FILE_DATA_URL_DZN))
 
 
 def load_solver():
