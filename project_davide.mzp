@@ -1,0 +1,18 @@
+{
+    "openFiles": [
+        "my_fzn_cumulative.mzn",
+        "my_cumulative.mzn",
+        "project_davide.mzn",
+        "data.dzn"
+    ],
+    "openTab": 2,
+    "projectFiles": [
+        "data.dzn",
+        "my_cumulative.mzn",
+        "my_fzn_cumulative.mzn",
+        "project_davide.mzn"
+    ],
+    "selectedBuiltinConfigId": "org.gecode.gecode",
+    "selectedBuiltinConfigVersion": "6.3.0",
+    "version": 106
+}
