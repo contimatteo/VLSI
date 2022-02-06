@@ -1,4 +1,4 @@
-include "my_cumulative.mzn";
+include "./utils/my_cumulative.mzn";
 
 int: n_plates;
 set of int: PLATES = 1..n_plates;

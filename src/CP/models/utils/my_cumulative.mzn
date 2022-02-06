@@ -1,8 +1,8 @@
 include "all_different.mzn";
 include "disjunctive.mzn";
-include "my_fzn_cumulative.mzn";
 include "fzn_cumulative.mzn";
 include "fzn_cumulative_reif.mzn";
+include "./my_fzn_cumulative.mzn";
 
 predicate my_cumulative(int: n_plates,
                         array[int] of var int: x,
