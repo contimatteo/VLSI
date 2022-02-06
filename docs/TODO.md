@@ -4,7 +4,6 @@
   [ ] solve `.mpc` file issues
   [ ] formalize 'cumulative' `predicate`
   [ ] write `my_cumulative`
-  [ ] write `my_cumulative`
   [ ] `makefile`
   [ ] 
 
