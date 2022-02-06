@@ -1,10 +1,8 @@
-import minizinc
-
 from pathlib import Path
 
+import minizinc
 
 ###
-
 
 ROOT_CP = Path(__file__).parent
 
@@ -15,7 +13,6 @@ DIR_SOLVERS = ROOT_CP.joinpath("solvers")
 FILE_DATA_URL = DIR_DATA.joinpath("input/ins-1.dzn")
 FILE_MODEL_URL = DIR_MODELS.joinpath("v2.mzn")
 FILE_SOLVER_URL = DIR_SOLVERS.joinpath("geocode.mpc")
-
 
 ###
 
@@ -37,7 +34,7 @@ def create_instance(solver, model):
     return minizinc.Instance(solver, model)
 
 
-def solve(instance, all_solutions=False):
+def solve(instance: minizinc.Instance, all_solutions=False):
     return instance.solve(all_solutions=all_solutions)
 
 
@@ -47,15 +44,16 @@ def solve(instance, all_solutions=False):
 def main():
     model = load_model()
     solver = load_solver()
-    
+
     load_data(model)
 
+    ### parse_solution instance
     instance = create_instance(solver, model)
-
+    ### solve
     results = solve(instance)
 
-    for i in range(len(results)):
-        print(results)
+    for _ in range(len(results)):
+        print("pos = ", results["pos"])
 
 
 ###
