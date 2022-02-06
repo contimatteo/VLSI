@@ -1,15 +1,3 @@
-
-% PLATE_WIDTH = 8;
-
-% N_CIRCUITS = 4;
-
-% CIRCUITS_DIM = [| 
-%   2, 1 | 
-%   2, 1 | 
-%   2, 1 | 
-%   2, 0 
-% |]
-
 width = 9;
 
 n_plates = 8;
