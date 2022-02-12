@@ -12,11 +12,11 @@ def plot_solution(sol, in_dict, tot_length):
     plt.yticks(np.arange(0, tot_length + 1, 1))
     plt.grid(visible=True, which='both', axis='both', alpha=0.2)
 
-    for plate_idx in range(in_dict['n_plates']):
+    for plate_idx in range(in_dict['n_circuits']):
         r = Rectangle(
             xy=(sol[plate_idx][0], sol[plate_idx][1]),
-            width=in_dict['dims'][plate_idx][0],
-            height=in_dict['dims'][plate_idx][1],
+            height=in_dict['dims'][plate_idx][0],
+            width=in_dict['dims'][plate_idx][1],
             edgecolor='white',
             facecolor=tuple(np.random.choice(range(256), size=3) / 255),
             fill=True,
