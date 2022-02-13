@@ -29,8 +29,8 @@ def convert_txt_file_to_dzn(txt_file_name: str):
 
     # print and save n_plates
     n_plates = txt_lines[1][:-1]
-    dzn_lines[1] = 'n_plates = ' + n_plates + ';\n'
-    data_dict['n_plates'] = int(n_plates)
+    dzn_lines[1] = 'n_circuits = ' + n_plates + ';\n'
+    data_dict['n_circuits'] = int(n_plates)
 
     # print and save dims
     data_dict['dims'] = []
