@@ -52,7 +52,10 @@ def plot_solutions_v2(solutions_dict):
 
     #
 
-    fig, axs = plt.subplots(nrows=rows, ncols=cols)
+    if len(results) == 1:
+        fig, axs = plt.subplots(1)
+    else:
+        fig, axs = plt.subplots(nrows=rows, ncols=cols)
 
     def __single_solution_plot(ax, result):
         ax.set_xlim(0, result['width'])
@@ -86,10 +89,13 @@ def plot_solutions_v2(solutions_dict):
 
     result_index_to_plot = -1
 
-    for r in range(rows):
-        for c in range(cols):
-            result_index_to_plot += 1
-            __single_solution_plot(axs[r, c], results[result_index_to_plot])
+    if len(results) == 1:
+        __single_solution_plot(axs, results[0])
+    else:
+        for r in range(rows):
+            for c in range(cols):
+                result_index_to_plot += 1
+                __single_solution_plot(axs[r, c], results[result_index_to_plot])
 
     #
 
