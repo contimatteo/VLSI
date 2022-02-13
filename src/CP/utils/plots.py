@@ -6,7 +6,7 @@ from matplotlib.patches import Rectangle
 ###
 
 
-def plot_solution(sol, in_dict, tot_length):
+def plot_solutions_v1(sol, in_dict, tot_length):
     fig, ax = plt.subplots()
     plt.xticks(np.arange(0, in_dict['width'] + 1, 1))
     plt.yticks(np.arange(0, tot_length + 1, 1))
@@ -33,5 +33,64 @@ def plot_solution(sol, in_dict, tot_length):
             ha='center',
             va='center'
         )
+
+    plt.show()
+
+
+###
+
+
+def plot_solutions_v2(solutions_dict):
+    results = solutions_dict["results"]
+    best_result_index = solutions_dict["best_result_index"]
+
+    if len(results) < 1:
+        return
+
+    rows = int(len(results) / 2)
+    cols = len(results) - rows
+
+    #
+
+    fig, axs = plt.subplots(nrows=rows, ncols=cols)
+
+    def __single_solution_plot(ax, result):
+        ax.set_xlim(0, result['width'])
+        ax.set_ylim(0, result['makespan'])
+        ax.set_xticks(np.arange(0, result['width'] + 1, 1))
+        ax.set_yticks(np.arange(0, result["makespan"] + 1, 1))
+        ax.grid(visible=True, which='both', axis='both', alpha=0.2)
+
+        for c_idx in range(result['n_circuits']):
+            r = Rectangle(
+                xy=(result["pos"][c_idx][0], result["pos"][c_idx][1]),
+                height=result['dims'][c_idx][0],
+                width=result['dims'][c_idx][1],
+                edgecolor='white',
+                facecolor=tuple(np.random.choice(range(256), size=3) / 255),
+                fill=True,
+                label=str(c_idx)
+            )
+
+            ax.add_patch(r)
+            ax.annotate(
+                str(c_idx + 1), (r.get_x() + r.get_width() / 2., r.get_y() + r.get_height() / 2.),
+                color='black',
+                weight='bold',
+                fontsize=10,
+                ha='center',
+                va='center'
+            )
+
+    #
+
+    result_index_to_plot = -1
+
+    for r in range(rows):
+        for c in range(cols):
+            result_index_to_plot += 1
+            __single_solution_plot(axs[r, c], results[result_index_to_plot])
+
+    #
 
     plt.show()

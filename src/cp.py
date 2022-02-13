@@ -1,12 +1,14 @@
+import os
 import minizinc
 
-from CP.utils import plot_solution, convert_txt_file_to_dzn
+from CP.utils import convert_txt_file_to_dzn, convert_raw_result_to_solutions_dict
+from CP.utils import plot_solutions_v1, plot_solutions_v2
 from CP.utils import CP_model_file_url, CP_data_file_url
 
 ###
 
 DATA_FILE_NAME = "ins-3"
-MODEL_FILE_NAME = "v2"
+MODEL_FILE_NAME = "v4"
 SOLVER_FILE_NAME = "gecode"
 
 ###
@@ -39,27 +41,43 @@ def solve(instance: minizinc.Instance, all_solutions=False) -> minizinc.Result:
 
 ###
 
+# def main(all_solutions=False):
+#     model = load_model(MODEL_FILE_NAME)
+#     solver = load_solver(SOLVER_FILE_NAME)
+#     in_dict = load_data(DATA_FILE_NAME, model)
+#     ### parse_solution instance
+#     instance = instantiate(solver, model)
+#     ### solve
+#     results = solve(instance, all_solutions)
+#     for _ in range(len(results)):
+#         print(results)
+#         plot_solutions_v1(results["pos"], in_dict, results["objective"])
 
-def main():
-    model = load_model(MODEL_FILE_NAME)
-    solver = load_solver(SOLVER_FILE_NAME)
-    in_dict = load_data(DATA_FILE_NAME, model)
+
+def main(all_solutions: bool):
+    convert_txt_file_to_dzn(DATA_FILE_NAME)
+
+    solver = "Gecode"
+    model = str(CP_model_file_url(MODEL_FILE_NAME))
+    data = str(CP_data_file_url(DATA_FILE_NAME, 'dzn'))
 
     #
 
-    ### parse_solution instance
-    instance = instantiate(solver, model)
-    ### solve
-    results = solve(instance)
+    opts = ""
+    if all_solutions is True:
+        opts += "-a "
+
+    os_cmd = f"minizinc --solver {solver} --model {model} --data {data} {opts}"
+    raw_results = os.popen(os_cmd).read()
 
     #
 
-    for _ in range(len(results)):
-        print(results)
-        plot_solution(results["pos"], in_dict, results["objective"])
+    solutions_dict = convert_raw_result_to_solutions_dict(raw_results)
+
+    plot_solutions_v2(solutions_dict)
 
 
 ###
 
 if __name__ == '__main__':
-    main()
+    main(True)
