@@ -65,10 +65,15 @@ def plot_solutions_v2(solutions_dict):
         ax.grid(visible=True, which='both', axis='both', alpha=0.2)
 
         for c_idx in range(result['n_circuits']):
+            x = result["pos"][c_idx][0]
+            y = result["pos"][c_idx][1]
+            w = result['dims'][c_idx][0]
+            h = result['dims'][c_idx][1]
+
             r = Rectangle(
-                xy=(result["pos"][c_idx][0], result["pos"][c_idx][1]),
-                height=result['dims'][c_idx][0],
-                width=result['dims'][c_idx][1],
+                xy=(y, x),
+                height=h,
+                width=w,
                 edgecolor='white',
                 facecolor=tuple(np.random.choice(range(256), size=3) / 255),
                 fill=True,
@@ -95,6 +100,9 @@ def plot_solutions_v2(solutions_dict):
         for r in range(rows):
             for c in range(cols):
                 result_index_to_plot += 1
+                if result_index_to_plot >= len(results):
+                    continue
+
                 __single_solution_plot(axs[r, c], results[result_index_to_plot])
 
     #
