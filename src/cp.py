@@ -1,5 +1,6 @@
 import os
 import minizinc
+import numpy as np
 
 from CP.utils import convert_txt_file_to_dzn, convert_raw_result_to_solutions_dict
 from CP.utils import plot_solutions_v1, plot_solutions_v2
@@ -7,9 +8,13 @@ from CP.utils import CP_model_file_url, CP_data_file_url
 
 ###
 
+np.random.seed(1)
+
 DATA_FILE_NAME = "ins-3"
 MODEL_FILE_NAME = "v4"
 SOLVER_FILE_NAME = "gecode"
+
+N_MAX_SOLUTIONS = 9
 
 ###
 
@@ -63,16 +68,23 @@ def main(all_solutions: bool):
 
     #
 
-    opts = ""
-    if all_solutions is True:
-        opts += "-a "
+    # opts = "--non-unique --statistics"
+    opts = "--statistics --output-time --time-limit 500"
+    # opts = "--statistics --output-detailed-timing --output-time --solver-time-limit 100"
 
-    os_cmd = f"minizinc --solver {solver} --model {model} --data {data} {opts}"
+    if all_solutions is True:
+        opts += " --all-solutions "
+
+    os_cmd = f"minizinc --solver {solver} --model {model} --data {data} {opts.strip()}"
     raw_results = os.popen(os_cmd).read()
+
+    print()
+    print(raw_results)
+    print()
 
     #
 
-    solutions_dict = convert_raw_result_to_solutions_dict(raw_results)
+    solutions_dict = convert_raw_result_to_solutions_dict(raw_results, N_MAX_SOLUTIONS)
 
     plot_solutions_v2(solutions_dict)
 

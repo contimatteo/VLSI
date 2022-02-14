@@ -103,7 +103,7 @@ def __convert_raw_var_to_special_type(raw_var_name: str, raw_var_value: str):
     raise Exception("raw variable format not supported.")
 
 
-def convert_raw_result_to_solutions_dict(raw_results: str) -> dict:
+def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int) -> dict:
     results = []
     best_result_index = None
     best_makespan_found = None
@@ -130,6 +130,8 @@ def convert_raw_result_to_solutions_dict(raw_results: str) -> dict:
 
             if len(raw_variable) < 1 or "===" in raw_variable:
                 continue
+            if raw_variable.startswith("%%%mzn-stat") or raw_variable.startswith("% "):
+                continue
 
             var_name = raw_variable.split(" = ")[0]
             var_value = raw_variable.split(" = ")[1]
@@ -155,4 +157,11 @@ def convert_raw_result_to_solutions_dict(raw_results: str) -> dict:
 
     #
 
-    return {"results": results, "best_result_index": best_result_index}
+    results = sorted(results, key=lambda x: x["makespan"], reverse=False)
+    results = results[0:n_max_solutions]
+
+    return {
+        "results": results,
+        "best_result_index": best_result_index,
+        "best_makespan": best_makespan_found
+    }
