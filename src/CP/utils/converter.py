@@ -143,7 +143,8 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
             elif var_name in SPECIAL_VARIABLE_NAMES:
                 var_value = __convert_raw_var_to_special_type(var_name, var_value)
             else:
-                raise Exception(f"`{var_name}` not recognized.")
+                continue
+                # raise Exception(f"`{var_name}` not recognized.")
 
             if var_name == "makespan":
                 if best_makespan_found is None or var_value < best_makespan_found:
@@ -157,7 +158,7 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
 
     #
 
-    results = sorted(results, key=lambda x: x["makespan"], reverse=False)
+    # results = sorted(results, key=lambda x: x["makespan"], reverse=False)
     results = results[0:n_max_solutions]
 
     return {

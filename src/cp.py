@@ -10,8 +10,8 @@ from CP.utils import CP_model_file_url, CP_data_file_url
 
 np.random.seed(1)
 
-DATA_FILE_NAME = "ab-test-4"
-MODEL_FILE_NAME = "v5"
+DATA_FILE_NAME = "ab-test-6"
+MODEL_FILE_NAME = "v6"
 SOLVER_FILE_NAME = "gecode"
 
 N_MAX_SOLUTIONS = 9
@@ -69,7 +69,7 @@ def main(all_solutions: bool):
     #
 
     # opts = "--statistics --output-time"
-    opts = "--statistics --output-time --time-limit 500"
+    opts = "--statistics --output-time --time-limit 1500"
     # opts = "--statistics --output-detailed-timing --output-time --solver-time-limit 100"
 
     if all_solutions is True:

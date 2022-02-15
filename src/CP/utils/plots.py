@@ -65,13 +65,13 @@ def plot_solutions_v2(solutions_dict):
         ax.grid(visible=True, which='both', axis='both', alpha=0.2)
 
         for c_idx in range(result['n_circuits']):
-            x = result["pos"][c_idx][0]
-            y = result["pos"][c_idx][1]
-            w = result['dims'][c_idx][0]
-            h = result['dims'][c_idx][1]
+            x = result["x"][c_idx]
+            y = result["y"][c_idx]
+            w = result['widths'][c_idx]
+            h = result['heights'][c_idx]
 
             r = Rectangle(
-                xy=(y, x),
+                xy=(x, y),
                 height=h,
                 width=w,
                 edgecolor='white',
