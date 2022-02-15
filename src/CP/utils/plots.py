@@ -47,8 +47,8 @@ def plot_solutions_v2(solutions_dict):
     if len(results) < 1:
         return
 
-    rows = 2  # int(len(results) / 2)
-    cols = 2  # len(results) / rows
+    rows = 3  # int(len(results) / 2)
+    cols = 3  # len(results) / rows
 
     #
 

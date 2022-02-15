@@ -10,11 +10,11 @@ from CP.utils import CP_model_file_url, CP_data_file_url
 
 np.random.seed(1)
 
-DATA_FILE_NAME = "ins-3"
+DATA_FILE_NAME = "ins-1"
 MODEL_FILE_NAME = "v4"
 SOLVER_FILE_NAME = "gecode"
 
-N_MAX_SOLUTIONS = 4
+N_MAX_SOLUTIONS = 9
 
 ###
 

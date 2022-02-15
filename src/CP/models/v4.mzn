@@ -1,7 +1,8 @@
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-include "./utils/my_cumulative.mzn";
+include "./utils/mc_cumulative.mzn";
+include "./utils/mc_utils.mzn";
 
 
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -22,24 +23,22 @@ array[CIRCUITS] of int: widths = [dims[i,1] | i in CIRCUITS];
 % array of vertical dimension of the circuits
 array[CIRCUITS] of int: heights = [dims[i,2] | i in CIRCUITS];
 
-
-%%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 % define position x and y of bottom left corner of each circuit
 int: max_length = sum(heights);
-
-% define position x and y of bottom left corner of each circuit
-array[CIRCUITS, 1..2] of var 0..max_length: pos;
-
-array[int] of var int: x = [pos[c, 2] | c in CIRCUITS];
-array[int] of var int: y = [pos[c, 1] | c in CIRCUITS];
+% define domain of finale `pos` variable.
+set of int: POS = 0..max_length;
 
 
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-% function makespan(pos): max(c in CIRCUITS)(pos[c, 1] + heights[c]);
+% define position x and y of bottom left corner of each circuit
+array[CIRCUITS, 1..2] of var POS: pos;
+
+array[CIRCUITS] of var int: x = [pos[c, 2] | c in CIRCUITS];
+array[CIRCUITS] of var int: y = [pos[c, 1] | c in CIRCUITS];
+
+var int: makespan = makespan(pos);
 
 
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -48,12 +47,20 @@ array[int] of var int: y = [pos[c, 1] | c in CIRCUITS];
 constraint my_cumulative(n_circuits, x, y, heights, widths, width);
 
 
+% simmetria tra tutti i circuiti uguali
+constraint forall(c1,c2 in CIRCUITS) (
+    if circuits_have_equal_dim(c1, c2)
+    then lex_lesseq([ pos[c1, i] | i in 1..2 ], [ pos[c2, i] | i in 1..2 ])
+    else true
+    endif
+);
+
+
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-var int: makespan = max(c in CIRCUITS)(pos[c, 1] + heights[c]);
-
-solve minimize makespan;
+% solve minimize makespan;
+solve satisfy;
 
 
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
