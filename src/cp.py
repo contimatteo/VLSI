@@ -10,8 +10,8 @@ from CP.utils import CP_model_file_url, CP_data_file_url
 
 np.random.seed(1)
 
-DATA_FILE_NAME = "test-2"
-MODEL_FILE_NAME = "v4"
+DATA_FILE_NAME = "ins-4"
+MODEL_FILE_NAME = "v5"
 SOLVER_FILE_NAME = "gecode"
 
 N_MAX_SOLUTIONS = 4
@@ -68,14 +68,14 @@ def main(all_solutions: bool):
 
     #
 
-    # opts = "--non-unique --statistics"
-    opts = "--statistics --output-time --time-limit 500"
+    # opts = "--statistics --output-time --time-limit 500"
+    opts = "--statistics --output-time"
     # opts = "--statistics --output-detailed-timing --output-time --solver-time-limit 100"
 
     if all_solutions is True:
         opts += " --all-solutions "
 
-    os_cmd = f"minizinc --solver {solver} --model {model} --data {data} {opts.strip()}"
+    os_cmd = f"minizinc --solver {solver}  {model} --data {data} {opts.strip()}"
     raw_results = os.popen(os_cmd).read()
 
     print()
