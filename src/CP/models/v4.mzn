@@ -49,7 +49,7 @@ constraint my_cumulative(n_circuits, x, y, heights, widths, width);
 
 % simmetria tra tutti i circuiti uguali
 constraint forall(c1,c2 in CIRCUITS) (
-    if circuits_have_equal_dim(c1, c2)
+    if c1 < c2 /\ circuits_with_equal_dim(c1, c2)
     then lex_lesseq([ pos[c1, i] | i in 1..2 ], [ pos[c2, i] | i in 1..2 ])
     else true
     endif
@@ -58,6 +58,8 @@ constraint forall(c1,c2 in CIRCUITS) (
 
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+constraint makespan == 8;
 
 % solve minimize makespan;
 solve satisfy;
