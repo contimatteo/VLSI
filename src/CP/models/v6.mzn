@@ -23,10 +23,11 @@ array[CIRCUITS] of int: widths = [dims[i,1] | i in CIRCUITS];
 % array of vertical dimension of the circuits
 array[CIRCUITS] of int: heights = [dims[i,2] | i in CIRCUITS];
 
-% define position x and y of bottom left corner of each circuit
-int: max_length = sum(heights);
+% 
+int: min_makespan = min(heights);
+int: max_makespan = sum(heights);
 % define domain of finale `pos` variable.
-set of int: POS = 0..max_length;
+set of int: POS = 0..max_makespan;
 
 
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -79,23 +80,26 @@ array[CIRCUITS, CIRCUITS] of var bool: c_list_for_simmetry_mask = array2d(CIRCUI
 
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% constraint makespan <= max_length / 2;
-constraint makespan == 12;
+% constraint makespan <= max_makespan / 2;
+constraint makespan >= min_makespan /\ makespan <= max_makespan;
 
-constraint x[4] == 3 /\ y[4] == 0;
-constraint x[7] == 3 /\ y[7] == 3;
-constraint x[8] == 0 /\ y[8] == 0;
+% constraint x[4] == 3 /\ y[4] == 0;
+% constraint x[7] == 3 /\ y[7] == 3;
+% constraint x[8] == 0 /\ y[8] == 0;
 
 % solve minimize makespan;
-solve satisfy;
+solve 
+    % :: seq_search([
+    %     int_search(makespan, first_fail, indomain_min)
+    % ])
+    satisfy;
 
 
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 output [
-    "c_list_for_simmetry_mask = ", show(c_list_for_simmetry_mask), "\n",
-    % "c_list_for_simmetry = ", show(c_list_for_simmetry), "\n",
+    "\n",
     "\n",
     "width = ", show(width), "\n",
     "n_circuits = ", show(n_circuits), "\n",
@@ -105,5 +109,9 @@ output [
     "x = ", show(x), "\n",
     "y = ", show(y), "\n",
     "pos = ", show(pos), "\n",
-    "makespan = ", show(makespan), "\n"
+    "makespan = ", show(makespan), "\n",
+    "c_list_for_simmetry_mask = ", show(c_list_for_simmetry_mask), "\n",
+    % "c_list_for_simmetry = ", show(c_list_for_simmetry), "\n",
+    "\n",
+    "\n"
 ];
