@@ -26,6 +26,9 @@ array[CIRCUITS] of int: heights = [dims[i,2] | i in CIRCUITS];
 % 
 int: min_makespan = min(heights);
 int: max_makespan = sum(heights);
+% find the circuit (index) with the max height.
+int: circuit_index_with_max_height = arg_max(heights);
+
 % define domain of finale `pos` variable.
 set of int: POS = 0..max_makespan;
 
@@ -47,26 +50,28 @@ var int: makespan = makespan(pos);
 
 constraint my_cumulative(n_circuits, x, y, heights, widths, width);
 
+% place the circuit with the max height at position (0,0);
+constraint x[circuit_index_with_max_height] == 0 /\ y[circuit_index_with_max_height] == 0;
+
 
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% PROVEEEEEEEE
 
-array[CIRCUITS, CIRCUITS] of var bool: c_list_for_simmetry_mask = array2d(CIRCUITS, CIRCUITS, (
-    [ 
-        if c1 <= c2 /\ (
-            c1 == c2 
-            \/ 
-            circuits_can_be_merged_on_x(c1, c2) 
-            \/ 
-            circuits_can_be_merged_on_y(c1, c2)
-        )
-        then true
-        else false
-        endif
-        | c1,c2 in CIRCUITS
-    ]
-));
-
+% array[CIRCUITS, CIRCUITS] of var bool: c_list_for_simmetry_mask = array2d(CIRCUITS, CIRCUITS, (
+%     [ 
+%         if c1 <= c2 /\ (
+%             c1 == c2 
+%             \/ 
+%             circuits_can_be_merged_on_x(c1, c2) 
+%             \/ 
+%             circuits_can_be_merged_on_y(c1, c2)
+%         )
+%         then true
+%         else false
+%         endif
+%         | c1,c2 in CIRCUITS
+%     ]
+% ));
 % array[int] of CIRCUITS: c_list_for_simmetry = [ 
 %     i | i,j in CIRCUITS where 
 %         i <= j /\
@@ -80,19 +85,15 @@ array[CIRCUITS, CIRCUITS] of var bool: c_list_for_simmetry_mask = array2d(CIRCUI
 
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% constraint makespan <= max_makespan / 2;
+
 constraint makespan >= min_makespan /\ makespan <= max_makespan;
 
-% constraint x[4] == 3 /\ y[4] == 0;
-% constraint x[7] == 3 /\ y[7] == 3;
-% constraint x[8] == 0 /\ y[8] == 0;
-
-% solve minimize makespan;
 solve 
-    % :: seq_search([
-    %     int_search(makespan, first_fail, indomain_min)
-    % ])
+    :: seq_search([
+        int_search([ makespan ], first_fail, indomain_min)
+    ])
     satisfy;
+    % minimize makespan;
 
 
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,7 +111,7 @@ output [
     "y = ", show(y), "\n",
     "pos = ", show(pos), "\n",
     "makespan = ", show(makespan), "\n",
-    "c_list_for_simmetry_mask = ", show(c_list_for_simmetry_mask), "\n",
+    % "c_list_for_simmetry_mask = ", show(c_list_for_simmetry_mask), "\n",
     % "c_list_for_simmetry = ", show(c_list_for_simmetry), "\n",
     "\n",
     "\n"
