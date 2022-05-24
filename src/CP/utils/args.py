@@ -8,7 +8,7 @@ MODELS_CHOICES = ["v5", "v6"]
 SOLVERS_CHOICES = ["Gecode"]
 OUTPUT_CHOICES = ["raw", "plot", "raw+plot"]
 
-DEFAULT_MS_TIME_LIMIT = 1500
+DEFAULT_MS_TIME_LIMIT = 60 * 1000
 DEFAULT_MODEL_NAME = "v6"
 DEFAULT_SOLVER_NAME = "Gecode"
 DEFAULT_N_SOLUTIONS = 9
@@ -92,7 +92,8 @@ def parse_args():
 
     assert n_sol > 0 and n_sol <= 64
 
-    assert time_limit >= 100 and time_limit <= 60000
+    # assert time_limit >= 100 and time_limit <= 60000
+    assert time_limit >= 100 and time_limit <= (300 * 1000)
 
     assert CP_data_file_url(data_file_name, "txt").is_file()
 
