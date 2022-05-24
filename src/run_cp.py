@@ -13,7 +13,7 @@ np.random.seed(1)
 
 DATA_FILE_NAME = "ab-test-6"
 MODEL_FILE_NAME = "v6"
-SOLVER_FILE_NAME = "gecode"
+SOLVER_FILE_NAME = "gecode"  # chuffed
 
 N_MAX_SOLUTIONS = 9
 
