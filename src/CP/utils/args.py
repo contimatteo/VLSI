@@ -5,7 +5,7 @@ from .storage import CP_data_file_url
 ###
 
 MODELS_CHOICES = ["v5", "v6"]
-SOLVERS_CHOICES = ["Gecode"]
+SOLVERS_CHOICES = ["Gecode", "Chuffed"]
 OUTPUT_CHOICES = ["raw", "plot", "raw+plot"]
 
 DEFAULT_MS_TIME_LIMIT = 60 * 1000
