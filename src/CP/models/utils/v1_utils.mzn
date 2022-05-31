@@ -40,6 +40,6 @@ predicate circuits_can_be_merged_on_y(int: c1, int: c2) = (
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-function var int: makespan(array[CIRCUITS, 1..2] of var 0..max_length: pos) = 
-    max(c in CIRCUITS)(pos[c, 1] + heights[c]);
+function var int: makespan(array[CIRCUITS] of var Ys: y) = 
+    max(c in CIRCUITS)(y[c] + heights[c])
 
