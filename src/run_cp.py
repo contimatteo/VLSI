@@ -1,5 +1,5 @@
 import os
-import minizinc
+# import minizinc
 import numpy as np
 
 from CP.utils import parse_args

@@ -52,8 +52,7 @@ constraint v1_cumulative(x, y, heights, widths, width);
 constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
 
 %%%  TODO: remove this
-% constraint makespan == 8;
-constraint makespan == 16;
+constraint makespan == 8;
 
 % % SIMMETRY --> tutti i circuiti con le stesse dimensioni
 % constraint forall(c1,c2 in CIRCUITS) (

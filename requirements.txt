@@ -5,6 +5,6 @@ yapf
 
 #
 
-minizinc==0.5.0
+# minizinc==0.5.0
 matplotlib
 python-dotenv
