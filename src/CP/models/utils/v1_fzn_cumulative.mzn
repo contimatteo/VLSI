@@ -57,12 +57,12 @@ predicate fzn_cumulative_time(array[int] of var int: x,
         ) /\
         % for each circuit check if they do not pass the width boundary
         forall(p in CIRCUITS)(x[p] + widths[p] <= width_boundary) 
-        /\
+        % /\
         % remove horizontal symmetry
-        lex_lesseq(x, [width_boundary - x[p] - widths[p] | p in CIRCUITS]) 
-        /\
+        % lex_lesseq(x, [width_boundary - x[p] - widths[p] | p in CIRCUITS]) 
+        % /\
         % remove vertical simmetry
-        lex_lesseq(y, [y_sum - y[p] - heights[p] | p in CIRCUITS])
+        % lex_lesseq(y, [y_sum - y[p] - heights[p] | p in CIRCUITS])
     );
 
 

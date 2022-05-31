@@ -48,7 +48,7 @@ def plot_solutions_v2(solutions_dict):
         return
 
     rows = 3  # int(len(results) / 2)
-    cols = 3  # len(results) / rows
+    cols = 4  # len(results) / rows
 
     #
 

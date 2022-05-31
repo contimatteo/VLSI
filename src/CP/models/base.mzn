@@ -25,18 +25,21 @@ array[int] of var int: x = [pos[c, 2] | c in CIRCUITS];
 array[int] of var int: y = [pos[c, 1] | c in CIRCUITS];
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-
-
-% constraint cumulative(n_circuits, x, y, heights, widths, width);
-constraint v1_cumulative(x, y, heights, widths, width);
-
 var int: makespan = max(c in CIRCUITS)(pos[c, 1] + heights[c]);
 
-solve satisfy;
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+
+constraint v1_cumulative(x, y, heights, widths, width);
+
+% TODO: remove this
+constraint makespan == 6;
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+
+solve satisfy;
 
 
 output [
