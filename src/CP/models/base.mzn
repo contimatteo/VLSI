@@ -12,12 +12,14 @@ set of int: CIRCUITS = 1..n_circuits;
 %%%  array of xi and yi: the horizontal and the vertical dimension of the circuit i
 array[CIRCUITS,1..2] of int: dims;
 
+set of int: WIDTHS = 1..width;
 %%%  width of the silicon plate
 int: width;
 %%%  array of horizontal dimension of the ciruits
-array[CIRCUITS] of 1..width: widths = [dims[i,1] | i in CIRCUITS];
+array[CIRCUITS] of WIDTHS: widths = [dims[i,1] | i in CIRCUITS];
 
 %%%  array of vertical dimension of the circuits
+% array[CIRCUITS] of int: 1..infinity = [dims[i,2] | i in CIRCUITS];
 array[CIRCUITS] of int: heights = [dims[i,2] | i in CIRCUITS];
 
 %%%  define position x and y of bottom left corner of each circuit

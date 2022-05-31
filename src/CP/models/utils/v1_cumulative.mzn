@@ -8,10 +8,10 @@ include "./v1_fzn_cumulative.mzn";
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 
-predicate v1_cumulative(array[int] of var int: x,
-                        array[int] of var int: y,
-                        array[int] of int: heights,
-                        array[int] of int: widths, 
+predicate v1_cumulative(array[CIRCUITS] of var Xs: x,
+                        array[CIRCUITS] of var Ys: y,
+                        array[CIRCUITS] of int: heights, % array[CIRCUITS] of HEIGHTS: heights,
+                        array[CIRCUITS] of WIDTHS: widths, 
                         int: width_boundary) =
 
     (
