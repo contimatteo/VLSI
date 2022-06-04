@@ -64,7 +64,7 @@ constraint makespan == 8;
 % % SIMMETRY --> tutti i circuiti con le stesse dimensioni
 % constraint forall(c1,c2 in CIRCUITS) (
 %     if c1 < c2 /\ circuits_with_equal_dim(c1, c2)
-%     then lex_lesseq([ pos[c1, i] | i in 1..2 ], [ pos[c2, i] | i in 1..2 ])
+%     then lex_lesseq([ x[c1], y[c1] ], [ x[c2], y[c2] ])
 %     else true
 %     endif
 % );

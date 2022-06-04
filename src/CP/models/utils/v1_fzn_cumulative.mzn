@@ -37,25 +37,31 @@ predicate fzn_cumulative_time(array[int] of var int: x,
         int: y_max  = max([ ub(y[c]) + ub(heights[c]) | c in CIRCUITS ]),
         var int: y_sum = sum(c in CIRCUITS)(y[c])
     } in (
-        % for each height check if the circuits at that height do not overlap
+        %%% for each height check if the circuits at that height do not overlap
         forall( h in y_min..y_max ) (
             let{
-                % array of circuits at height = h
-                array[int] of var int: is_plate_at_h = [
-                    bool2int(y[c] <= h /\ h < y[c] + heights[c]) | c in CIRCUITS
-                    ]
+                %%% array of circuits at height = h
+                % array[int] of var int: is_circuit_at_height = [
+                %     bool2int(y[c] <= h /\ h < y[c] + heights[c]) | c in CIRCUITS
+                % ]
+                array[CIRCUITS] of var bool: is_circuit_at_height = [
+                    y[c] <= h /\ h < y[c] + heights[c] | c in CIRCUITS
+                ]
             } in
-                forall(i,j in CIRCUITS where i<j /\ is_plate_at_h[i]==1 /\ is_plate_at_h[j]==1)(
+                forall(i,j in CIRCUITS where i<j /\ is_circuit_at_height[i] /\ is_circuit_at_height[j])(
                     x[i] + widths[i] <= x[j] \/ x[j] + widths[j] <= x[i]
                 )
+                % forall(i,j in CIRCUITS where x[i]<x[j] /\ is_circuit_at_height[i] /\ is_circuit_at_height[j])(
+                %     x[i] + widths[i] <= x[j]
+                % )
         ) /\
-        % for each circuit check if they do not pass the width boundary
+        %%% for each circuit check if they do not pass the width boundary
         forall(p in CIRCUITS)(x[p] + widths[p] <= width_boundary) 
         % /\
-        % remove horizontal symmetry
+        %%% remove horizontal symmetry
         % lex_lesseq(x, [width_boundary - x[p] - widths[p] | p in CIRCUITS]) 
         % /\
-        % remove vertical simmetry
+        %%% remove vertical simmetry
         % lex_lesseq(y, [y_sum - y[p] - heights[p] | p in CIRCUITS])
     );
 
