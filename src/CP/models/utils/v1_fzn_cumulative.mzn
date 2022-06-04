@@ -46,10 +46,11 @@ predicate fzn_cumulative_time(array[int] of var int: x,
                 % ]
                 array[CIRCUITS] of var bool: is_circuit_at_height = [
                     y[c] <= h /\ h < y[c] + heights[c] | c in CIRCUITS
-                ]
+                ],
+                array[int] of var opt int: circuits_at_height_h = [ c | c in CIRCUITS where is_circuit_at_height[c] ]
             } in
-                forall(i,j in CIRCUITS where i<j /\ is_circuit_at_height[i] /\ is_circuit_at_height[j])(
-                    x[i] + widths[i] <= x[j] \/ x[j] + widths[j] <= x[i]
+                forall(c1,c2 in circuits_at_height_h where c1<c2 )(
+                    x[c1] + widths[c1] <= x[c2] \/ x[c2] + widths[c2] <= x[c1]
                 )
                 % forall(i,j in CIRCUITS where x[i]<x[j] /\ is_circuit_at_height[i] /\ is_circuit_at_height[j])(
                 %     x[i] + widths[i] <= x[j]
