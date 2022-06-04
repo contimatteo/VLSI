@@ -69,7 +69,7 @@ def main(args):
 
     #
 
-    opts = f"--time-limit {args.time}"  # --solver-time-limit
+    opts = f"--time-limit {args.time * 1000}"  # --solver-time-limit
 
     if args.solutions > 1:
         opts += " --all-solutions"

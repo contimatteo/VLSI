@@ -1,0 +1,100 @@
+
+
+GOLIA (Chuffed)
+
+% Generated FlatZinc statistics:
+%%%mzn-stat: paths=0
+%%%mzn-stat: flatIntVars=1719
+%%%mzn-stat: flatIntConstraints=591
+%%%mzn-stat: method="minimize"
+%%%mzn-stat: flatTime=0.115411
+%%%mzn-stat-end
+
+width = 17
+n_circuits = 12
+dims = [3, 3, 3, 4, 3, 5, 3, 6, 3, 7, 3, 8, 3, 9, 4, 3, 4, 8, 4, 14, 7, 3, 7, 6]
+widths = [3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 7, 7]
+heights = [3, 4, 5, 6, 7, 8, 9, 3, 8, 14, 3, 6]
+x = [11, 14, 11, 14, 14, 8, 11, 7, 4, 0, 0, 4]
+y = [14, 13, 9, 7, 0, 6, 0, 14, 6, 0, 14, 0]
+makespan = 17
+% time elapsed: 2.49 s
+----------
+==========
+% time elapsed: 2.55 s
+%%%mzn-stat: nodes=1339
+%%%mzn-stat: failures=203
+%%%mzn-stat: restarts=1
+%%%mzn-stat: variables=621118
+%%%mzn-stat: intVars=1748
+%%%mzn-stat: boolVariables=619368
+%%%mzn-stat: propagators=897
+%%%mzn-stat: propagations=1074134
+%%%mzn-stat: peakDepth=1107
+%%%mzn-stat: nogoods=203
+%%%mzn-stat: backjumps=28
+%%%mzn-stat: peakMem=0.00
+%%%mzn-stat: time=2.346
+%%%mzn-stat: initTime=0.555
+%%%mzn-stat: solveTime=1.791
+%%%mzn-stat: objective=17
+%%%mzn-stat: optTime=1.790
+%%%mzn-stat: baseMem=0.00
+%%%mzn-stat: trailMem=0.63
+%%%mzn-stat: randomSeed=1654341376
+%%%mzn-stat: nSolutions=1
+%%%mzn-stat-end
+
+
+
+DAVIDE (Chuffed)
+
+
+% Generated FlatZinc statistics:
+%%%mzn-stat: paths=0
+%%%mzn-stat: flatBoolVars=16611
+%%%mzn-stat: flatIntVars=3652
+%%%mzn-stat: flatBoolConstraints=13934
+%%%mzn-stat: flatIntConstraints=15779
+%%%mzn-stat: evaluatedReifiedConstraints=15538
+%%%mzn-stat: evaluatedHalfReifiedConstraints=5326
+%%%mzn-stat: eliminatedImplications=4201
+%%%mzn-stat: method="minimize"
+%%%mzn-stat: flatTime=2.47835
+%%%mzn-stat-end
+
+width = 17
+n_circuits = 12
+dims = [3, 3, 3, 4, 3, 5, 3, 6, 3, 7, 3, 8, 3, 9, 4, 3, 4, 8, 4, 14, 7, 3, 7, 6]
+widths = [3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 7, 7]
+heights = [3, 4, 5, 6, 7, 8, 9, 3, 8, 14, 3, 6]
+x = [14, 11, 14, 11, 11, 8, 14, 0, 4, 0, 4, 4]
+y = [14, 13, 9, 7, 0, 9, 0, 14, 9, 0, 6, 0]
+makespan = 17
+% time elapsed: 23.42 s
+----------
+==========
+% time elapsed: 23.45 s
+%%%mzn-stat: nodes=931629
+%%%mzn-stat: failures=55244
+%%%mzn-stat: restarts=1
+%%%mzn-stat: variables=108556
+%%%mzn-stat: intVars=3675
+%%%mzn-stat: boolVariables=104879
+%%%mzn-stat: propagators=24274
+%%%mzn-stat: propagations=59910885
+%%%mzn-stat: peakDepth=2240
+%%%mzn-stat: nogoods=55244
+%%%mzn-stat: backjumps=874144
+%%%mzn-stat: peakMem=0.00
+%%%mzn-stat: time=20.744
+%%%mzn-stat: initTime=0.287
+%%%mzn-stat: solveTime=20.457
+%%%mzn-stat: objective=17
+%%%mzn-stat: optTime=20.448
+%%%mzn-stat: baseMem=0.00
+%%%mzn-stat: trailMem=0.12
+%%%mzn-stat: randomSeed=1654341312
+%%%mzn-stat: nSolutions=1
+%%%mzn-stat-end
+

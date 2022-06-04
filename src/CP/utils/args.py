@@ -8,7 +8,7 @@ MODELS_CHOICES = ["base"]
 SOLVERS_CHOICES = ["Gecode", "Chuffed"]
 OUTPUT_CHOICES = ["raw", "plot", "raw+plot"]
 
-DEFAULT_MS_TIME_LIMIT = 10 * 1000
+DEFAULT_SECONDS_TIME_LIMIT = 10
 DEFAULT_MODEL_NAME = "v6"
 DEFAULT_SOLVER_NAME = "Chuffed"
 DEFAULT_N_SOLUTIONS = 12
@@ -57,8 +57,8 @@ def parse_args():
         '--time',
         required=False,
         type=int,
-        default=DEFAULT_MS_TIME_LIMIT,
-        help='computation (ms) time limit'
+        default=DEFAULT_SECONDS_TIME_LIMIT,
+        help='computation (seconds) time limit'
     )
     parser.add_argument(
         '--stats', required=False, action="store_false", help='prints execution statistics infos'
@@ -93,7 +93,7 @@ def parse_args():
     assert n_sol > 0 and n_sol <= 64
 
     # assert time_limit >= 100 and time_limit <= 60000
-    assert time_limit >= 100 and time_limit <= (300 * 1000)
+    assert time_limit >= 1 and time_limit <= 300
 
     assert CP_data_file_url(data_file_name, "txt").is_file()
 

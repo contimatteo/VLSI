@@ -29,9 +29,8 @@ set of int: Xs = 0..(width - min(widths));
 set of int: Ys = 0..(max_makespan - min(heights));
 array[CIRCUITS] of var Xs: x;
 array[CIRCUITS] of var Ys: y;
+array[0..width, 0..max_makespan] of var CIRCUITS: grid; 
 
-
-% var int: makespan = max(c in CIRCUITS)(pos[c, 1] + heights[c]);
 var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
 
 
@@ -53,15 +52,23 @@ constraint assert(
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 %%%  base problem constraints (by definition)
-constraint v1_cumulative(x, y, heights, widths, width);
+% constraint v1_cumulative(x, y, heights, widths, width);
+constraint cumulative(y, heights, widths, width);
+constraint cumulative(x, widths, heights, makespan);
+constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
+constraint forall(c in CIRCUITS)(
+    forall(k in 0..widths[c]-1, h in 0..heights[c]-1)(
+        grid[ x[c]+k, y[c]+h ] == c
+    )
+);
 
 %%% place the circuit with the max height at position (0,0);
 constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
 
-%%%  TODO: remove this
-constraint makespan == 8;
+%%% define `makespan` boundaries.
+constraint makespan >= max(heights) /\ makespan <= max_makespan;
 
-% % SIMMETRY --> tutti i circuiti con le stesse dimensioni
+% SIMMETRY --> tutti i circuiti con le stesse dimensioni
 % constraint forall(c1,c2 in CIRCUITS) (
 %     if c1 < c2 /\ circuits_with_equal_dim(c1, c2)
 %     then lex_lesseq([ x[c1], y[c1] ], [ x[c2], y[c2] ])
@@ -72,7 +79,7 @@ constraint makespan == 8;
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 
-solve satisfy;
+solve minimize makespan;
 
 
 output [
