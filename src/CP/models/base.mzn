@@ -68,7 +68,7 @@ constraint cumulative(x, [r_width(i) | i in CIRCUITS], [r_height(i) | i in CIRCU
 
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
 constraint forall(c in CIRCUITS)(
-    forall(k in 0..widths[c]-1, h in 0..heights[c]-1)(
+    forall(k in 0..r_width(c)-1, h in 0..r_height(c)-1)(
         grid[ x[c]+k, y[c]+h ] == c
     )
 );
