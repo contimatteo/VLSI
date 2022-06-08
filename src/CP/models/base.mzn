@@ -15,7 +15,7 @@ array[CIRCUITS,1..2] of int: dims;
 set of int: WIDTHS = 1..width;
 %%%  width of the silicon plate
 int: width;
-%%%  array of horizontal dimension of the ciruits
+%%%  array of horizontal dimension of the circuits
 array[CIRCUITS] of WIDTHS: widths = [dims[i,1] | i in CIRCUITS];
 
 %%%  array of vertical dimension of the circuits
