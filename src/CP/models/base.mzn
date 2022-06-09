@@ -44,6 +44,9 @@ array[CIRCUITS] of var bool: rotation;
 function var int: r_height(int: i) = (not rotation[i]) * heights[i] + rotation[i] * widths[i];
 function var int: r_width(int: i) = (not rotation[i]) * widths[i] + rotation[i] * heights[i];
 
+%#rotation implied constraint if is taller then the width of the board it should not be rotated
+constraint forall (c in CIRCUITS)(heights[c] > width -> not rotation[c]);
+
 
 %%%  all circuits must have each dimension greater than zero
 constraint assert ( 
