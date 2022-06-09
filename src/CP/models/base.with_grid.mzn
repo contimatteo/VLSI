@@ -19,6 +19,7 @@ int: width;
 array[CIRCUITS] of WIDTHS: widths = [dims[i,1] | i in CIRCUITS];
 
 %%%  array of vertical dimension of the circuits
+% array[CIRCUITS] of int: 1..infinity = [dims[i,2] | i in CIRCUITS];
 array[CIRCUITS] of int: heights = [dims[i,2] | i in CIRCUITS];
 
 %%%  define position x and y of bottom left corner of each circuit
@@ -28,6 +29,7 @@ set of int: Xs = 0..(width - min(widths));
 set of int: Ys = 0..(max_makespan - min(heights));
 array[CIRCUITS] of var Xs: x;
 array[CIRCUITS] of var Ys: y;
+array[0..width, 0..max_makespan] of var CIRCUITS: grid; 
 
 var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
 
@@ -50,18 +52,15 @@ constraint assert(
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 %%%  base problem constraints (by definition)
+% constraint v1_cumulative(x, y, heights, widths, width);
 constraint cumulative(y, heights, widths, width);
 constraint cumulative(x, widths, heights, makespan);
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
-<<<<<<< Updated upstream
-%%% ragionare se si possono assegnare gli indici solo ai bordi
-=======
->>>>>>> Stashed changes
-constraint (
-    alldifferent([ (x[c]+k) + (y[c]+h)*width | c in CIRCUITS, 
-                                               k in 0..widths[c]-1, 
-                                               h in 0..heights[c]-1]));
-
+constraint forall(c in CIRCUITS)(
+    forall(k in 0..widths[c]-1, h in 0..heights[c]-1)(
+        grid[ x[c]+k, y[c]+h ] == c
+    )
+);
 
 %%% place the circuit with the max height at position (0,0);
 constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
