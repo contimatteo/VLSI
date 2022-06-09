@@ -4,12 +4,12 @@ from .storage import CP_data_file_url
 
 ###
 
-MODELS_CHOICES = ["base"]
+MODELS_CHOICES = ["base", "base.rotation"]
 SOLVERS_CHOICES = ["Gecode", "Chuffed"]
 OUTPUT_CHOICES = ["raw", "plot", "raw+plot"]
 
 DEFAULT_SECONDS_TIME_LIMIT = 10
-DEFAULT_MODEL_NAME = "v6"
+DEFAULT_MODEL_NAME = "base"
 DEFAULT_SOLVER_NAME = "Chuffed"
 DEFAULT_N_SOLUTIONS = 12
 DEFAULT_OUTPUT_FORMAT = "raw+plot"

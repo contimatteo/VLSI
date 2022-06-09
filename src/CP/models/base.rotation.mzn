@@ -1,6 +1,4 @@
-% include "globals.mzn";
-include "alldifferent.mzn";
-include "cumulative.mzn";
+include "globals.mzn";
 % include "./utils/v1_cumulative.mzn";
 % include "./utils/v1_utils.mzn";
 
@@ -15,14 +13,21 @@ set of int: CIRCUITS = 1..n_circuits;
 %%%  array of xi and yi: the horizontal and the vertical dimension of the circuit i
 array[CIRCUITS,1..2] of int: dims;
 
-set of int: WIDTHS = 1..width;
+% Rotations: whether the circuit at index `i` rotated or not
+array[CIRCUITS] of var bool: is_rotated;
+
+% set of int: WIDTHS = 1..width;
 %%%  width of the silicon plate
 int: width;
 %%%  array of horizontal dimension of the ciruits
-array[CIRCUITS] of int: widths = [dims[i,1] | i in CIRCUITS];
+array[CIRCUITS] of var int: widths = [
+    (not is_rotated[c]) * dims[c,1] + is_rotated[c] * dims[c,2] | c in CIRìCUITS
+];
 
 %%%  array of vertical dimension of the circuits
-array[CIRCUITS] of int: heights = [dims[i,2] | i in CIRCUITS];
+array[CIRCUITS] of int: heights = [
+    (not is_rotated[c]) * dims[c,2] + is_rotated[c] * dims[c,1] | c in CIRìCUITS
+];
 
 %%%  define position x and y of bottom left corner of each circuit
 int: max_makespan = sum(heights);
@@ -52,24 +57,17 @@ constraint assert(
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-
-array[int] of var int: grid = [
-    (x[c]+k) + (y[c]+h)*width | c in CIRCUITS, k in 0..widths[c]-1, h in 0..heights[c]-1
-];
-
 %%%  base problem constraints (by definition)
 constraint cumulative(y, heights, widths, width);
 constraint cumulative(x, widths, heights, makespan);
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
 %%% ragionare se si possono assegnare gli indici solo ai bordi
-% constraint (
-%     alldifferent(
-%         % [ (x[c]+k) + (y[c]+h)*width | c in CIRCUITS, k in 0..widths[c]-1, h in 0..heights[c]-1 ]
-%         grid
-%     )
-% );
-constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]);
-
+constraint (
+    alldifferent([ 
+        (x[c]+k) + (y[c]+h)*width | c in CIRCUITS, 
+                                    k in 0..widths[c]-1, 
+                                    h in 0..heights[c]-1])
+);
 
 %%% place the circuit with the max height at position (0,0);
 constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
@@ -99,6 +97,5 @@ output [
     "heights = ", show(heights), "\n",
     "x = ", show(x), "\n",
     "y = ", show(y), "\n",
-    "makespan = ", show(makespan), "\n",
-    "grid = ", show(grid), "\n"
+    "makespan = ", show(makespan), "\n"
 ];
