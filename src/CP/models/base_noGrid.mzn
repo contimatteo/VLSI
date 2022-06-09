@@ -50,11 +50,13 @@ constraint assert(
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 %%%  base problem constraints (by definition)
-% constraint v1_cumulative(x, y, heights, widths, width);
 constraint cumulative(y, heights, widths, width);
 constraint cumulative(x, widths, heights, makespan);
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
+<<<<<<< Updated upstream
 %%% ragionare se si possono assegnare gli indici solo ai bordi
+=======
+>>>>>>> Stashed changes
 constraint (
     alldifferent([ (x[c]+k) + (y[c]+h)*width | c in CIRCUITS, 
                                                k in 0..widths[c]-1, 
