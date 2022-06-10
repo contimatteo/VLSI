@@ -1,6 +1,7 @@
 % include "globals.mzn";
 include "alldifferent.mzn";
 include "cumulative.mzn";
+include "nvalue.mzn";
 % include "./utils/v1_cumulative.mzn";
 % include "./utils/v1_utils.mzn";
 
@@ -62,12 +63,8 @@ constraint cumulative(y, heights, widths, width);
 constraint cumulative(x, widths, heights, makespan);
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
 %%% ragionare se si possono assegnare gli indici solo ai bordi
-constraint (
-    alldifferent(
-        % [ (x[c]+k) + (y[c]+h)*width | c in CIRCUITS, k in 0..widths[c]-1, h in 0..heights[c]-1 ]
-        grid
-    )
-);
+constraint alldifferent(grid);
+% constraint nvalue(length(grid), grid);
 % constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]);
 
 
