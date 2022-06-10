@@ -75,8 +75,8 @@ constraint cumulative(x, [r_width(c) | c in CIRCUITS], [r_height(c) | c in CIRCU
 constraint forall(c in CIRCUITS)(x[c] + r_width(c) <= width);
 
 %%%  exploit the `grid` variable definition
-constraint alldifferent(grid); %%% GECODE
-% constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]); %%% CHUFFED
+%constraint alldifferent(grid); %%% GECODE
+constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]); %%% CHUFFED
 
 
 %%% place the circuit with the max height at position (0,0);
