@@ -20,7 +20,7 @@ int: width;
 %%%  array of horizontal dimension of the ciruits
 array[CIRCUITS] of var int: widths = [ (not is_rotated[c]) * dims[c,1] + is_rotated[c] * dims[c,2] | c in CIRCUITS ];
 %%%  array of vertical dimension of the circuits
-array[CIRCUITS] of int: heights = [ (not is_rotated[c]) * dims[c,2] + is_rotated[c] * dims[c,1] | c in CIRCUITS ];
+array[CIRCUITS] of var int: heights = [ (not is_rotated[c]) * dims[c,2] + is_rotated[c] * dims[c,1] | c in CIRCUITS ];
 
 %%% define makespan boundaries
 int: sum_area = sum(c in CIRCUITS)(heights[c]*widths[c]);
@@ -40,8 +40,8 @@ var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
 
 %%%  all circuits must have each dimension greater than zero
 constraint assert ( 
-    min(heights) > 0, 
-    "[ERROR] each circuit must have the height dimension greater than zero." 
+    min(dims) > 0, 
+    "[ERROR] each circuit must have each dimension greater than zero." 
 );
 
 constraint assert(
@@ -89,7 +89,6 @@ output [
     "heights = ", show(heights), "\n",
     "x = ", show(x), "\n",
     "y = ", show(y), "\n",
-    % "grid = ", show(grid), "\n",
     "min_makespan = ", show(min_makespan), "\n",
     "max_makespan = ", show(max_makespan), "\n",
     "makespan = ", show(makespan), "\n"

@@ -38,8 +38,8 @@ var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
 
 %%%  all circuits must have each dimension greater than zero
 constraint assert ( 
-    min(heights) > 0, 
-    "[ERROR] each circuit must have the height dimension greater than zero." 
+    min(dims) > 0, 
+    "[ERROR] each circuit must have each dimension greater than zero." 
 );
 
 constraint assert(
@@ -87,7 +87,6 @@ output [
     "heights = ", show(heights), "\n",
     "x = ", show(x), "\n",
     "y = ", show(y), "\n",
-    % "grid = ", show(grid), "\n",
     "min_makespan = ", show(min_makespan), "\n",
     "max_makespan = ", show(max_makespan), "\n",
     "makespan = ", show(makespan), "\n"
