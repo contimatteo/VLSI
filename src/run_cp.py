@@ -82,7 +82,8 @@ def main(args):
 
     #
 
-    os_cmd = f"minizinc --solver {solver} --model {model} --data {data} {opts.strip()}"
+    # os_cmd = f"minizinc --solver {solver} --model {model} --data {data} {opts.strip()}"
+    os_cmd = f"minizinc {opts.strip()} --solver \"{solver}\" {model} {data}"
 
     if args.debug is True:
         print()

@@ -106,6 +106,6 @@ output [
     "heights = ", show(heights), "\n",
     "x = ", show(x), "\n",
     "y = ", show(y), "\n",
-    "makespan = ", show(makespan), "\n",
-    "grid = ", show(grid), "\n"
+    % "grid = ", show(grid), "\n",
+    "makespan = ", show(makespan), "\n"
 ];
