@@ -99,7 +99,7 @@ def parse_args():
     assert n_sol > 0 and n_sol <= 64
 
     # assert time_limit >= 100 and time_limit <= 60000
-    assert time_limit >= 1 and time_limit <= 600
+    assert time_limit >= 1 and time_limit <= 1800
 
     assert CP_data_file_url(data_file_name, "txt").is_file()
 
