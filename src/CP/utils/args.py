@@ -5,7 +5,18 @@ from .storage import CP_data_file_url
 ###
 
 MODELS_CHOICES = ["base", "base.rotation"]
-SOLVERS_CHOICES = ["Gecode", "Chuffed"]
+SOLVERS_CHOICES = [
+    "Chuffed",
+    "COIN-BC",
+    "CPLEX",
+    "findMUS",
+    "Gecode",
+    "Gecode Gist",
+    "Globalizer",
+    "Gurobi",
+    "SCIP",
+    "Xpress",
+]
 OUTPUT_CHOICES = ["raw", "plot", "raw+plot"]
 
 DEFAULT_SECONDS_TIME_LIMIT = 10
@@ -27,7 +38,7 @@ def parse_args():
         type=str,
         default=DEFAULT_MODEL_NAME,
         choices=MODELS_CHOICES,
-        help='solver name'
+        help='name of the model to use'
     )
     parser.add_argument(
         '--solver',
@@ -35,7 +46,7 @@ def parse_args():
         type=str,
         default=DEFAULT_SOLVER_NAME,
         choices=SOLVERS_CHOICES,
-        help='solver name'
+        help='name of the solver to use'
     )
     parser.add_argument(
         '--solutions',
