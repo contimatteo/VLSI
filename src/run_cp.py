@@ -62,9 +62,10 @@ def __plot(raw_results):
 
 def main(args):
     convert_txt_file_to_dzn(args.data)
+    model_name = f"{args.model}.{str(args.solver).lower()}"
 
     solver = args.solver
-    model = CP_model_file_url(args.model).resolve()
+    model = CP_model_file_url(model_name).resolve()
     data = CP_data_file_url(args.data, 'dzn').resolve()
 
     #

@@ -158,7 +158,7 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
 
     #
 
-    # results = sorted(results, key=lambda x: x["makespan"], reverse=False)
+    results = sorted(results, key=lambda x: x["makespan"], reverse=False)
     results = results[0:n_max_solutions]
 
     return {

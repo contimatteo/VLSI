@@ -1,6 +1,5 @@
-include "globals.mzn";
-% include "./utils/v1_cumulative.mzn";
-% include "./utils/v1_utils.mzn";
+include "alldifferent.mzn";
+include "cumulative.mzn";
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -13,23 +12,19 @@ set of int: CIRCUITS = 1..n_circuits;
 %%%  array of xi and yi: the horizontal and the vertical dimension of the circuit i
 array[CIRCUITS,1..2] of int: dims;
 
-% Rotations: whether the circuit at index `i` rotated or not
+%%% rotations: whether the circuit at index `i` rotated or not
 array[CIRCUITS] of var bool: is_rotated;
 
-% set of int: WIDTHS = 1..width;
 %%%  width of the silicon plate
 int: width;
 %%%  array of horizontal dimension of the ciruits
-array[CIRCUITS] of var int: widths = [
-    (not is_rotated[c]) * dims[c,1] + is_rotated[c] * dims[c,2] | c in CIRìCUITS
-];
-
+array[CIRCUITS] of var int: widths = [ (not is_rotated[c]) * dims[c,1] + is_rotated[c] * dims[c,2] | c in CIRCUITS ];
 %%%  array of vertical dimension of the circuits
-array[CIRCUITS] of int: heights = [
-    (not is_rotated[c]) * dims[c,2] + is_rotated[c] * dims[c,1] | c in CIRìCUITS
-];
+array[CIRCUITS] of int: heights = [ (not is_rotated[c]) * dims[c,2] + is_rotated[c] * dims[c,1] | c in CIRCUITS ];
 
-%%%  define position x and y of bottom left corner of each circuit
+%%% define makespan boundaries
+int: sum_area = sum(c in CIRCUITS)(heights[c]*widths[c]);
+int: min_makespan = round(sum_area / width);
 int: max_makespan = sum(heights);
 
 set of int: Xs = 0..(width - min(widths));
@@ -57,31 +52,28 @@ constraint assert(
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
+%%% TODO: ragionare se si possono assegnare gli indici solo ai bordi
+array[int] of var int: grid = [
+    (x[c]+k) + (y[c]+h)*width | c in CIRCUITS, k in 0..widths[c]-1, h in 0..heights[c]-1
+];
+
 %%%  base problem constraints (by definition)
 constraint cumulative(y, heights, widths, width);
 constraint cumulative(x, widths, heights, makespan);
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
-%%% ragionare se si possono assegnare gli indici solo ai bordi
-constraint (
-    alldifferent([ 
-        (x[c]+k) + (y[c]+h)*width | c in CIRCUITS, 
-                                    k in 0..widths[c]-1, 
-                                    h in 0..heights[c]-1])
-);
+%%% GECODE
+constraint alldifferent(grid);
+%%% CHUFFED
+% constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]);
+
 
 %%% place the circuit with the max height at position (0,0);
 constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
 
 %%% define `makespan` boundaries.
-constraint makespan >= max(heights) /\ makespan <= max_makespan;
+constraint makespan >= min_makespan /\ makespan <= max_makespan;
+% constraint makespan >= max(heights) /\ makespan <= max_makespan;
 
-% SIMMETRY --> tutti i circuiti con le stesse dimensioni
-% constraint forall(c1,c2 in CIRCUITS) (
-%     if c1 < c2 /\ circuits_with_equal_dim(c1, c2)
-%     then lex_lesseq([ x[c1], y[c1] ], [ x[c2], y[c2] ])
-%     else true
-%     endif
-% );
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -97,5 +89,8 @@ output [
     "heights = ", show(heights), "\n",
     "x = ", show(x), "\n",
     "y = ", show(y), "\n",
+    % "grid = ", show(grid), "\n",
+    "min_makespan = ", show(min_makespan), "\n",
+    "max_makespan = ", show(max_makespan), "\n",
     "makespan = ", show(makespan), "\n"
 ];
