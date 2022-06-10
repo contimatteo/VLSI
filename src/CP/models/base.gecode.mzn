@@ -15,10 +15,9 @@ array[CIRCUITS,1..2] of int: dims;
 %%%  width of the silicon plate
 int: width;
 %%%  array of horizontal dimension of the ciruits
-array[CIRCUITS] of int: widths = [dims[i,1] | i in CIRCUITS];
-
+array[CIRCUITS] of int: widths = [dims[c,1] | c in CIRCUITS];
 %%%  array of vertical dimension of the circuits
-array[CIRCUITS] of int: heights = [dims[i,2] | i in CIRCUITS];
+array[CIRCUITS] of int: heights = [dims[c,2] | c in CIRCUITS];
 
 %%% define makespan boundaries
 int: sum_area = sum(c in CIRCUITS)(heights[c]*widths[c]);
@@ -31,6 +30,11 @@ array[CIRCUITS] of var Xs: x;
 array[CIRCUITS] of var Ys: y;
 
 var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
+
+%%% TODO: ragionare se si possono assegnare gli indici solo ai bordi
+array[int] of var int: grid = [
+    (x[c]+w) + (y[c]+h)*width | c in CIRCUITS, w in 0..widths[c]-1, h in 0..heights[c]-1
+];
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -50,19 +54,15 @@ constraint assert(
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-%%% TODO: ragionare se si possono assegnare gli indici solo ai bordi
-array[int] of var int: grid = [
-    (x[c]+k) + (y[c]+h)*width | c in CIRCUITS, k in 0..widths[c]-1, h in 0..heights[c]-1
-];
 
 %%%  base problem constraints (by definition)
 constraint cumulative(y, heights, widths, width);
 constraint cumulative(x, widths, heights, makespan);
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
-%%% GECODE
-constraint alldifferent(grid);
-%%% CHUFFED
-% constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]);
+
+%%%  exploit the `grid` variable definition
+constraint alldifferent(grid); %%% GECODE
+% constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]); %%% CHUFFED
 
 
 %%% place the circuit with the max height at position (0,0);
