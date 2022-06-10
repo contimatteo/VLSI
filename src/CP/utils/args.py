@@ -8,13 +8,9 @@ MODELS_CHOICES = ["base", "base.rotation"]
 SOLVERS_CHOICES = [
     "Chuffed",
     "COIN-BC",
-    "CPLEX",
     # "findMUS",
     "Gecode",
     # "Globalizer",
-    "Gurobi",
-    "SCIP",
-    "Xpress",
 ]
 OUTPUT_CHOICES = ["raw", "plot", "raw+plot"]
 
