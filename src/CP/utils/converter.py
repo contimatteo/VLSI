@@ -78,7 +78,11 @@ def __convert_raw_var_to_number(raw_var: str):
     raise Exception("raw variable format not supported.")
 
 
-def __convert_raw_var_to_list(raw_var: str):
+def __convert_raw_var_to_bool(raw_var: str):
+    return str(raw_var).lower() == "true"
+
+
+def __convert_raw_var_to_list(raw_var: str, is_num: bool):
     raw_var = raw_var.strip()
     assert isinstance(raw_var, str) and len(raw_var) > 0
 
@@ -86,7 +90,10 @@ def __convert_raw_var_to_list(raw_var: str):
     if raw_var[0] == "[":
         raw_var = raw_var.replace("[", "").replace("]", "").replace(" ", "")
         raw_var = raw_var.split(",")
-        return [__convert_raw_var_to_number(val) for val in raw_var]
+        return [
+            __convert_raw_var_to_number(val) if is_num else __convert_raw_var_to_bool(val)
+            for val in raw_var
+        ]
 
     raise Exception("raw variable format not supported.")
 
@@ -97,8 +104,11 @@ def __convert_raw_var_to_special_type(raw_var_name: str, raw_var_value: str):
 
     # 2x2 matrix
     if raw_var_name == "pos" or raw_var_name == "dims":
-        raw_var = __convert_raw_var_to_list(raw_var)
+        raw_var = __convert_raw_var_to_list(raw_var, True)
         return np.array(raw_var, dtype=np.int64).reshape((-1, 2)).tolist()
+    elif raw_var_name == "is_rotated":
+        raw_var = __convert_raw_var_to_list(raw_var, False)
+        return [str(raw_bool_var).lower() == "true" for raw_bool_var in raw_var]
 
     raise Exception("raw variable format not supported.")
 
@@ -112,7 +122,7 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
 
     NUMERIC_VARIABLE_NAMES = ["width", "n_circuits", "makespan"]
     LIST_VARIABLE_NAMES = ["widths", "heights", "x", "y"]
-    SPECIAL_VARIABLE_NAMES = ["dims", "pos"]
+    SPECIAL_VARIABLE_NAMES = ["dims", "pos", "is_rotated"]
 
     #
 
@@ -139,7 +149,7 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
             if var_name in NUMERIC_VARIABLE_NAMES:
                 var_value = __convert_raw_var_to_number(var_value)
             elif var_name in LIST_VARIABLE_NAMES:
-                var_value = __convert_raw_var_to_list(var_value)
+                var_value = __convert_raw_var_to_list(var_value, True)
             elif var_name in SPECIAL_VARIABLE_NAMES:
                 var_value = __convert_raw_var_to_special_type(var_name, var_value)
             else:
