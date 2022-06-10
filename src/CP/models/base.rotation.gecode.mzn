@@ -41,7 +41,7 @@ array[CIRCUITS] of var Ys: y;
 var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
 
 %%% TODO: ragionare se si possono assegnare gli indici solo ai bordi
-array[int] of var opt int: grid = [
+array[int] of var int: grid = [
     % (x[c]+k) + (y[c]+h)*width | c in CIRCUITS, k in 0..widths[c]-1, h in 0..heights[c]-1
     ( x[c] + (w * (not is_rotated[c]) + h * is_rotated[c]) ) + 
     ( y[c] + (w * is_rotated[c] + h * (not is_rotated[c])) ) * width
@@ -75,8 +75,8 @@ constraint cumulative(x, [r_width(c) | c in CIRCUITS], [r_height(c) | c in CIRCU
 constraint forall(c in CIRCUITS)(x[c] + r_width(c) <= width);
 
 %%%  exploit the `grid` variable definition
-% constraint alldifferent(grid); %%% GECODE
-constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]); %%% CHUFFED
+constraint alldifferent(grid); %%% GECODE
+% constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]); %%% CHUFFED
 
 
 %%% place the circuit with the max height at position (0,0);
@@ -101,6 +101,7 @@ output [
     "heights = ", show(heights), "\n",
     "x = ", show(x), "\n",
     "y = ", show(y), "\n",
+    "is_rotated = ", show(is_rotated), "\n",
     "min_makespan = ", show(min_makespan), "\n",
     "max_makespan = ", show(max_makespan), "\n",
     "makespan = ", show(makespan), "\n"
