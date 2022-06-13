@@ -4,7 +4,7 @@ from .storage import CP_data_file_url
 
 ###
 
-MODELS_CHOICES = ["[legacy] base(grid)","base.gecode", "base.rotation.chuffed", "base.rotation.gecode"]
+MODELS_CHOICES = ["base", "base.rotation"]
 SOLVERS_CHOICES = [
     "Chuffed",
     "COIN-BC",
