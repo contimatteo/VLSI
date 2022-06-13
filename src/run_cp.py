@@ -62,9 +62,10 @@ def __plot(raw_results):
 
 def main(args):
     convert_txt_file_to_dzn(args.data)
+    model_name = f"{args.model}.{str(args.solver).lower()}"
 
     solver = args.solver
-    model = CP_model_file_url(args.model).resolve()
+    model = CP_model_file_url(model_name).resolve()
     data = CP_data_file_url(args.data, 'dzn').resolve()
 
     #
@@ -82,7 +83,8 @@ def main(args):
 
     #
 
-    os_cmd = f"minizinc --solver {solver} --model {model} --data {data} {opts.strip()}"
+    # os_cmd = f"minizinc --solver {solver} --model {model} --data {data} {opts.strip()}"
+    os_cmd = f"minizinc {opts.strip()} --solver \"{solver}\" {model} {data}"
 
     if args.debug is True:
         print()

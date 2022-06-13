@@ -4,14 +4,20 @@ from .storage import CP_data_file_url
 
 ###
 
-MODELS_CHOICES = ["base"]
-SOLVERS_CHOICES = ["Gecode", "Chuffed"]
+MODELS_CHOICES = ["base", "base.rotation"]
+SOLVERS_CHOICES = [
+    "Chuffed",
+    "COIN-BC",
+    # "findMUS",
+    "Gecode",
+    # "Globalizer",
+]
 OUTPUT_CHOICES = ["raw", "plot", "raw+plot"]
 
 DEFAULT_SECONDS_TIME_LIMIT = 10
-DEFAULT_MODEL_NAME = "v6"
+DEFAULT_MODEL_NAME = "base"
 DEFAULT_SOLVER_NAME = "Chuffed"
-DEFAULT_N_SOLUTIONS = 12
+DEFAULT_N_SOLUTIONS = 9
 DEFAULT_OUTPUT_FORMAT = "raw+plot"
 
 ###
@@ -27,7 +33,7 @@ def parse_args():
         type=str,
         default=DEFAULT_MODEL_NAME,
         choices=MODELS_CHOICES,
-        help='solver name'
+        help='name of the model to use'
     )
     parser.add_argument(
         '--solver',
@@ -35,7 +41,7 @@ def parse_args():
         type=str,
         default=DEFAULT_SOLVER_NAME,
         choices=SOLVERS_CHOICES,
-        help='solver name'
+        help='name of the solver to use'
     )
     parser.add_argument(
         '--solutions',
@@ -93,7 +99,7 @@ def parse_args():
     assert n_sol > 0 and n_sol <= 64
 
     # assert time_limit >= 100 and time_limit <= 60000
-    assert time_limit >= 1 and time_limit <= 300
+    assert time_limit >= 1 and time_limit <= 1800
 
     assert CP_data_file_url(data_file_name, "txt").is_file()
 
