@@ -1,11 +1,11 @@
 import os
-# import minizinc
 import numpy as np
+import json
 
 from CP.utils import parse_args
 from CP.utils import convert_txt_file_to_dzn, convert_raw_result_to_solutions_dict
-from CP.utils import plot_solutions_v1, plot_solutions_v2
-from CP.utils import CP_model_file_url, CP_data_file_url
+from CP.utils import plot_solutions_v2
+from CP.utils import CP_model_file_url, CP_data_file_url, CP_out_file_url
 
 ###
 
@@ -19,53 +19,44 @@ N_MAX_SOLUTIONS = 9
 
 ###
 
-# def load_model(file_name: str) -> minizinc.Model:
-#     return minizinc.Model(str(CP_model_file_url(file_name)))
 
-# def load_data(file_name: str, model: minizinc.Model) -> dict:
-#     in_dict = convert_txt_file_to_dzn(DATA_FILE_NAME)
+def __minizinc_exec_cmd(os_cmd: str) -> str:
+    return os.popen(os_cmd).read()
 
-#     model.add_file(str(CP_data_file_url(file_name, "dzn")))
 
-#     return in_dict
+def __convert_raw_results_to_dict(raw_results: dict, args) -> dict:
+    solutions_dict = convert_raw_result_to_solutions_dict(raw_results, N_MAX_SOLUTIONS)
 
-# def load_solver(file_name: str):
-#     assert isinstance(file_name, str)
-#     return minizinc.Solver.lookup(file_name)
+    solutions_dict["solver"] = args.solver
+    solutions_dict["model"] = args.model
+    solutions_dict["data"] = args.data
 
-# def instantiate(solver: minizinc.Solver, model: minizinc.Model) -> minizinc.Instance:
-#     return minizinc.Instance(solver, model)
+    return solutions_dict
 
-# def solve(instance: minizinc.Instance, all_solutions=False) -> minizinc.Result:
-#     return instance.solve(all_solutions=all_solutions)
 
-# def main(all_solutions=False):
-#     model = load_model(MODEL_FILE_NAME)
-#     solver = load_solver(SOLVER_FILE_NAME)
-#     in_dict = load_data(DATA_FILE_NAME, model)
-#     ### parse_solution instance
-#     instance = instantiate(solver, model)
-#     ### solve
-#     results = solve(instance, all_solutions)
-#     for _ in range(len(results)):
-#         print(results)
-#         plot_solutions_v1(results["pos"], in_dict, results["objective"])
+def __store_solutions_dict(solutions_dict: dict) -> None:
+    sub_dir = str(solutions_dict["solver"]).lower() + "/" + solutions_dict["model"]
+    file_name = solutions_dict["data"]
+    file_url = str(CP_out_file_url(file_name, sub_dir).resolve())
+
+    with open(file_url, 'w', encoding="utf-8") as file:
+        json.dump(solutions_dict, file, indent=2)
+
+
+def __plot(solutions_dict):
+    plot_solutions_v2(solutions_dict)
+
 
 ###
 
 
-def __plot(raw_results):
-    solutions_dict = convert_raw_result_to_solutions_dict(raw_results, N_MAX_SOLUTIONS)
-
-    plot_solutions_v2(solutions_dict)
-
-
 def main(args):
-    convert_txt_file_to_dzn(args.data)
-    model_name = f"{args.model}.{str(args.solver).lower()}"
-
     solver = args.solver
-    model = CP_model_file_url(model_name).resolve()
+
+    _model_name = f"{args.model}.{str(args.solver).lower()}"
+    model = CP_model_file_url(_model_name).resolve()
+
+    convert_txt_file_to_dzn(args.data)
     data = CP_data_file_url(args.data, 'dzn').resolve()
 
     #
@@ -74,34 +65,35 @@ def main(args):
 
     if args.solutions > 1:
         opts += " --all-solutions"
-
     if args.stats is True:
         opts += " --statistics --output-time"
-
     if args.verbose == 1:
         opts += " --output-detailed-timing"
 
     #
 
-    # os_cmd = f"minizinc --solver {solver} --model {model} --data {data} {opts.strip()}"
     os_cmd = f"minizinc {opts.strip()} --solver \"{solver}\" {model} {data}"
 
     if args.debug is True:
-        print()
-        print(os_cmd)
-        print()
+        print("\n", os_cmd, "\n")
 
-    raw_results = os.popen(os_cmd).read()
+    ### exec minizinc model
+    raw_results = __minizinc_exec_cmd(os_cmd)
+
+    ### parse raw results
+    solutions_dict = __convert_raw_results_to_dict(raw_results, args)
+
+    ### save parsed solutions to disk
+    __store_solutions_dict(solutions_dict)
 
     #
 
-    if args.output == "raw" or args.output == "raw+plot":
-        print()
-        print(raw_results)
-        print()
+    if args.output is not None:
+        if args.output == "raw" or args.output == "raw+plot":
+            print("\n", raw_results, "\n")
 
-    if args.output == "plot" or args.output == "raw+plot":
-        __plot(raw_results)
+        if args.output == "plot" or args.output == "raw+plot":
+            __plot(solutions_dict)
 
 
 ###
