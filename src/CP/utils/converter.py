@@ -142,7 +142,9 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
                 continue
             if raw_variable.startswith("%%%mzn-stat") or raw_variable.startswith("% "):
                 continue
-
+            print()
+            print(raw_variable)
+            print()
             var_name = raw_variable.split(" = ")[0]
             var_value = raw_variable.split(" = ")[1]
 

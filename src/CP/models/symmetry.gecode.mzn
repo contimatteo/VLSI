@@ -168,8 +168,8 @@ constraint forall(c1,c2 in 1..tot_circuits where c1<c2)(
         abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1] \/ abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
     then 
         if tot_x[c1]!=tot_x[c2]     %abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1] %\/ abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
-        then tot_x[c1] < tot_x[c2]
-        else tot_y[c1] < tot_y[c2]
+        then true %tot_x[c1] < tot_x[c2]
+        else true %tot_y[c1] < tot_y[c2]
         endif
     else true
     endif
@@ -202,5 +202,5 @@ output [
     "tot_x = ", show(tot_x), "\n",
     "tot_y = ", show(tot_y), "\n",
     "tot_is_valid = ", show(tot_is_valid), "\n",
-    "symmetry.gecode"
+    "model = symmetry.gecode"
 ];

@@ -105,5 +105,5 @@ output [
     "min_makespan = ", show(min_makespan), "\n",
     "max_makespan = ", show(max_makespan), "\n",
     "makespan = ", show(makespan), "\n",
-    "rotation.gecode"
+    "model = rotation.gecode"
 ];
