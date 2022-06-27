@@ -104,5 +104,6 @@ output [
     "is_rotated = ", show(is_rotated), "\n",
     "min_makespan = ", show(min_makespan), "\n",
     "max_makespan = ", show(max_makespan), "\n",
-    "makespan = ", show(makespan), "\n"
+    "makespan = ", show(makespan), "\n",
+    "rotation.chuffed"
 ];

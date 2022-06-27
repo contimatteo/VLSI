@@ -202,4 +202,5 @@ output [
     "tot_x = ", show(tot_x), "\n",
     "tot_y = ", show(tot_y), "\n",
     "tot_is_valid = ", show(tot_is_valid), "\n",
+    "symmetry.gecode"
 ];
