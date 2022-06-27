@@ -1,8 +1,9 @@
 
 
 *MATTEO*
-  [ ] fix `script` for plotting the results
-  [ ] search strategies
+  [x] fix `script` for plotting the results
+  [ ] assign to all circuits the same color (plot)
+  [ ] validate mechanism for printing stats (after 'ins-19' issues arise)
 
 
 *DAVIDE*
@@ -29,7 +30,7 @@
   [ ] look at other projects
   [ ] `makefile`
   [ ] solve `.mpc` file issues
-  
+  [ ] search strategies
   [ ] restart strategies
   [ ] strategy for reducing `makespan` variable domain
 

@@ -70,13 +70,17 @@ constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
 
 %%% define `makespan` boundaries.
 constraint makespan >= min_makespan /\ makespan <= max_makespan;
-% constraint makespan >= max(heights) /\ makespan <= max_makespan;
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+ann: search_makespan = int_search([ makespan ], input_order, indomain_min);
+ann: search_y = int_search(y, first_fail, indomain_min);
 
+solve :: 
+    seq_search([ search_makespan, search_y ])
+    minimize makespan;
 
-solve minimize makespan;
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 
 output [
