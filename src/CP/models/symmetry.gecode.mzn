@@ -164,16 +164,46 @@ constraint forall(c1,c2 in 1..tot_circuits where c1<c2)(
         tot_is_valid[c1] /\ tot_is_valid[c2] 
         /\
         not (tot_x[c1]==tot_x[c2] /\ tot_y[c1]==tot_y[c2])
-        /\
-        abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1] \/ abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
+        %/\
+        %abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1] \/ abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
     then 
-        if tot_x[c1]!=tot_x[c2]     %abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1] %\/ abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
-        then true %tot_x[c1] < tot_x[c2]
-        else true %tot_y[c1] < tot_y[c2]
+        %if tot_x[c1]!=tot_x[c2]     %abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1] %\/ abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
+        
+        if %no overlap
+
+        % %too many ors obtained from drawing
+        %     (tot_x[c2] >= tot_x[c1] + tot_widths[c1] \/ tot_x[c2] <= tot_x[c1] - tot_widths[c2]) 
+        %     \/ 
+        %     (tot_y[c2] >= tot_y[c1] + tot_heights[c1] \/ tot_y[c2] <= tot_y[c1] - tot_heights[c2])
+        
+        % %apply deMorgan on each caluse between ()
+        %     not(tot_x[c2] < tot_x[c1] + tot_widths[c1] /\ tot_x[c2] > tot_x[c1] - tot_widths[c2]) 
+        %     \/ 
+        %     not(tot_y[c2] < tot_y[c1] + tot_heights[c1] /\ tot_y[c2] > tot_y[c1] - tot_heights[c2])
+
+        %apply deMorgan
+            (tot_x[c2] < tot_x[c1] + tot_widths[c1] /\ tot_x[c2] > tot_x[c1] - tot_widths[c2])
+            /\
+            (tot_y[c2] < tot_y[c1] + tot_heights[c1] /\ tot_y[c2] > tot_y[c1] - tot_heights[c2])
+        then
+            %still an or: apply deMorgan and switch then clause with else clause
+            % if tot_x[c2] >= tot_x[c1] + tot_widths[c1] \/ tot_x[c2] <= tot_x[c1] - tot_widths[c2] %possibly stacked along the y axis
+            % then tot_y[c1] < tot_y[c2]
+            % else %possibly stacked along the x axis (or far away diagonally)
+            %     tot_x[c1] < tot_x[c2]
+            % endif
+
+            if tot_x[c2] < tot_x[c1] + tot_widths[c1] /\ tot_x[c2] > tot_x[c1] - tot_widths[c2] %possibly stacked along the x axis
+            then tot_x[c1] < tot_x[c2]
+            else %possibly stacked along the y axis (or far away diagonally)
+                 tot_y[c1] < tot_y[c2]
+            endif
         endif
-    else true
+    %else true
     endif
 );
+
+% #TODO avoid the swap of circuits inside of virtual circuits
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
