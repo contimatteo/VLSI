@@ -1,5 +1,5 @@
-include "./utils/v1_cumulative.mzn";
-include "./utils/v1_utils.mzn";
+include "alldifferent.mzn";
+include "cumulative.mzn";
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -12,17 +12,16 @@ set of int: CIRCUITS = 1..n_circuits;
 %%%  array of xi and yi: the horizontal and the vertical dimension of the circuit i
 array[CIRCUITS,1..2] of int: dims;
 
-set of int: WIDTHS = 1..width;
 %%%  width of the silicon plate
 int: width;
 %%%  array of horizontal dimension of the ciruits
-array[CIRCUITS] of WIDTHS: widths = [dims[i,1] | i in CIRCUITS];
-
+array[CIRCUITS] of int: widths = [dims[c,1] | c in CIRCUITS];
 %%%  array of vertical dimension of the circuits
-% array[CIRCUITS] of int: 1..infinity = [dims[i,2] | i in CIRCUITS];
-array[CIRCUITS] of int: heights = [dims[i,2] | i in CIRCUITS];
+array[CIRCUITS] of int: heights = [dims[c,2] | c in CIRCUITS];
 
-%%%  define position x and y of bottom left corner of each circuit
+%%% define makespan boundaries
+int: sum_area = sum(c in CIRCUITS)(heights[c]*widths[c]);
+int: min_makespan = round(sum_area / width);
 int: max_makespan = sum(heights);
 
 set of int: Xs = 0..(width - min(widths));
@@ -30,9 +29,12 @@ set of int: Ys = 0..(max_makespan - min(heights));
 array[CIRCUITS] of var Xs: x;
 array[CIRCUITS] of var Ys: y;
 
-
-% var int: makespan = max(c in CIRCUITS)(pos[c, 1] + heights[c]);
 var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
+
+%%% TODO: ragionare se si possono assegnare gli indici solo ai bordi
+array[int] of var int: grid = [
+    (x[c]+w) + (y[c]+h)*width | c in CIRCUITS, w in 0..widths[c]-1, h in 0..heights[c]-1
+];
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -40,8 +42,8 @@ var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
 
 %%%  all circuits must have each dimension greater than zero
 constraint assert ( 
-    min(heights) > 0, 
-    "[ERROR] each circuit must have the height dimension greater than zero." 
+    min(dims) > 0, 
+    "[ERROR] each circuit must have each dimension greater than zero." 
 );
 
 constraint assert(
@@ -52,27 +54,33 @@ constraint assert(
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
+
 %%%  base problem constraints (by definition)
-constraint v1_cumulative(x, y, heights, widths, width);
+constraint cumulative(y, heights, widths, width);
+constraint cumulative(x, widths, heights, makespan);
+constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
+
+%%%  exploit the `grid` variable definition
+constraint alldifferent(grid); %%% GECODE
+% constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]); %%% CHUFFED
+
 
 %%% place the circuit with the max height at position (0,0);
 constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
 
-%%%  TODO: remove this
-constraint makespan == 8;
+%%% define `makespan` boundaries.
+constraint makespan >= min_makespan /\ makespan <= max_makespan;
 
-% % SIMMETRY --> tutti i circuiti con le stesse dimensioni
-% constraint forall(c1,c2 in CIRCUITS) (
-%     if c1 < c2 /\ circuits_with_equal_dim(c1, c2)
-%     then lex_lesseq([ pos[c1, i] | i in 1..2 ], [ pos[c2, i] | i in 1..2 ])
-%     else true
-%     endif
-% );
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+ann: search_makespan = int_search([ makespan ], input_order, indomain_min);
+ann: search_y = int_search(y, first_fail, indomain_min);
 
+solve :: 
+    seq_search([ search_makespan, search_y ])
+    minimize makespan;
 
-solve satisfy;
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 
 output [
@@ -83,5 +91,7 @@ output [
     "heights = ", show(heights), "\n",
     "x = ", show(x), "\n",
     "y = ", show(y), "\n",
+    "min_makespan = ", show(min_makespan), "\n",
+    "max_makespan = ", show(max_makespan), "\n",
     "makespan = ", show(makespan), "\n"
 ];

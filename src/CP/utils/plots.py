@@ -48,7 +48,7 @@ def plot_solutions_v2(solutions_dict):
         return
 
     rows = 3  # int(len(results) / 2)
-    cols = 4  # len(results) / rows
+    cols = 3  # len(results) / rows
 
     #
 
@@ -65,10 +65,14 @@ def plot_solutions_v2(solutions_dict):
         ax.grid(visible=True, which='both', axis='both', alpha=0.2)
 
         for c_idx in range(result['n_circuits']):
+            if "is_rotated" not in result:
+                result['is_rotated'] = [False for _ in result['heights']]
+
             x = result["x"][c_idx]
             y = result["y"][c_idx]
-            w = result['widths'][c_idx]
-            h = result['heights'][c_idx]
+            is_rotated = result['is_rotated'][c_idx]
+            w = result['widths'][c_idx] if not is_rotated else result['heights'][c_idx]
+            h = result['heights'][c_idx] if not is_rotated else result['widths'][c_idx]
 
             r = Rectangle(
                 xy=(x, y),
