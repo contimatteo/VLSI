@@ -81,7 +81,7 @@ constraint makespan >= min_makespan /\ makespan <= max_makespan;
 %%%  # of virtual circuits
 int: n_v_circuits = n_circuits*(n_circuits-1) div 2;
 int: tot_circuits = n_circuits + n_v_circuits;
-%%%  set of virtual circuit indexes 
+%%%  set of virtual circuit indexes
 set of int: V_CIRCUITS = 1..n_v_circuits;
 
 %%%  possible couple of circuits (simple combination of possible c1,c2 indexes)
@@ -195,8 +195,9 @@ array[1..tot_circuits] of var bool: tot_is_valid = [true | c in CIRCUITS] ++ is_
 %    | c in n_circuits+1..tot_circuits
 %];
 
-constraint forall(c1,c2 in 1..tot_circuits where c1<c2)(
-    %%%  remove swapping (same size circuits)
+%%%  remove swapping (same size circuits)
+constraint forall(c1,c2 in 1..tot_circuits where 
+c1<c2)(
     if 
         tot_widths[c1] == tot_widths[c2] /\ tot_heights[c1] == tot_heights[c2] 
         /\ 
@@ -224,6 +225,44 @@ constraint forall(c1,c2 in 1..tot_circuits where c1<c2)(
         endif
     else true
     endif
+);
+
+%%% impose an ordering constraint for each circuit within one virtual circuit
+constraint forall (vc in n_circuits..n_v_circuits where tot_is_valid[vc])( 
+    forall (c1,c2 in 1..n_circuits where
+        c1 < c2 /\
+        c1 != vc /\
+        c2 != vc /\
+
+        tot_x[c1] >= tot_x[vc] /\ 
+        tot_x[c1] < tot_x[vc] + tot_widths[vc] /\ %%% no need to check if c1 fits in vc: vc is valid
+        tot_y[c1] >= tot_y[vc] /\
+        tot_y[c1] < tot_y[vc]+ tot_heights[vc] /\
+            
+        tot_x[c2] >= tot_x[vc] /\ 
+        tot_x[c2] < tot_x[vc] + tot_widths[vc] /\
+        tot_y[c2] >= tot_y[vc] /\
+        tot_y[c2] < tot_y[vc]+ tot_heights[vc]
+            
+    )( 
+        if (tot_x[c1] > tot_x[c2]) %CASE: constraint on x axis with c2 left of c1
+        then tot_x[c1] > tot_x[c2]
+        else 
+            if (tot_x[c1] < tot_x[c2]) %CASE: constraint on x axis with c2 right of c1
+            then tot_x[c1] < tot_x[c2]
+            else
+                if (tot_y[c1] > tot_y[c2]) %CASE: costraint on y axis with c1 above c2
+                then tot_y[c1] > tot_y[c2]
+                else 
+                    if (tot_y[c1] < tot_y[c2]) %CASE: constraint on y axis with c1 under c2
+                    then tot_y[c1] < tot_y[c2]
+                    else true
+                    endif
+                endif
+            endif
+        endif
+    )    
+);
     %/\
     %%%  remove swapping (adjacent circuits)
     %if
@@ -252,7 +291,6 @@ constraint forall(c1,c2 in 1..tot_circuits where c1<c2)(
     %    else true
     %    endif
     %endif
-);
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -280,5 +318,5 @@ output [
     "tot_heights = ", show(tot_heights), "\n",
     "tot_x = ", show(tot_x), "\n",
     "tot_y = ", show(tot_y), "\n",
-    "tot_is_valid = ", show(tot_is_valid), "\n",
+    "tot_is_valid = ", show(tot_is_valid), "\n"
 ];
