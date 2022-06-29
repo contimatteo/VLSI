@@ -204,12 +204,22 @@ constraint forall(c1,c2 in 1..tot_circuits where c1<c2)(
         /\
         not (tot_x[c1]==tot_x[c2] /\ tot_y[c1]==tot_y[c2])
     then 
-        if abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1]
-        then tot_x[c1] < tot_x[c2]
+        %if abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1] 
+        if (tot_x[c1] > tot_x[c2]) /\ (tot_x[c1] - tot_x[c2] >= tot_widths[c2]) %CASE: constraint on x axis with c2 left of c1
+        then tot_x[c1] > tot_x[c2]
         else 
-            if abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
-            then tot_y[c1] < tot_y[c2]
-            else true
+            if (tot_x[c1] < tot_x[c2]) /\ (tot_x[c2] - tot_x[c1] >= tot_widths[c2]) %CASE: constraint on x axis with c2 right of c1
+            then tot_x[c1] < tot_x[c2]
+            else
+                %if abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
+                if (tot_y[c1] > tot_y[c2]) /\ (tot_y[c1] - tot_y[c2] >= tot_heights[c2]) %CASE: costraint on y axis with c1 above c2
+                then tot_y[c1] > tot_y[c2]
+                else 
+                    if (tot_y[c1] < tot_y[c2]) /\ (tot_y[c2] - tot_y[c1] >= tot_heights[c1]) %CASE: constraint on y axis with c1 under c2
+                    then tot_y[c1] < tot_y[c2]
+                    else true
+                    endif
+                endif
             endif
         endif
     else true
