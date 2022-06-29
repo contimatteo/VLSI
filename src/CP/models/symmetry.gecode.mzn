@@ -155,55 +155,94 @@ array[1..tot_circuits] of var int: tot_heights = heights ++ v_heights;
 array[1..tot_circuits] of var Xs: tot_x = x ++ v_x;
 array[1..tot_circuits] of var Ys: tot_y = y ++ v_y;
 array[1..tot_circuits] of var bool: tot_is_valid = [true | c in CIRCUITS] ++ is_valid;
+%%%  check for each circuit c if it's composed by precedent circuits c1, c2
+%%%  if composed by 2 precedent circuits c1, c2
+%%%  and they have same height -> cannot swap c in horizontal dim
+%%%  ande they have same width -> cannot swap c in vertical dim
+%array[V_CIRCUITS] of var bool: can_swap_adjacent = [
+%    
+%    tot_is_valid[c]
+%    /\
+%    forall(c1,c2 in 1..c-1 where c1<c2)(
+%        
+%        if tot_is_valid[c1] /\ tot_is_valid[c2]
+%        then
+%            let{
+%                var int: vx = min(tot_x[c1], tot_x[c2]),
+%                var int: vy = min(tot_y[c1], tot_y[c2]),
+%                var int: w = max(
+%                    tot_x[c1]+tot_widths[c1]-tot_x[c2],
+%                    tot_x[c2]+tot_widths[c2]-tot_x[c1],
+%                ),
+%                var int: h = max(
+%                    tot_y[c1]+tot_heights[c1]-tot_y[c2],
+%                    tot_y[c2]+tot_heights[c2]-tot_y[c1],
+%                ),
+%                var int: a = tot_widths[c1]*tot_heights[c1] + tot_widths[c2]*tot_heights[c2]
+%            } in (
+%                not (
+%                    tot_x[c] == vx /\ tot_y[c] == vy 
+%                    /\ 
+%                    tot_widths[c] == w /\ tot_heights[c] == h
+%                    /\
+%                    tot_widths[c]*tot_heights[c] == a
+%                )
+%            )
+%        else true
+%        endif
+%    )
+%    
+%    | c in n_circuits+1..tot_circuits
+%];
 
 constraint forall(c1,c2 in 1..tot_circuits where c1<c2)(
-    %%%  remove swapping
+    %%%  remove swapping (same size circuits)
     if 
         tot_widths[c1] == tot_widths[c2] /\ tot_heights[c1] == tot_heights[c2] 
         /\ 
         tot_is_valid[c1] /\ tot_is_valid[c2] 
         /\
         not (tot_x[c1]==tot_x[c2] /\ tot_y[c1]==tot_y[c2])
-        %/\
-        %abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1] \/ abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
     then 
-        %if tot_x[c1]!=tot_x[c2]     %abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1] %\/ abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
-        
-        if %no overlap
-
-        % %too many ors obtained from drawing
-        %     (tot_x[c2] >= tot_x[c1] + tot_widths[c1] \/ tot_x[c2] <= tot_x[c1] - tot_widths[c2]) 
-        %     \/ 
-        %     (tot_y[c2] >= tot_y[c1] + tot_heights[c1] \/ tot_y[c2] <= tot_y[c1] - tot_heights[c2])
-        
-        % %apply deMorgan on each caluse between ()
-        %     not(tot_x[c2] < tot_x[c1] + tot_widths[c1] /\ tot_x[c2] > tot_x[c1] - tot_widths[c2]) 
-        %     \/ 
-        %     not(tot_y[c2] < tot_y[c1] + tot_heights[c1] /\ tot_y[c2] > tot_y[c1] - tot_heights[c2])
-
-        %apply deMorgan
-            (tot_x[c2] < tot_x[c1] + tot_widths[c1] /\ tot_x[c2] > tot_x[c1] - tot_widths[c2])
-            /\
-            (tot_y[c2] < tot_y[c1] + tot_heights[c1] /\ tot_y[c2] > tot_y[c1] - tot_heights[c2])
-        then
-            %still an or: apply deMorgan and switch then clause with else clause
-            % if tot_x[c2] >= tot_x[c1] + tot_widths[c1] \/ tot_x[c2] <= tot_x[c1] - tot_widths[c2] %possibly stacked along the y axis
-            % then tot_y[c1] < tot_y[c2]
-            % else %possibly stacked along the x axis (or far away diagonally)
-            %     tot_x[c1] < tot_x[c2]
-            % endif
-
-            if tot_x[c2] < tot_x[c1] + tot_widths[c1] /\ tot_x[c2] > tot_x[c1] - tot_widths[c2] %possibly stacked along the x axis
-            then tot_x[c1] < tot_x[c2]
-            else %possibly stacked along the y axis (or far away diagonally)
-                 tot_y[c1] < tot_y[c2]
+        if abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1]
+        then tot_x[c1] < tot_x[c2]
+        else 
+            if abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
+            then tot_y[c1] < tot_y[c2]
+            else true
             endif
         endif
-    %else true
+    else true
     endif
+    %/\
+    %%%  remove swapping (adjacent circuits)
+    %if
+    %    (tot_x[c1]+tot_widths[c1] == tot_x[c2] \/ tot_x[c2]+tot_widths[c2] == tot_x[c1])
+    %    /\
+    %    tot_heights[c1] == tot_heights[c2]
+    %    /\
+    %    tot_y[c1] == tot_y[c2]
+    %    /\ 
+    %    tot_is_valid[c1] /\ tot_is_valid[c2]
+    %    /\
+    %    can_swap_adjacent[c1] /\ can_swap_adjacent[c2] 
+    %then tot_x[c1] < tot_x[c2]
+    %else
+    %    if 
+    %        (tot_y[c1]+tot_heights[c1] == tot_y[c2] \/ tot_y[c2]+tot_heights[c2] == tot_y[c1])
+    %        /\
+    %        tot_widths[c1] == tot_widths[c2]
+    %        /\
+    %        tot_x[c1] == tot_x[c2]
+    %        /\
+    %        tot_is_valid[c1] /\ tot_is_valid[c2]
+    %        /\
+    %        can_swap_adjacent[c1] /\ can_swap_adjacent[c2]
+    %    then tot_y[c1] < tot_y[c2]
+    %    else true
+    %    endif
+    %endif
 );
-
-% #TODO avoid the swap of circuits inside of virtual circuits
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -232,5 +271,4 @@ output [
     "tot_x = ", show(tot_x), "\n",
     "tot_y = ", show(tot_y), "\n",
     "tot_is_valid = ", show(tot_is_valid), "\n",
-    "model = symmetry.gecode"
 ];
