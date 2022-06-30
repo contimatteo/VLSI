@@ -195,44 +195,47 @@ array[1..tot_circuits] of var bool: tot_is_valid = [true | c in CIRCUITS] ++ is_
 %    | c in n_circuits+1..tot_circuits
 %];
 
-%%%  remove swapping (same size circuits)
-constraint forall(c1,c2 in 1..tot_circuits where 
-c1<c2)(
-    if 
-        tot_widths[c1] == tot_widths[c2] /\ tot_heights[c1] == tot_heights[c2] 
-        /\ 
-        tot_is_valid[c1] /\ tot_is_valid[c2] 
-        /\
-        not (tot_x[c1]==tot_x[c2] /\ tot_y[c1]==tot_y[c2])
-    then 
-        %if abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1] 
-        if (tot_x[c1] > tot_x[c2]) /\ (tot_x[c1] - tot_x[c2] >= tot_widths[c2]) %CASE: constraint on x axis with c2 left of c1
-        then tot_x[c1] > tot_x[c2]
-        else 
-            if (tot_x[c1] < tot_x[c2]) /\ (tot_x[c2] - tot_x[c1] >= tot_widths[c2]) %CASE: constraint on x axis with c2 right of c1
-            then tot_x[c1] < tot_x[c2]
-            else
-                %if abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
-                if (tot_y[c1] > tot_y[c2]) /\ (tot_y[c1] - tot_y[c2] >= tot_heights[c2]) %CASE: costraint on y axis with c1 above c2
-                then tot_y[c1] > tot_y[c2]
-                else 
-                    if (tot_y[c1] < tot_y[c2]) /\ (tot_y[c2] - tot_y[c1] >= tot_heights[c1]) %CASE: constraint on y axis with c1 under c2
-                    then tot_y[c1] < tot_y[c2]
-                    else true
-                    endif
-                endif
-            endif
-        endif
-    else true
-    endif
-);
+% %%%  remove swapping (same size circuits)
+% constraint forall(c1,c2 in 1..tot_circuits where 
+% c1<c2)(
+%     if 
+%         tot_widths[c1] == tot_widths[c2] /\ tot_heights[c1] == tot_heights[c2] 
+%         /\ 
+%         tot_is_valid[c1] /\ tot_is_valid[c2] 
+%         /\
+%         not (tot_x[c1]==tot_x[c2] /\ tot_y[c1]==tot_y[c2])
+%     then 
+%         %if abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1] 
+%         if (tot_x[c1] > tot_x[c2]) /\ (tot_x[c1] - tot_x[c2] >= tot_widths[c2]) %CASE: constraint on x axis with c2 left of c1
+%         then tot_x[c1] > tot_x[c2]
+%         else 
+%             if (tot_x[c1] < tot_x[c2]) /\ (tot_x[c2] - tot_x[c1] >= tot_widths[c1]) %CASE: constraint on x axis with c2 right of c1
+%             then tot_x[c1] < tot_x[c2]
+%             else
+%                 %if abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
+%                 if (tot_y[c1] > tot_y[c2]) /\ (tot_y[c1] - tot_y[c2] >= tot_heights[c2]) %CASE: costraint on y axis with c1 above c2
+%                 then tot_y[c1] > tot_y[c2]
+%                 else 
+%                     if (tot_y[c1] < tot_y[c2]) /\ (tot_y[c2] - tot_y[c1] >= tot_heights[c1]) %CASE: constraint on y axis with c1 under c2
+%                     then tot_y[c1] < tot_y[c2]
+%                     else true
+%                     endif
+%                 endif
+%             endif
+%         endif
+%     else true
+%     endif
+% );
 
-%%% impose an ordering constraint for each circuit within one virtual circuit
-constraint forall (vc in n_circuits..n_v_circuits where tot_is_valid[vc])( 
+
+
+
+%%% impose an ordering constraint for each couple of real circuits that is swappable in a virtual circuit
+ constraint forall (vc in 1..n_v_circuits where tot_is_valid[vc])( 
     forall (c1,c2 in 1..n_circuits where
         c1 < c2 /\
-        c1 != vc /\
-        c2 != vc /\
+        %c1 != vc /\
+        %c2 != vc /\
 
         tot_x[c1] >= tot_x[vc] /\ 
         tot_x[c1] < tot_x[vc] + tot_widths[vc] /\ %%% no need to check if c1 fits in vc: vc is valid
@@ -245,52 +248,46 @@ constraint forall (vc in n_circuits..n_v_circuits where tot_is_valid[vc])(
         tot_y[c2] < tot_y[vc]+ tot_heights[vc]
             
     )( 
-        if (tot_x[c1] > tot_x[c2]) %CASE: constraint on x axis with c2 left of c1
+        if (tot_y[c1] = tot_y[c2] /\ tot_heights[c1] = tot_heights[c2]) %CASE: aligned along x axis with c2 left of c1
         then tot_x[c1] > tot_x[c2]
         else 
-            if (tot_x[c1] < tot_x[c2]) %CASE: constraint on x axis with c2 right of c1
-            then tot_x[c1] < tot_x[c2]
-            else
-                if (tot_y[c1] > tot_y[c2]) %CASE: costraint on y axis with c1 above c2
+                if (tot_x[c1] = tot_x[c2] /\ tot_widths[c1] = tot_widths[c2]) %CASE: aligned along on y axis with c1 above c2
                 then tot_y[c1] > tot_y[c2]
-                else 
-                    if (tot_y[c1] < tot_y[c2]) %CASE: constraint on y axis with c1 under c2
-                    then tot_y[c1] < tot_y[c2]
-                    else true
-                    endif
+                else true
                 endif
-            endif
         endif
-    )    
-);
-    %/\
-    %%%  remove swapping (adjacent circuits)
-    %if
-    %    (tot_x[c1]+tot_widths[c1] == tot_x[c2] \/ tot_x[c2]+tot_widths[c2] == tot_x[c1])
-    %    /\
-    %    tot_heights[c1] == tot_heights[c2]
-    %    /\
-    %    tot_y[c1] == tot_y[c2]
-    %    /\ 
-    %    tot_is_valid[c1] /\ tot_is_valid[c2]
-    %    /\
-    %    can_swap_adjacent[c1] /\ can_swap_adjacent[c2] 
-    %then tot_x[c1] < tot_x[c2]
-    %else
-    %    if 
-    %        (tot_y[c1]+tot_heights[c1] == tot_y[c2] \/ tot_y[c2]+tot_heights[c2] == tot_y[c1])
-    %        /\
-    %        tot_widths[c1] == tot_widths[c2]
-    %        /\
-    %        tot_x[c1] == tot_x[c2]
-    %        /\
-    %        tot_is_valid[c1] /\ tot_is_valid[c2]
-    %        /\
-    %        can_swap_adjacent[c1] /\ can_swap_adjacent[c2]
-    %    then tot_y[c1] < tot_y[c2]
-    %    else true
-    %    endif
-    %endif
+    %)    
+));
+
+
+%     %/\
+%     %%%  remove swapping (adjacent circuits)
+%     %if
+%     %    (tot_x[c1]+tot_widths[c1] == tot_x[c2] \/ tot_x[c2]+tot_widths[c2] == tot_x[c1])
+%     %    /\
+%     %    tot_heights[c1] == tot_heights[c2]
+%     %    /\
+%     %    tot_y[c1] == tot_y[c2]
+%     %    /\ 
+%     %    tot_is_valid[c1] /\ tot_is_valid[c2]
+%     %    /\
+%     %    can_swap_adjacent[c1] /\ can_swap_adjacent[c2] 
+%     %then tot_x[c1] < tot_x[c2]
+%     %else
+%     %    if 
+%     %        (tot_y[c1]+tot_heights[c1] == tot_y[c2] \/ tot_y[c2]+tot_heights[c2] == tot_y[c1])
+%     %        /\
+%     %        tot_widths[c1] == tot_widths[c2]
+%     %        /\
+%     %        tot_x[c1] == tot_x[c2]
+%     %        /\
+%     %        tot_is_valid[c1] /\ tot_is_valid[c2]
+%     %        /\
+%     %        can_swap_adjacent[c1] /\ can_swap_adjacent[c2]
+%     %    then tot_y[c1] < tot_y[c2]
+%     %    else true
+%     %    endif
+%     %endif
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
