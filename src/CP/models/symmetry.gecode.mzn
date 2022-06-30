@@ -102,57 +102,21 @@ array [1..2, V_CIRCUITS] of CIRCUITS: c_pairs = array2d(
 
 
 %%%  remove swapping (same size circuits) (with abs)
-constraint forall(c1,c2 in RV_CIRCUITS where c1<c2)(
-    if 
-        rv_width(c1) == rv_width(c2) /\ rv_height(c1) == rv_height(c2) 
-        /\ 
-        rv_is_valid(c1) /\ rv_is_valid(c2) 
-        /\
+constraint forall(c1,c2 in RV_CIRCUITS where 
+        c1<c2 /\
+        rv_width(c1) == rv_width(c2) /\ rv_height(c1) == rv_height(c2) /\ 
+        rv_is_valid(c1) /\ rv_is_valid(c2) /\
         not (rv_x(c1)==rv_x(c2) /\ rv_y(c1)==rv_y(c2))
-    then 
-        if abs(rv_x(c1) - rv_x(c2)) >= rv_width(c1)
-        then rv_x(c1) < rv_x(c2)
-        else 
-            if abs(rv_y(c1) - rv_y(c2)) >= rv_height(c1)
-            then rv_y(c1) < rv_y(c2)
-            else true
-            endif
+        )(
+    if abs(rv_x(c1) - rv_x(c2)) >= rv_width(c1)
+    then rv_x(c1) < rv_x(c2)
+    else 
+        if abs(rv_y(c1) - rv_y(c2)) >= rv_height(c1)
+        then rv_y(c1) < rv_y(c2)
+        else true
         endif
-    else true
     endif
 );
-
-
-% %%%  remove swapping (same size circuits) (whithout abs)
-% constraint forall(c1,c2 in 1..rv_n_circuits where c1<c2)(
-%     if 
-%         rv_width(c1) == rv_width(c2) /\ rv_height(c1) == rv_height(c2) 
-%         /\ 
-%         rv_is_valid(c1) /\ rv_is_valid(c2) 
-%         /\
-%         not (rv_x(c1)==rv_x(c2) /\ rv_y(c1)==rv_y(c2))
-%     then 
-%         %if abs(rv_x(c1) - rv_x(c2)) >= rv_width(c1) 
-%         if (rv_x(c1) > rv_x(c2)) /\ (rv_x(c1) - rv_x(c2) >= rv_width(c2)) %CASE: constraint on x axis with c2 left of c1
-%         then rv_x(c1) > rv_x(c2)
-%         else 
-%             if (rv_x(c1) < rv_x(c2)) /\ (rv_x(c2) - rv_x(c1) >= rv_width(c1)) %CASE: constraint on x axis with c2 right of c1
-%             then rv_x(c1) < rv_x(c2)
-%             else
-%                 %if abs(rv_y(c1) - rv_y(c2)) >= rv_height(c1)
-%                 if (rv_y(c1) > rv_y(c2)) /\ (rv_y(c1) - rv_y(c2) >= rv_height(c2)) %CASE: costraint on y axis with c1 above c2
-%                 then rv_y(c1) > rv_y(c2)
-%                 else 
-%                     if (rv_y(c1) < rv_y(c2)) /\ (rv_y(c2) - rv_y(c1) >= rv_height(c1)) %CASE: constraint on y axis with c1 under c2
-%                     then rv_y(c1) < rv_y(c2)
-%                     else true
-%                     endif
-%                 endif
-%             endif
-%         endif
-%     else true
-%     endif
-% );
 
 % %%% impose an ordering constraint for each couple of real circuits that is swappable in a virtual circuit
 %  constraint forall (vc in 1..v_n_circuits where rv_is_valid(vc))( 
