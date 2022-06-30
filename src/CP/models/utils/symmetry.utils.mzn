@@ -62,35 +62,35 @@ function var bool: vc_is_valid (V_CIRCUITS: vc_index) = (
 
 function var int: rv_width (RV_CIRCUITS: c_index) = (
     if c_index > n_circuits
-        then vc_width(c_index)
+        then vc_width(c_index - n_circuits)
         else widths[c_index]
     endif
 );
 
 function var int: rv_height (RV_CIRCUITS: c_index) = (
     if c_index > n_circuits
-        then vc_height(c_index)
+        then vc_height(c_index - n_circuits)
         else heights[c_index]
     endif
 );
 
 function var Xs: rv_x (RV_CIRCUITS: c_index) = (
     if c_index > n_circuits
-        then vc_x(c_index)
+        then vc_x(c_index - n_circuits)
         else x[c_index]
     endif
 );
 
 function var Ys: rv_y (RV_CIRCUITS: c_index) = (
     if c_index > n_circuits
-        then vc_y(c_index)
+        then vc_y(c_index - n_circuits)
         else y[c_index]
     endif
 );
 
 function var bool: rv_is_valid (RV_CIRCUITS: c_index) = (
     if c_index > n_circuits
-        then vc_is_valid(c_index)
+        then vc_is_valid(c_index - n_circuits)
         else true
     endif
 );

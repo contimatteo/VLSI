@@ -2,6 +2,7 @@ include "alldifferent.mzn";
 include "cumulative.mzn";
 % include "utils/symmetry_breaking.mzn";
 include "utils/symmetry.utils.mzn";
+include "utils/utils.mzn";
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -101,7 +102,7 @@ array [1..2, V_CIRCUITS] of CIRCUITS: c_pairs = array2d(
 
 
 %%%  remove swapping (same size circuits) (with abs)
-constraint forall(c1,c2 in 1..n_circuits where c1<c2)(
+constraint forall(c1,c2 in RV_CIRCUITS where c1<c2)(
     if 
         rv_width(c1) == rv_width(c2) /\ rv_height(c1) == rv_height(c2) 
         /\ 
@@ -155,7 +156,7 @@ constraint forall(c1,c2 in 1..n_circuits where c1<c2)(
 
 % %%% impose an ordering constraint for each couple of real circuits that is swappable in a virtual circuit
 %  constraint forall (vc in 1..v_n_circuits where rv_is_valid(vc))( 
-%     forall (c1,c2 in 1..n_circuits where
+%     forall (c1,c2 in RV_CIRCUITS where
 %         c1 < c2 /\ % c1 != vc /\ c2 != vc /\
 %         rv_x(c1) >= rv_x(vc) /\ 
 %         rv_x(c1) < rv_x(vc) + rv_width(vc) /\ %%% no need to check if c1 fits in vc: vc is valid
@@ -178,6 +179,18 @@ constraint forall(c1,c2 in 1..n_circuits where c1<c2)(
 % ));
 
 
+% %%%  remove swapping between consecutive circuits on X axis
+% constraint forall(c1,c2 in CIRCUITS where c1<c2)(
+%     % if c_can_be_swapped_on_x(c1, c2) then x[c1] < x[c2] else true endif
+%     c_can_be_swapped_on_x(c1, c2) -> x[c1] < x[c2]
+% );
+% %%%  remove swapping between consecutive circuits on Y axis
+% constraint forall(c1,c2 in CIRCUITS where c1<c2)(
+%     % if c_can_be_swapped_on_y(c1, c2) then y[c1] < y[c2] else true endif
+%     c_can_be_swapped_on_y(c1, c2) -> y[c1] < y[c2]
+% );
+
+
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 ann: search_makespan = int_search([ makespan ], input_order, indomain_min);
@@ -198,7 +211,7 @@ output [
     "min_makespan = ", show(min_makespan), "\n",
     "max_makespan = ", show(max_makespan), "\n",
     "makespan = ", show(makespan), "\n",
-    "v_n_circuits = ", show(v_n_circuits), "\n",
+    % "v_n_circuits = ", show(v_n_circuits), "\n",
     % "c_pairs = ", show(c_pairs), "\n",
     % "c_pairs c1 = ", show([c_pairs[1,i] | i in V_CIRCUITS]), "\n",
     % "c_pairs c2 = ", show([c_pairs[2,i] | i in V_CIRCUITS]), "\n",
