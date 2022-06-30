@@ -99,6 +99,7 @@ array [1..2, V_CIRCUITS] of CIRCUITS: c_pairs = array2d(
 %%%  |  and they have same height -> cannot swap c in horizontal dim
 %%%  |  and they have same width -> cannot swap c in vertical dim
 
+
 %%%  remove swapping (same size circuits) (with abs)
 constraint forall(c1,c2 in 1..n_circuits where c1<c2)(
     if 
@@ -181,9 +182,11 @@ constraint forall(c1,c2 in 1..n_circuits where c1<c2)(
 
 
 ann: search_makespan = int_search([ makespan ], input_order, indomain_min);
+% ann: search_makespan = int_search([ makespan ], input_order, indomain_median);
 ann: search_y = int_search(y, first_fail, indomain_min);
 solve 
-    ::seq_search([ search_makespan, search_y ])
+    % ::seq_search([ search_makespan, search_y ])
+    ::seq_search([ search_makespan ])
     minimize makespan;
 
 
