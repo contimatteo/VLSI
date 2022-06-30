@@ -61,8 +61,8 @@ constraint cumulative(x, widths, heights, makespan);
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
 
 %%%  exploit the `grid` variable definition
-constraint alldifferent(grid); %%% GECODE
-% constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]); %%% CHUFFED
+% constraint alldifferent(grid); %%% GECODE
+constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]); %%% CHUFFED
 
 
 %%% place the circuit with the max height at position (0,0);
@@ -70,17 +70,13 @@ constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
 
 %%% define `makespan` boundaries.
 constraint makespan >= min_makespan /\ makespan <= max_makespan;
+% constraint makespan >= max(heights) /\ makespan <= max_makespan;
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-ann: search_makespan = int_search([ makespan ], input_order, indomain_min);
-ann: search_y = int_search(y, first_fail, indomain_min);
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-solve :: 
-    seq_search([ search_makespan, search_y ])
-    minimize makespan;
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+solve minimize makespan;
 
 
 output [
@@ -94,5 +90,5 @@ output [
     "min_makespan = ", show(min_makespan), "\n",
     "max_makespan = ", show(max_makespan), "\n",
     "makespan = ", show(makespan), "\n",
-    "model = search.gecode"
+    "model = base.chuffed"
 ];
