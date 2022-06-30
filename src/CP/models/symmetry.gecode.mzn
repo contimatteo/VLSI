@@ -1,6 +1,7 @@
 include "alldifferent.mzn";
 include "cumulative.mzn";
 include "utils/symmetry_breaking.mzn";
+include "utils/symmetry.utils.mzn";
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -89,25 +90,25 @@ array [1..2, V_CIRCUITS] of CIRCUITS: couples = array2d(
     1..2, V_CIRCUITS, [c1 | c1,c2 in CIRCUITS where c1<c2] ++ [c2 | c1,c2 in CIRCUITS where c1<c2]
 );
 
-%%%  array of horizontal dimension of virtual ciruits
-array[V_CIRCUITS] of var int: v_widths = [
-    %%%  if c1 on the right -> x[c1]+widths[c1]-x[c2]
-    if x[couples[1,i]]>x[couples[2,i]] 
-    then x[couples[1,i]] + widths[couples[1,i]] - x[couples[2,i]] 
-    else 
-        %%% if c1 on the left -> x[c2]+widths[c2]-x[c1]
-        if x[couples[1,i]]<x[couples[2,i]]
-        then x[couples[2,i]] + widths[couples[2,i]] - x[couples[1,i]]
-        else 
-            %%% if c1 and c2 with same x, check who is higher
-            %%%  maybe better to choose the max width
-            if y[couples[1,i]]>y[couples[2,i]]
-            then widths[couples[1,i]]
-            else widths[couples[2,i]]
-            endif
-        endif 
-    endif | i in V_CIRCUITS
-];
+% %%%  array of horizontal dimension of virtual ciruits
+% array[V_CIRCUITS] of var int: v_widths = [
+%     %%%  if c1 on the right -> x[c1]+widths[c1]-x[c2]
+%     if x[couples[1,i]]>x[couples[2,i]] 
+%     then x[couples[1,i]] + widths[couples[1,i]] - x[couples[2,i]] 
+%     else 
+%         %%% if c1 on the left -> x[c2]+widths[c2]-x[c1]
+%         if x[couples[1,i]]<x[couples[2,i]]
+%         then x[couples[2,i]] + widths[couples[2,i]] - x[couples[1,i]]
+%         else 
+%             %%% if c1 and c2 with same x, check who is higher
+%             %%%  maybe better to choose the max width
+%             if y[couples[1,i]]>y[couples[2,i]]
+%             then widths[couples[1,i]]
+%             else widths[couples[2,i]]
+%             endif
+%         endif 
+%     endif | i in V_CIRCUITS
+% ];
 
 %%%  array of vertical dimension of virtual circuits
 array[V_CIRCUITS] of var int: v_heights = [
@@ -137,10 +138,10 @@ array[V_CIRCUITS] of var Ys: v_y = [min(y[couples[1,i]], y[couples[2,i]]) | i in
 %%%  boolean array of validity for virtual blocks
 array[V_CIRCUITS] of var bool: is_valid = [
     %%%  check only circuits starting on the bottom left of the top right corner
-    forall(c in CIRCUITS where x[c]<v_x[vc]+v_widths[vc] /\ y[c]<v_y[vc]+v_heights[vc])(                
+    forall(c in CIRCUITS where x[c]<v_x[vc]+v_widths(vc) /\ y[c]<v_y[vc]+v_heights[vc])(                
         %%%  if bottom left corner of c is inside, all the circuit must be inside
         if x[c]>=v_x[vc] /\ y[c]>=v_y[vc]
-        then x[c]+widths[c]<=v_x[vc]+v_widths[vc] /\ y[c]+heights[c]<=v_y[vc]+v_heights[vc]
+        then x[c]+widths[c]<=v_x[vc]+v_widths(vc) /\ y[c]+heights[c]<=v_y[vc]+v_heights[vc]
         %%%  otherwise all the circuit must be outside
         else x[c]+widths[c]<=v_x[vc] \/ y[c]+heights[c]<=v_y[vc]                    
         endif
@@ -150,7 +151,7 @@ array[V_CIRCUITS] of var bool: is_valid = [
 ];
 
 %%% merged info
-array[1..tot_circuits] of var int: tot_widths = widths ++ v_widths;
+array[1..tot_circuits] of var int: tot_widths = widths ++ [v_widths(i) | i in V_CIRCUITS];
 array[1..tot_circuits] of var int: tot_heights = heights ++ v_heights;
 array[1..tot_circuits] of var Xs: tot_x = x ++ v_x;
 array[1..tot_circuits] of var Ys: tot_y = y ++ v_y;
@@ -159,68 +160,9 @@ array[1..tot_circuits] of var bool: tot_is_valid = [true | c in CIRCUITS] ++ is_
 %%%  if composed by 2 precedent circuits c1, c2
 %%%  and they have same height -> cannot swap c in horizontal dim
 %%%  ande they have same width -> cannot swap c in vertical dim
-%array[V_CIRCUITS] of var bool: can_swap_adjacent = [
-%    
-%    tot_is_valid[c]
-%    /\
-%    forall(c1,c2 in 1..c-1 where c1<c2)(
-%        
-%        if tot_is_valid[c1] /\ tot_is_valid[c2]
-%        then
-%            let{
-%                var int: vx = min(tot_x[c1], tot_x[c2]),
-%                var int: vy = min(tot_y[c1], tot_y[c2]),
-%                var int: w = max(
-%                    tot_x[c1]+tot_widths[c1]-tot_x[c2],
-%                    tot_x[c2]+tot_widths[c2]-tot_x[c1],
-%                ),
-%                var int: h = max(
-%                    tot_y[c1]+tot_heights[c1]-tot_y[c2],
-%                    tot_y[c2]+tot_heights[c2]-tot_y[c1],
-%                ),
-%                var int: a = tot_widths[c1]*tot_heights[c1] + tot_widths[c2]*tot_heights[c2]
-%            } in (
-%                not (
-%                    tot_x[c] == vx /\ tot_y[c] == vy 
-%                    /\ 
-%                    tot_widths[c] == w /\ tot_heights[c] == h
-%                    /\
-%                    tot_widths[c]*tot_heights[c] == a
-%                )
-%            )
-%        else true
-%        endif
-%    )
-%    
-%    | c in n_circuits+1..tot_circuits
-%];
 
-% %%%  remove swapping (same size circuits) (with abs)
-% constraint forall(c1,c2 in 1..tot_circuits where c1<c2)(
-%     if 
-%         tot_widths[c1] == tot_widths[c2] /\ tot_heights[c1] == tot_heights[c2] 
-%         /\ 
-%         tot_is_valid[c1] /\ tot_is_valid[c2] 
-%         /\
-%         not (tot_x[c1]==tot_x[c2] /\ tot_y[c1]==tot_y[c2])
-%     then 
-%         if abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1]
-%         then tot_x[c1] < tot_x[c2]
-%         else 
-%             if abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
-%             then tot_y[c1] < tot_y[c2]
-%             else true
-%             endif
-%         endif
-%     else true
-%     endif
-% );
-
-
-%EXPERIMENTAL1  with w1w2  h1h2
-%%%  remove swapping (same size circuits) (whithout abs) 
-constraint forall(c1,c2 in 1..tot_circuits where 
-c1<c2)(
+%%%  remove swapping (same size circuits) (with abs)
+constraint forall(c1,c2 in 1..n_circuits where c1<c2)(
     if 
         tot_widths[c1] == tot_widths[c2] /\ tot_heights[c1] == tot_heights[c2] 
         /\ 
@@ -228,47 +170,17 @@ c1<c2)(
         /\
         not (tot_x[c1]==tot_x[c2] /\ tot_y[c1]==tot_y[c2])
     then 
-        %if abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1] 
-        if ((tot_x[c1] > tot_x[c2]) /\ (tot_x[c1] - tot_x[c2] >= tot_widths[c2]) \/ (tot_x[c1] < tot_x[c2]) /\ (tot_x[c2] - tot_x[c1] >= tot_widths[c1])) %CASE: constraint on x axis with c2 left of c1
-        then tot_x[c1] > tot_x[c2]
+        if abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1]
+        then tot_x[c1] < tot_x[c2]
         else 
- 
-                %if abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
-                if ((tot_y[c1] > tot_y[c2]) /\ (tot_y[c1] - tot_y[c2] >= tot_heights[c2]) \/ (tot_y[c1] < tot_y[c2]) /\ (tot_y[c2] - tot_y[c1] >= tot_heights[c1])) %CASE: costraint on y axis with c1 above c2
-                then tot_y[c1] > tot_y[c2]
-                else true
-                endif
+            if abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
+            then tot_y[c1] < tot_y[c2]
+            else true
+            endif
         endif
     else true
     endif
 );
-
-% %EXPERIMENTAL2 w1w1 h1h1
-% %%%  remove swapping (same size circuits) (whithout abs)
-% constraint forall(c1,c2 in 1..tot_circuits where 
-% c1<c2)(
-%     if 
-%         tot_widths[c1] == tot_widths[c2] /\ tot_heights[c1] == tot_heights[c2] 
-%         /\ 
-%         tot_is_valid[c1] /\ tot_is_valid[c2] 
-%         /\
-%         not (tot_x[c1]==tot_x[c2] /\ tot_y[c1]==tot_y[c2])
-%     then 
-%         %if abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1] 
-%         if ((tot_x[c1] > tot_x[c2]) /\ (tot_x[c1] - tot_x[c2] >= tot_widths[c1]) \/ (tot_x[c1] < tot_x[c2]) /\ (tot_x[c2] - tot_x[c1] >= tot_widths[c1])) %CASE: constraint on x axis with c2 left of c1
-%         then tot_x[c1] > tot_x[c2]
-%         else 
- 
-%                 %if abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
-%                 if ((tot_y[c1] > tot_y[c2]) /\ (tot_y[c1] - tot_y[c2] >= tot_heights[c1]) \/ (tot_y[c1] < tot_y[c2]) /\ (tot_y[c2] - tot_y[c1] >= tot_heights[c1])) %CASE: costraint on y axis with c1 above c2
-%                 then tot_y[c1] > tot_y[c2]
-%                 else true
-%                 endif
-%         endif
-%     else true
-%     endif
-% );
-
 
 
 % %%%  remove swapping (same size circuits) (whithout abs)
@@ -303,70 +215,47 @@ c1<c2)(
 %     endif
 % );
 
-%%% impose an ordering constraint for each couple of real circuits that is swappable in a virtual circuit
- constraint forall (vc in 1..n_v_circuits where tot_is_valid[vc])( 
-    forall (c1,c2 in 1..n_circuits where
-        c1 < c2 /\
-        %c1 != vc /\
-        %c2 != vc /\
+% %%% impose an ordering constraint for each couple of real circuits that is swappable in a virtual circuit
+%  constraint forall (vc in 1..n_v_circuits where tot_is_valid[vc])( 
+%     forall (c1,c2 in 1..n_circuits where
+%         c1 < c2 /\
+%         %c1 != vc /\
+%         %c2 != vc /\
 
-        tot_x[c1] >= tot_x[vc] /\ 
-        tot_x[c1] < tot_x[vc] + tot_widths[vc] /\ %%% no need to check if c1 fits in vc: vc is valid
-        tot_y[c1] >= tot_y[vc] /\
-        tot_y[c1] < tot_y[vc]+ tot_heights[vc] /\
+%         tot_x[c1] >= tot_x[vc] /\ 
+%         tot_x[c1] < tot_x[vc] + tot_widths[vc] /\ %%% no need to check if c1 fits in vc: vc is valid
+%         tot_y[c1] >= tot_y[vc] /\
+%         tot_y[c1] < tot_y[vc]+ tot_heights[vc] /\
             
-        tot_x[c2] >= tot_x[vc] /\ 
-        tot_x[c2] < tot_x[vc] + tot_widths[vc] /\
-        tot_y[c2] >= tot_y[vc] /\
-        tot_y[c2] < tot_y[vc]+ tot_heights[vc]
+%         tot_x[c2] >= tot_x[vc] /\ 
+%         tot_x[c2] < tot_x[vc] + tot_widths[vc] /\
+%         tot_y[c2] >= tot_y[vc] /\
+%         tot_y[c2] < tot_y[vc]+ tot_heights[vc]
             
-    )( 
-        if (tot_y[c1] = tot_y[c2] /\ tot_heights[c1] = tot_heights[c2]) %CASE: aligned along x axis with c2 left of c1
-        then tot_x[c1] > tot_x[c2]
-        else 
-                if (tot_x[c1] = tot_x[c2] /\ tot_widths[c1] = tot_widths[c2]) %CASE: aligned along on y axis with c1 above c2
-                then tot_y[c1] > tot_y[c2]
-                else true
-                endif
-        endif
-    %)    
-));
-
-%     %/\
-%     %%%  remove swapping (adjacent circuits)
-%     %if
-%     %    (tot_x[c1]+tot_widths[c1] == tot_x[c2] \/ tot_x[c2]+tot_widths[c2] == tot_x[c1])
-%     %    /\
-%     %    tot_heights[c1] == tot_heights[c2]
-%     %    /\
-%     %    tot_y[c1] == tot_y[c2]
-%     %    /\ 
-%     %    tot_is_valid[c1] /\ tot_is_valid[c2]
-%     %    /\
-%     %    can_swap_adjacent[c1] /\ can_swap_adjacent[c2] 
-%     %then tot_x[c1] < tot_x[c2]
-%     %else
-%     %    if 
-%     %        (tot_y[c1]+tot_heights[c1] == tot_y[c2] \/ tot_y[c2]+tot_heights[c2] == tot_y[c1])
-%     %        /\
-%     %        tot_widths[c1] == tot_widths[c2]
-%     %        /\
-%     %        tot_x[c1] == tot_x[c2]
-%     %        /\
-%     %        tot_is_valid[c1] /\ tot_is_valid[c2]
-%     %        /\
-%     %        can_swap_adjacent[c1] /\ can_swap_adjacent[c2]
-%     %    then tot_y[c1] < tot_y[c2]
-%     %    else true
-%     %    endif
-%     %endif
+%     )( 
+%         if (tot_y[c1] = tot_y[c2] /\ tot_heights[c1] = tot_heights[c2]) %CASE: aligned along x axis with c2 left of c1
+%         then tot_x[c1] < tot_x[c2]
+%         else 
+%                 if (tot_x[c1] = tot_x[c2] /\ tot_widths[c1] = tot_widths[c2]) %CASE: aligned along on y axis with c1 above c2
+%                 then tot_y[c1] < tot_y[c2]
+%                 else true
+%                 endif
+%         endif
+%     %)    
+% ));
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-constraint makespan=min_makespan;
-solve satisfy;
+%constraint makespan=min_makespan;
+%solve satisfy;
 % solve minimize makespan;
 
+ann: search_makespan = int_search([ makespan ], input_order, indomain_min);
+ann: search_y = int_search(y, first_fail, indomain_min);
+
+solve 
+    ::seq_search([ search_makespan, search_y ])
+    minimize makespan;
 
 output [
     "width = ", show(width), "\n",
