@@ -180,9 +180,8 @@ constraint forall(c1,c2 in 1..n_circuits where c1<c2)(
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-
 ann: search_makespan = int_search([ makespan ], input_order, indomain_min);
-ann: search_y = int_search(y, first_fail, indomain_min);
+
 solve 
     ::seq_search([ search_makespan ])
     minimize makespan;
