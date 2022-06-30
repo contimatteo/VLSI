@@ -195,7 +195,29 @@ array[1..tot_circuits] of var bool: tot_is_valid = [true | c in CIRCUITS] ++ is_
 %    | c in n_circuits+1..tot_circuits
 %];
 
-% %%%  remove swapping (same size circuits)
+%%%  remove swapping (same size circuits) (with abs)
+constraint forall(c1,c2 in 1..tot_circuits where c1<c2)(
+    if 
+        tot_widths[c1] == tot_widths[c2] /\ tot_heights[c1] == tot_heights[c2] 
+        /\ 
+        tot_is_valid[c1] /\ tot_is_valid[c2] 
+        /\
+        not (tot_x[c1]==tot_x[c2] /\ tot_y[c1]==tot_y[c2])
+    then 
+        if abs(tot_x[c1] - tot_x[c2]) >= tot_widths[c1]
+        then tot_x[c1] < tot_x[c2]
+        else 
+            if abs(tot_y[c1] - tot_y[c2]) >= tot_heights[c1]
+            then tot_y[c1] < tot_y[c2]
+            else true
+            endif
+        endif
+    else true
+    endif
+);
+
+
+% %%%  remove swapping (same size circuits) (whithout abs)
 % constraint forall(c1,c2 in 1..tot_circuits where 
 % c1<c2)(
 %     if 
