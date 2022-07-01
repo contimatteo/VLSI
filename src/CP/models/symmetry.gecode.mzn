@@ -1,8 +1,7 @@
 include "alldifferent.mzn";
 include "cumulative.mzn";
-% include "utils/symmetry_breaking.mzn";
-include "utils/symmetry.utils.mzn";
-include "utils/utils.mzn";
+include "utils/symmetry.mzn";
+include "utils/global.mzn";
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
