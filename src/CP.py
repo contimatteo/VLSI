@@ -1,6 +1,9 @@
 import os
-import numpy as np
+import copy
 import json
+import numpy as np
+
+from dotenv import load_dotenv
 
 from CP.utils import parse_args
 from CP.utils import convert_txt_file_to_dzn, convert_raw_result_to_solutions_dict
@@ -10,6 +13,7 @@ from CP.utils import CP_model_file_url, CP_data_file_url, CP_out_file_url
 ###
 
 np.random.seed(1)
+load_dotenv()
 
 DATA_FILE_NAME = "ab-test-6"
 MODEL_FILE_NAME = "v6"
@@ -35,12 +39,35 @@ def __convert_raw_results_to_dict(raw_results: dict, args) -> dict:
 
 
 def __store_solutions_dict(solutions_dict: dict) -> None:
-    sub_dir = str(solutions_dict["solver"]).lower() + "/" + solutions_dict["model"]
-    file_name = solutions_dict["data"]
-    file_url = str(CP_out_file_url(file_name, sub_dir).resolve())
 
-    with open(file_url, 'w', encoding="utf-8") as file:
-        json.dump(solutions_dict, file, indent=2)
+    def __file_url():
+        file_sub_dir = str(solutions_dict["solver"]).lower() + "/" + solutions_dict["model"]
+        return str(CP_out_file_url(solutions_dict["data"], file_sub_dir).resolve())
+
+    def __clean_dict(obj):
+        obj_copy = copy.deepcopy(obj)
+        del obj_copy["results"]
+        del obj_copy["best_makespan"]
+        del obj_copy["best_result_index"]
+        return obj_copy
+
+    def __format_dict(obj):
+        int_list_to_str = lambda l: ','.join(str(v) for v in l)
+        obj_copy = copy.deepcopy(obj)
+        obj_copy["solution"]['x'] = int_list_to_str(obj_copy["solution"]['x'])
+        obj_copy["solution"]['y'] = int_list_to_str(obj_copy["solution"]['y'])
+        obj_copy["solution"]['widths'] = int_list_to_str(obj_copy["solution"]['widths'])
+        obj_copy["solution"]['heights'] = int_list_to_str(obj_copy["solution"]['heights'])
+        return obj_copy
+
+    json_data = copy.deepcopy(solutions_dict)
+    json_data = __clean_dict(json_data)
+    json_data = __format_dict(json_data)
+
+    with open(__file_url(), 'w', encoding="utf-8") as file:
+        json.dump(json_data, file, indent=1)
+
+    return json_data
 
 
 def __plot(solutions_dict):
@@ -63,12 +90,12 @@ def main(args):
 
     opts = f"--time-limit {args.time * 1000}"  # --solver-time-limit
 
-    if args.solutions > 1:
+    if args.sol > 1:
         opts += " --all-solutions"
     if args.stats is True:
         opts += " --statistics --output-time"
-    if args.verbose == 1:
-        opts += " --output-detailed-timing"
+
+    # opts += " --output-detailed-timing"
 
     #
 
@@ -84,16 +111,18 @@ def main(args):
     solutions_dict = __convert_raw_results_to_dict(raw_results, args)
 
     ### save parsed solutions to disk
-    __store_solutions_dict(solutions_dict)
+    out_file_content = __store_solutions_dict(solutions_dict)
 
     #
 
-    if args.output is not None:
-        if args.output == "raw" or args.output == "raw+plot":
+    if args.verbose > 0:
+        if args.verbose == 1:
+            print("\n", json.dumps(out_file_content, indent=2), "\n")
+        if args.verbose == 2:
             print("\n", raw_results, "\n")
 
-        if args.output == "plot" or args.output == "raw+plot":
-            __plot(solutions_dict)
+    if args.plot is True:
+        __plot(solutions_dict)
 
 
 ###
