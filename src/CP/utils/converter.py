@@ -1,4 +1,5 @@
 import numpy as np
+import json
 
 from .storage import CP_data_file_url
 
@@ -126,10 +127,12 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
 
     #
 
-    raw_solutions = raw_results.split("----------")
+    raw_results = raw_results.replace("%%%mzn-stat-end", "", 3)
+    raw_solutions = raw_results.split("%%%mzn-stat-end")
+    # raw_solutions = raw_results.split("----------")
 
     for (si, raw_solution) in enumerate(raw_solutions):
-        result = {}
+        result = {"stats": {}}
         raw_variables = raw_solution.split("\n")
 
         if len(raw_variables) < 1:
@@ -140,7 +143,17 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
 
             if len(raw_variable) < 1 or "===" in raw_variable:
                 continue
-            if raw_variable.startswith("%%%mzn-stat") or raw_variable.startswith("% "):
+            if raw_variable.startswith("% ") or raw_variable.startswith("%%%mzn-stat-end"):
+                continue
+
+            if raw_variable.startswith("%%%mzn-stat"):
+                tmp_value = (raw_variable.replace("%%%mzn-stat: ", "")).split("=")
+                var_name = tmp_value[0]
+                var_value = tmp_value[1]
+                result["stats"][var_name] = var_value
+                continue
+
+            if len(raw_variable.split(" = ")) < 2:
                 continue
 
             var_name = raw_variable.split(" = ")[0]
