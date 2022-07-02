@@ -12,13 +12,13 @@ SOLVERS_CHOICES = [
     "Gecode",
     # "Globalizer",
 ]
-OUTPUT_CHOICES = ["raw", "plot", "raw+plot"]
+VERBOSE_CHOICES = [0, 1, 2]
 
 DEFAULT_SECONDS_TIME_LIMIT = 300
 DEFAULT_MODEL_NAME = "base"
 DEFAULT_SOLVER_NAME = "Gecode"
 DEFAULT_N_SOLUTIONS = 1
-DEFAULT_OUTPUT_FORMAT = "raw"
+DEFAULT_VERBOSE = 1
 
 ###
 
@@ -44,19 +44,18 @@ def parse_args():
         help='name of the solver to use'
     )
     parser.add_argument(
-        '--solutions',
-        required=False,
-        type=int,
-        default=DEFAULT_N_SOLUTIONS,
-        help='max no. of solutions'
+        '--sol', required=False, type=int, default=DEFAULT_N_SOLUTIONS, help='max no. of solutions'
     )
     parser.add_argument(
-        '--output',
+        '--verbose',
         required=False,
-        type=str,
-        default=DEFAULT_OUTPUT_FORMAT,
-        choices=OUTPUT_CHOICES,
-        help='output format'
+        type=int,
+        default=DEFAULT_VERBOSE,
+        choices=VERBOSE_CHOICES,
+        help='print execution verbose infos'
+    )
+    parser.add_argument(
+        '--plot', required=False, action="store_true", help='show final solutions plot'
     )
 
     parser.add_argument(
@@ -68,14 +67,6 @@ def parse_args():
     )
     parser.add_argument(
         '--stats', required=False, action="store_false", help='prints execution statistics infos'
-    )
-    parser.add_argument(
-        '--verbose',
-        required=False,
-        type=int,
-        default=0,
-        choices=[0, 1],
-        help='print execution verbose infos'
     )
     parser.add_argument(
         '--debug', required=False, action="store_true", help='prints development debug infos'
@@ -92,7 +83,7 @@ def parse_args():
 
     #
 
-    n_sol = args.solutions
+    n_sol = args.sol
     time_limit = args.time
     data_file_name = args.data
 

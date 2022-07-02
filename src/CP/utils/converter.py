@@ -174,5 +174,6 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
     return {
         "results": results,
         "best_result_index": best_result_index,
-        "best_makespan": best_makespan_found
+        "best_makespan": best_makespan_found,
+        "solution": results[best_result_index],
     }

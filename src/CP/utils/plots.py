@@ -15,8 +15,8 @@ def plot_solutions_v1(sol, in_dict, tot_length):
     for plate_idx in range(in_dict['n_circuits']):
         r = Rectangle(
             xy=(sol[plate_idx][0], sol[plate_idx][1]),
-            height=in_dict['dims'][plate_idx][0],
-            width=in_dict['dims'][plate_idx][1],
+            height=in_dict['heights'][plate_idx],
+            width=in_dict['widths'][plate_idx],
             edgecolor='white',
             facecolor=tuple(np.random.choice(range(256), size=3) / 255),
             fill=True,

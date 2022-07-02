@@ -89,7 +89,6 @@ solve ::
 output [
     "width = ", show(width), "\n",
     "n_circuits = ", show(n_circuits), "\n",
-    "dims = ", show(dims), "\n",
     "widths = ", show(widths), "\n",
     "heights = ", show(heights), "\n",
     "x = ", show(x), "\n",
