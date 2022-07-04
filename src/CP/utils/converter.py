@@ -25,29 +25,27 @@ def convert_txt_file_to_dzn(txt_file_name: str):
 
     #
 
-    # print and save width
-    width = txt_lines[0][:-1]
-    dzn_lines[0] = 'width = ' + width + ';\n'
-    data_dict['width'] = int(width)
+    data_dict['width'] = int(txt_lines[0][:-1])
 
-    # print and save n_plates
-    n_plates = txt_lines[1][:-1]
-    dzn_lines[1] = 'n_circuits = ' + n_plates + ';\n'
-    data_dict['n_circuits'] = int(n_plates)
+    data_dict['n_circuits'] = int(txt_lines[1][:-1])
 
-    # print and save dims
     data_dict['dims'] = []
-    dzn_lines[2] = 'dims = ['
     for line_idx in range(2, len(txt_lines)):
         x, y = txt_lines[line_idx][:-1].split(sep=' ')
-        dzn_lines[line_idx] += '|' + x + ', ' + y + ',\n'
         data_dict['dims'].append((int(x), int(y)))
 
-    # remove last comma
-    dzn_lines[-1] = dzn_lines[-1][:-1]
+    #
 
-    # close the array
-    dzn_lines[-1] += '|]'
+    dzn_lines[0] = f"width = {str(data_dict['width'])};\n"
+
+    dzn_lines[1] = f"n_circuits = {str(data_dict['n_circuits'])};\n"
+
+    dzn_lines[2] = 'dims = ['
+    for dim in sorted(data_dict['dims'], key=lambda dim: dim[0] * dim[1], reverse=True):
+        # for dim in data_dict['dims']:
+        dzn_lines[line_idx] += f"|{dim[0]},{dim[1]},\n"
+    dzn_lines[-1] = dzn_lines[-1][:-1]  ### remove last comma
+    dzn_lines[-1] += '|]'  ### close the array
 
     #
 
@@ -55,9 +53,7 @@ def convert_txt_file_to_dzn(txt_file_name: str):
         f.writelines(dzn_lines)
         f.close()
 
-    #
-
-    assert txt_file_url.exists() and txt_file_url.is_file()
+    assert dzn_file_url.exists() and dzn_file_url.is_file()
 
     return data_dict
 
@@ -121,7 +117,7 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
 
     #
 
-    NUMERIC_VARIABLE_NAMES = ["width", "n_circuits", "makespan"]
+    NUMERIC_VARIABLE_NAMES = ["width", "n_circuits", "makespan", "min_makespan", "max_makespan"]
     LIST_VARIABLE_NAMES = ["widths", "heights", "x", "y"]
     SPECIAL_VARIABLE_NAMES = ["dims", "pos", "is_rotated"]
 
@@ -143,7 +139,7 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
 
             if raw_variable.startswith("% time elapsed: "):
                 var_value = raw_variable.replace("% time elapsed: ", "").replace(" s", "").strip()
-                result["stats"]["timeElapsed"] = float(var_value)
+                result["stats"]["TOTAL_TIME_ELAPSED"] = float(var_value)
                 continue
 
             if len(raw_variable) < 1 or "===" in raw_variable:

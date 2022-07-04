@@ -63,8 +63,8 @@ constraint cumulative(x, widths, heights, makespan);
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
 constraint diffn(x, y, widths, heights);
 
-%%% place the circuit with the max height at position (0,0);
-% constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
+%%% force the biggest block to be always to the bottom left of the second biggest
+constraint x[1] <= x[2] /\ y[1] <= y[2];
 
 %%% define `makespan` boundaries.
 constraint makespan >= min_makespan /\ makespan <= max_makespan;
@@ -72,9 +72,11 @@ constraint makespan >= min_makespan /\ makespan <= max_makespan;
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 
-solve :: ann_search_makespan minimize makespan;
-% solve :: ann_search_makespan :: ann_restart minimize makespan;
-% solve :: ann_search_makespan :: ann_search_x :: ann_search_y :: ann_restart minimize makespan;
+solve :: seq_search([
+    ann_search_makespan,
+    ann_search_x,
+    ann_search_y,
+]) :: ann_restart minimize makespan;
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
