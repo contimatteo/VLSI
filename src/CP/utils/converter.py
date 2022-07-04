@@ -141,6 +141,11 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
         for (_, raw_variable) in enumerate(raw_variables):
             raw_variable = raw_variable.strip()
 
+            if raw_variable.startswith("% time elapsed: "):
+                var_value = raw_variable.replace("% time elapsed: ", "").replace(" s", "").strip()
+                result["stats"]["timeElapsed"] = float(var_value)
+                continue
+
             if len(raw_variable) < 1 or "===" in raw_variable:
                 continue
             if raw_variable.startswith("% ") or raw_variable.startswith("%%%mzn-stat-end"):
@@ -148,9 +153,10 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
 
             if raw_variable.startswith("%%%mzn-stat"):
                 tmp_value = (raw_variable.replace("%%%mzn-stat: ", "")).split("=")
-                var_name = tmp_value[0]
-                var_value = tmp_value[1]
-                result["stats"][var_name] = var_value
+                var_name, var_value = tmp_value[0], tmp_value[1]
+                if var_name not in ["method"]:
+                    var_value = float(var_value) if '.' in var_value else int(var_value)
+                    result["stats"][var_name] = var_value
                 continue
 
             if len(raw_variable.split(" = ")) < 2:
