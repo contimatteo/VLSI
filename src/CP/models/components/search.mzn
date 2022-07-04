@@ -30,7 +30,7 @@ ann: ann_search_makespan = int_search([ makespan ], input_order, indomain_min);
 
 
 % ann: ann_restart = restart_constant(1000);
-ann: ann_restart = restart_linear(1000);
+% ann: ann_restart = restart_linear(1000);
 % ann: ann_restart = restart_geometric(2, 50)
-% ann: ann_restart = restart_luby(150);
+ann: ann_restart = restart_luby(150);
 % ann: ann_restart = restart_none;

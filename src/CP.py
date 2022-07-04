@@ -90,13 +90,12 @@ def main(args):
     #
 
     opts = f"--time-limit {args.time * 1000}"  # --solver-time-limit
+    # opts += " --output-detailed-timing"
 
     if args.sol > 1:
         opts += " --all-solutions"
     if args.stats is True:
         opts += " --statistics --output-time"
-
-    # opts += " --output-detailed-timing"
 
     #
 
