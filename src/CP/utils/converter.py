@@ -1,5 +1,6 @@
 import numpy as np
 import json
+import copy
 
 from .storage import CP_data_file_url
 
@@ -110,7 +111,7 @@ def __convert_raw_var_to_special_type(raw_var_name: str, raw_var_value: str):
     raise Exception("raw variable format not supported.")
 
 
-def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int) -> dict:
+def convert_raw_result_to_solutions_dict(raw_output: str, n_max_solutions: int) -> dict:
     results = []
     best_result_index = None
     best_makespan_found = None
@@ -123,12 +124,36 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
 
     #
 
-    raw_results = raw_results.replace("%%%mzn-stat-end", "", 3)
-    raw_solutions = raw_results.split("%%%mzn-stat-end")
-    # raw_solutions = raw_results.split("----------")
+    raw_output_split = raw_output.split("%%%mzn-stat-end")
+
+    raw_stats = raw_output_split[0] + "\n"
+    if "==========" in raw_output_split[1]:
+        raw_stats += raw_output_split[1].split("==========")[1]
+        raw_solutions = raw_output_split[1].split("==========")[0]
+        raw_solutions = raw_solutions.split("----------")
+    else:
+        raw_stats += raw_output_split[1].split("----------")[1]
+        raw_solutions = [raw_output_split[1].split("----------")[0]]
+
+    stats = {}
+    for (si, raw_stat) in enumerate(raw_stats.split("\n")):
+        if raw_stat.startswith("% ") or raw_stat.startswith("%%%mzn-stat-end"):
+            continue
+
+        if raw_stat.startswith("%%%mzn-stat"):
+            tmp_value = (raw_stat.replace("%%%mzn-stat: ", "")).split("=")
+            var_name, var_value = tmp_value[0], tmp_value[1]
+            if var_name not in ["method"]:
+                var_value = float(var_value) if '.' in var_value else int(var_value)
+                stats[var_name] = var_value
+            continue
+
+    stats["TOTAL_TIME"] = round(stats["initTime"] + stats["solveTime"] + stats["flatTime"], 2)
+
+    #
 
     for (si, raw_solution) in enumerate(raw_solutions):
-        result = {"stats": {}}
+        result = {"stats": copy.deepcopy(stats)}
         raw_variables = raw_solution.split("\n")
 
         if len(raw_variables) < 1:
@@ -137,24 +162,8 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
         for (_, raw_variable) in enumerate(raw_variables):
             raw_variable = raw_variable.strip()
 
-            if raw_variable.startswith("% time elapsed: "):
-                var_value = raw_variable.replace("% time elapsed: ", "").replace(" s", "").strip()
-                result["stats"]["TOTAL_TIME_ELAPSED"] = float(var_value)
-                continue
-
             if len(raw_variable) < 1 or "===" in raw_variable:
                 continue
-            if raw_variable.startswith("% ") or raw_variable.startswith("%%%mzn-stat-end"):
-                continue
-
-            if raw_variable.startswith("%%%mzn-stat"):
-                tmp_value = (raw_variable.replace("%%%mzn-stat: ", "")).split("=")
-                var_name, var_value = tmp_value[0], tmp_value[1]
-                if var_name not in ["method"]:
-                    var_value = float(var_value) if '.' in var_value else int(var_value)
-                    result["stats"][var_name] = var_value
-                continue
-
             if len(raw_variable.split(" = ")) < 2:
                 continue
 
@@ -178,12 +187,12 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
 
             result[var_name] = var_value
 
-        if len(result.keys()) > 0:
+        if len(result.keys()) > 1:
             results.append(result)
 
     #
 
-    results = sorted(results, key=lambda x: x["makespan"], reverse=False)
+    results = sorted(results, key=lambda sol: sol["makespan"], reverse=False)
     results = results[0:n_max_solutions]
 
     return {

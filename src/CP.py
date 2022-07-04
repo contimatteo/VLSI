@@ -29,7 +29,9 @@ def __minizinc_exec_cmd(os_cmd: str) -> str:
 
 
 def __convert_raw_results_to_dict(raw_results: dict, args) -> dict:
-    solutions_dict = convert_raw_result_to_solutions_dict(raw_results, N_MAX_SOLUTIONS)
+    solutions_dict = convert_raw_result_to_solutions_dict(
+        raw_results, min(args.sol, N_MAX_SOLUTIONS)
+    )
 
     solutions_dict["solver"] = args.solver
     solutions_dict["model"] = args.model
@@ -116,7 +118,7 @@ def main(args):
     #
 
     if args.verbose > 0:
-        if args.verbose >= 1:
+        if args.verbose == 1:
             print("\n", json.dumps(out_file_content, indent=2), "\n")
         if args.verbose == 2:
             print("\n", raw_results, "\n")
