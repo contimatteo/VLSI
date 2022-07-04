@@ -1,7 +1,7 @@
 include "lex_lesseq.mzn";
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 
 %%%  create virtual circuits
@@ -17,7 +17,16 @@ array [1..2, V_CIRCUITS] of CIRCUITS: c_pairs = array2d(
 );
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+
+predicate c_grid_x_symmetry() = lex_lesseq(x, [width - x[c] - widths[c] | c in CIRCUITS]);
+predicate c_grid_y_symmetry() = lex_lesseq(y, [makespan - y[c] - heights[c] | c in CIRCUITS]);
+
+% constraint symmetry_breaking_constraint(
+%     forall (i,j in CIRCUITS where i < j) ((x[i] == x[j] /\ widths[i] == widths[j]) -> y[i] <= y[j] ));
+% constraint symmetry_breaking_constraint(
+%     forall (i,j in CIRCUITS where i < j) ((y[i] == y[j] /\ heights[i] == heights[j]) -> x[i] <= x[j] ));
 
 
 predicate c_equal_dim_symmetry() = (

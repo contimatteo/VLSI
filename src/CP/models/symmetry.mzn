@@ -9,7 +9,7 @@ include "utils/global.mzn";
 
 mzn_ignore_symmetry_breaking_constraints = false;
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 
 int: width; %%%  width of the silicon plate
@@ -41,7 +41,7 @@ array[CIRCUITS] of var Ys: y;
 % ];
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 
 %%%  all circuits must have each dimension greater than zero
@@ -56,14 +56,14 @@ constraint assert(
 );
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 
 %%%  base problem constraints (by definition)
-constraint cumulative(y, heights, widths, width);
-constraint cumulative(x, widths, heights, makespan);
+constraint cumulative(y, heights, widths, width) :: domain;
+constraint cumulative(x, widths, heights, makespan) :: domain;
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
-constraint diffn(x, y, widths, heights);
+constraint diffn(x, y, widths, heights) :: domain;
 
 %%%  define `makespan` boundaries.
 constraint makespan >= min_makespan /\ makespan <= max_makespan;
@@ -74,15 +74,20 @@ constraint makespan >= min_makespan /\ makespan <= max_makespan;
 % constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
 
 %%%  prevent circuits (and group of circuits) to swap
-constraint symmetry_breaking_constraint(c_equal_dim_symmetry());
-constraint symmetry_breaking_constraint(c_consecutive_symmetry());
+constraint symmetry_breaking_constraint(c_grid_x_symmetry());
+constraint symmetry_breaking_constraint(c_grid_y_symmetry());
+% constraint symmetry_breaking_constraint(c_equal_dim_symmetry());
+% constraint symmetry_breaking_constraint(c_consecutive_symmetry());
 
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
+% solve :: ann_search_y minimize makespan;
 solve :: ann_search_makespan minimize makespan;
+% solve :: ann_search_makespan :: ann_search_y minimize makespan;
 % solve :: ann_search_makespan :: ann_restart minimize makespan;
-% solve :: ann_search_makespan :: ann_search_x :: ann_search_y :: ann_restart minimize makespan;
+% solve :: ann_search_makespan :: ann_search_y :: ann_restart minimize makespan;
+% solve :: ann_search_makespan :: ann_search_y :: ann_search_x :: ann_restart minimize makespan;
 
 
 output [
