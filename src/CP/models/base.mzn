@@ -31,10 +31,10 @@ array[CIRCUITS] of var Ys: y;
 
 var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
 
-%%% TODO: ragionare se si possono assegnare gli indici solo ai bordi
-array[int] of var int: grid = [
-    (x[c]+w) + (y[c]+h)*width | c in CIRCUITS, w in 0..widths[c]-1, h in 0..heights[c]-1
-];
+% %%% TODO: ragionare se si possono assegnare gli indici solo ai bordi
+% array[int] of var int: grid = [
+%     (x[c]+w) + (y[c]+h)*width | c in CIRCUITS, w in 0..widths[c]-1, h in 0..heights[c]-1
+% ];
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -59,14 +59,13 @@ constraint assert(
 constraint cumulative(y, heights, widths, width);
 constraint cumulative(x, widths, heights, makespan);
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
-
-%%%  exploit the `grid` variable definition
 % constraint alldifferent(grid); %%% GECODE
-constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]); %%% CHUFFED
+% constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]); %%% CHUFFED
+constraint diffn(x, y, widths, heights);
 
 
 %%% place the circuit with the max height at position (0,0);
-constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
+% constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
 
 %%% define `makespan` boundaries.
 constraint makespan >= min_makespan /\ makespan <= max_makespan;

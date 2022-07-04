@@ -38,7 +38,6 @@ predicate c_equal_dim_symmetry() = (
     %     else true
     %     endif
     % )
-
     forall(c1,c2 in CIRCUITS where c1<c2)(
         if widths[c1] == widths[c2] /\ heights[c1] == heights[c2] 
         then lex_lesseq([ x[c1], y[c1] ], [ x[c2], y[c2] ])
@@ -106,15 +105,19 @@ predicate c_consecutive_symmetry() = (
     %     %)    
     % ));
     %
-    % %%%  remove swapping between consecutive circuits on X axis
-    % constraint forall(c1,c2 in CIRCUITS where c1<c2)(
+    % /\
+    % forall(c1,c2 in CIRCUITS where c1<c2)(
+    %     %%%  remove swapping between consecutive circuits on X axis
     %     % if c_can_be_swapped_on_x(c1, c2) then x[c1] < x[c2] else true endif
-    %     c_can_be_swapped_on_x(c1, c2) -> x[c1] < x[c2]
-    % );
-    % %%%  remove swapping between consecutive circuits on Y axis
-    % constraint forall(c1,c2 in CIRCUITS where c1<c2)(
+    %     % c_can_be_swapped_on_x(c1, c2) -> x[c1] < x[c2]
+    %     % if c_can_be_swapped_on_x(c1, c2) then lex_lesseq([ x[c1] ], [ x[c2] ]) else true endif
+    %     c_can_be_swapped_on_x(c1, c2) -> lex_lesseq([ x[c1] ], [ x[c2] ])
+    %     /\
+    %     %%%  remove swapping between consecutive circuits on Y axis
     %     % if c_can_be_swapped_on_y(c1, c2) then y[c1] < y[c2] else true endif
-    %     c_can_be_swapped_on_y(c1, c2) -> y[c1] < y[c2]
-    % );
+    %     % c_can_be_swapped_on_y(c1, c2) -> y[c1] < y[c2]
+    %     % if c_can_be_swapped_on_y(c1, c2) then lex_lesseq([ y[c1] ], [ y[c2] ]) else true endif
+    %     c_can_be_swapped_on_y(c1, c2) -> lex_lesseq([ y[c1] ], [ y[c2] ])
+    % )
     %
 );
