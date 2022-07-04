@@ -117,7 +117,7 @@ def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int)
 
     #
 
-    NUMERIC_VARIABLE_NAMES = ["width", "n_circuits", "makespan"]
+    NUMERIC_VARIABLE_NAMES = ["width", "n_circuits", "makespan", "min_makespan", "max_makespan"]
     LIST_VARIABLE_NAMES = ["widths", "heights", "x", "y"]
     SPECIAL_VARIABLE_NAMES = ["dims", "pos", "is_rotated"]
 
