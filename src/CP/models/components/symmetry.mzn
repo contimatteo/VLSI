@@ -1,3 +1,4 @@
+include "lex_less.mzn";
 include "lex_lesseq.mzn";
 
 
@@ -38,11 +39,7 @@ predicate c_equal_dim_symmetry() = (
     %     then
     %         if abs(rv_x(c1) - rv_x(c2)) >= rv_width(c1)
     %         then rv_x(c1) < rv_x(c2)
-    %         else 
-    %             if abs(rv_y(c1) - rv_y(c2)) >= rv_height(c1)
-    %             then rv_y(c1) < rv_y(c2)
-    %             else true
-    %             endif
+    %         else if abs(rv_y(c1) - rv_y(c2)) >= rv_height(c1) then rv_y(c1) < rv_y(c2) else true endif
     %         endif
     %     else true
     %     endif
@@ -83,7 +80,6 @@ predicate c_equal_dim_symmetry() = (
 
 
 predicate c_consecutive_symmetry() = (
-    true
     %%%  INFO: details in order to avoid UNSAT solution for near circuits
     %%%  |  check for each circuit c if it's composed by precedent circuits c1, c2
     %%%  |  if composed by 2 precedent circuits c1, c2
@@ -114,19 +110,14 @@ predicate c_consecutive_symmetry() = (
     %     %)    
     % ));
     %
-    % /\
-    % forall(c1,c2 in CIRCUITS where c1<c2)(
-    %     %%%  remove swapping between consecutive circuits on X axis
-    %     % if c_can_be_swapped_on_x(c1, c2) then x[c1] < x[c2] else true endif
-    %     % c_can_be_swapped_on_x(c1, c2) -> x[c1] < x[c2]
-    %     % if c_can_be_swapped_on_x(c1, c2) then lex_lesseq([ x[c1] ], [ x[c2] ]) else true endif
-    %     c_can_be_swapped_on_x(c1, c2) -> lex_lesseq([ x[c1] ], [ x[c2] ])
-    %     /\
-    %     %%%  remove swapping between consecutive circuits on Y axis
-    %     % if c_can_be_swapped_on_y(c1, c2) then y[c1] < y[c2] else true endif
-    %     % c_can_be_swapped_on_y(c1, c2) -> y[c1] < y[c2]
-    %     % if c_can_be_swapped_on_y(c1, c2) then lex_lesseq([ y[c1] ], [ y[c2] ]) else true endif
-    %     c_can_be_swapped_on_y(c1, c2) -> lex_lesseq([ y[c1] ], [ y[c2] ])
-    % )
+    forall(c1,c2 in CIRCUITS where c1<c2)(
+        %%%  remove swapping between consecutive circuits on X axis
+        if c_can_be_swapped_on_x(c1, c2) then lex_less([ x[c1] ], [ x[c2] ]) else true endif
+        % c_can_be_swapped_on_x(c1, c2) -> lex_lesseq([ x[c1] ], [ x[c2] ])
+        /\
+        %%%  remove swapping between consecutive circuits on Y axis
+        if c_can_be_swapped_on_y(c1, c2) then lex_less([ y[c1] ], [ y[c2] ]) else true endif
+        % c_can_be_swapped_on_y(c1, c2) -> lex_lesseq([ y[c1] ], [ y[c2] ])
+    )
     %
 );

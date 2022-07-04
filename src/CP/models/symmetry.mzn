@@ -7,7 +7,7 @@ include "components/search.mzn";
 include "utils/symmetry.mzn";
 include "utils/global.mzn";
 
-mzn_ignore_symmetry_breaking_constraints = false;
+% mzn_ignore_symmetry_breaking_constraints = false;
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -34,11 +34,6 @@ set of int: Xs = 0..(width - min(widths));
 set of int: Ys = 0..(max_makespan - min(heights));
 array[CIRCUITS] of var Xs: x;
 array[CIRCUITS] of var Ys: y;
-
-% %%% TODO: ragionare se si possono assegnare gli indici solo ai bordi
-% array[int] of var int: grid = [
-%     (x[c]+w) + (y[c]+h)*width | c in CIRCUITS, w in 0..widths[c]-1, h in 0..heights[c]-1
-% ];
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -68,10 +63,6 @@ constraint diffn(x, y, widths, heights) :: domain;
 %%%  define `makespan` boundaries.
 constraint makespan >= min_makespan /\ makespan <= max_makespan;
 
-%%% ISSUE: the previous formalization cannot work in combination with the new symmetries formulation.
-%%% TODO: place ONE of the circuits with the max height at position (0,0);
-%%% place the circuit with the max height at position (0,0);
-% constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
 %%% force the biggest block to be always to the bottom left of the second biggest
 constraint x[1] <= x[2] /\ y[1] <= y[2];
 
@@ -79,20 +70,12 @@ constraint x[1] <= x[2] /\ y[1] <= y[2];
 constraint symmetry_breaking_constraint(c_grid_x_symmetry());
 constraint symmetry_breaking_constraint(c_grid_y_symmetry());
 constraint symmetry_breaking_constraint(c_equal_dim_symmetry());
-% constraint symmetry_breaking_constraint(c_consecutive_symmetry());
+constraint symmetry_breaking_constraint(c_consecutive_symmetry());
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 
-% solve minimize makespan;
-% solve :: ann_search_makespan minimize makespan;
-% solve :: ann_search_x :: ann_search_y :: ann_restart minimize makespan;
-% solve :: ann_search_makespan :: ann_search_y minimize makespan;
-% solve :: ann_search_makespan :: ann_restart minimize makespan;
-% solve :: ann_search_makespan :: ann_search_y :: ann_restart minimize makespan;
-% solve :: ann_search_makespan :: ann_search_y :: ann_search_x minimize makespan;
-% solve :: ann_search_makespan :: ann_search_x :: ann_search_y :: ann_restart minimize makespan;
 solve :: seq_search([
     ann_search_makespan,
     ann_search_x,
