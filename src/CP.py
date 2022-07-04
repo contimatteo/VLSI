@@ -116,7 +116,7 @@ def main(args):
     #
 
     if args.verbose > 0:
-        if args.verbose == 1:
+        if args.verbose >= 1:
             print("\n", json.dumps(out_file_content, indent=2), "\n")
         if args.verbose == 2:
             print("\n", raw_results, "\n")
