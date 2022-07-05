@@ -4,13 +4,11 @@ from .storage import CP_data_file_url
 
 ###
 
-MODELS_CHOICES = ["base", "search", "rotation", "search.symmetry"]
+MODELS_CHOICES = ["base", "rotation", "rotation.search", "rotation.search.symmetry", "search",  "search.symmetry"]
 SOLVERS_CHOICES = [
     "Chuffed",
-    "COIN-BC",
-    # "findMUS",
-    "Gecode",
-    # "Globalizer",
+    # "COIN-BC",
+    "Gecode"
 ]
 VERBOSE_CHOICES = [0, 1, 2]
 

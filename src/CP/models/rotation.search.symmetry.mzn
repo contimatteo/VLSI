@@ -89,7 +89,8 @@ solve :: seq_search([
     ann_search_makespan,
     ann_search_x,
     ann_search_y,
-    ann_search_rot,
+    %%% 'indomain_random' is not supported yet!
+    % ann_search_rot,
 ]) :: ann_restart minimize makespan;
 
 

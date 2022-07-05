@@ -28,8 +28,9 @@ ann: ann_search_makespan = int_search([ makespan ], input_order, indomain_min);
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
+%%% 'indomain_random' is not supported yet!
+% ann: ann_search_rot = bool_search(is_rotated, input_order, indomain_random);
 
-ann: ann_search_rot = bool_search(is_rotated, input_order, indomain_random);
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
