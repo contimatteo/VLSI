@@ -4,7 +4,7 @@ from .storage import CP_data_file_url
 
 ###
 
-MODELS_CHOICES = ["base", "search", "rotation", "symmetry"]
+MODELS_CHOICES = ["base", "search", "rotation", "search.symmetry"]
 SOLVERS_CHOICES = [
     "Chuffed",
     "COIN-BC",
@@ -15,7 +15,7 @@ SOLVERS_CHOICES = [
 VERBOSE_CHOICES = [0, 1, 2]
 
 DEFAULT_SECONDS_TIME_LIMIT = 300
-DEFAULT_MODEL_NAME = "base"
+DEFAULT_MODEL_NAME = "search.symmetry"
 DEFAULT_SOLVER_NAME = "Chuffed"
 DEFAULT_N_SOLUTIONS = 1
 DEFAULT_VERBOSE = 1
