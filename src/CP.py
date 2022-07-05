@@ -48,9 +48,7 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
 
     def __clean_dict(obj):
         obj_copy = copy.deepcopy(obj)
-        del obj_copy["results"]
-        del obj_copy["best_makespan"]
-        del obj_copy["best_result_index"]
+        del obj_copy["all_solutions"]
         return obj_copy
 
     def __format_dict(obj):
@@ -67,7 +65,7 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
     json_data = __format_dict(json_data)
 
     with open(__file_url(), 'w', encoding="utf-8") as file:
-        json.dump(json_data, file, indent=1)
+        json.dump(json_data, file, indent=2)
 
     return json_data
 
@@ -120,7 +118,7 @@ def main(args):
 
     #
 
-    if args.verbose == 1:
+    if args.verbose >= 1:
         print("\n", json.dumps(out_file_content, indent=2), "\n")
 
     if args.plot is True:

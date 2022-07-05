@@ -1,5 +1,6 @@
 include "alldifferent.mzn";
 include "cumulative.mzn";
+include "diffn.mzn";
 
 include "components/search.mzn";
 
@@ -33,11 +34,6 @@ array[CIRCUITS] of var Ys: y;
 
 var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
 
-% %%% TODO: ragionare se si possono assegnare gli indici solo ai bordi
-% array[int] of var int: grid = [
-%     (x[c]+w) + (y[c]+h)*width | c in CIRCUITS, w in 0..widths[c]-1, h in 0..heights[c]-1
-% ];
-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -58,10 +54,10 @@ constraint assert(
 
 
 %%%  base problem constraints (by definition)
-constraint cumulative(y, heights, widths, width);
-constraint cumulative(x, widths, heights, makespan);
+constraint diffn(x, y, widths, heights) :: domain;
+constraint cumulative(y, heights, widths, width) :: domain;
+constraint cumulative(x, widths, heights, makespan) :: domain;
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
-constraint diffn(x, y, widths, heights);
 
 %%% force the biggest block to be always to the bottom left of the second biggest
 constraint x[1] <= x[2] /\ y[1] <= y[2];

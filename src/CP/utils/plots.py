@@ -7,18 +7,17 @@ from matplotlib.patches import Rectangle
 
 
 def plot_solutions_v2(solutions_dict):
-    results = solutions_dict["results"]
-    best_result_index = solutions_dict["best_result_index"]
+    solutions = solutions_dict["all_solutions"]
 
-    if len(results) < 1:
+    if len(solutions) < 1:
         return
 
-    rows = 3  # int(len(results) / 2)
-    cols = 3  # len(results) / rows
+    rows = 3  # int(len(solutions) / 2)
+    cols = 3  # len(solutions) / rows
 
     #
 
-    if len(results) == 1:
+    if len(solutions) == 1:
         fig, axs = plt.subplots(1)
     else:
         fig, axs = plt.subplots(nrows=rows, ncols=cols)
@@ -66,16 +65,16 @@ def plot_solutions_v2(solutions_dict):
 
     result_index_to_plot = -1
 
-    if len(results) == 1:
-        __single_solution_plot(axs, results[0])
+    if len(solutions) == 1:
+        __single_solution_plot(axs, solutions[0])
     else:
         for r in range(rows):
             for c in range(cols):
                 result_index_to_plot += 1
-                if result_index_to_plot >= len(results):
+                if result_index_to_plot >= len(solutions):
                     continue
 
-                __single_solution_plot(axs[r, c], results[result_index_to_plot])
+                __single_solution_plot(axs[r, c], solutions[result_index_to_plot])
 
     #
 

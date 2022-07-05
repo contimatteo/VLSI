@@ -1,5 +1,6 @@
 include "alldifferent.mzn";
 include "cumulative.mzn";
+include "diffn.mzn";
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -40,14 +41,6 @@ array[CIRCUITS] of var Ys: y;
 
 var int: makespan = max(c in CIRCUITS)(y[c] + r_height(c));
 
-% %%% TODO: ragionare se si possono assegnare gli indici solo ai bordi
-% array[int] of var int: grid = [
-%     % (x[c]+k) + (y[c]+h)*width | c in CIRCUITS, k in 0..widths[c]-1, h in 0..heights[c]-1
-%     ( x[c] + (w * (not is_rotated[c]) + h * is_rotated[c]) ) + 
-%     ( y[c] + (w * is_rotated[c] + h * (not is_rotated[c])) ) * width
-%     | c in CIRCUITS, w in 0..widths[c]-1, h in 0..heights[c]-1
-% ];
-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -72,8 +65,8 @@ constraint cumulative(x, [r_width(c) | c in CIRCUITS], [r_height(c) | c in CIRCU
 constraint forall(c in CIRCUITS)(x[c] + r_width(c) <= width);
 constraint diffn(x, y, [r_width(c) | c in CIRCUITS], [r_height(c) | c in CIRCUITS]);
 
-%%% place the circuit with the max height at position (0,0);
-% constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
+%%% force the biggest block to be always to the bottom left of the second biggest
+constraint x[1] <= x[2] /\ y[1] <= y[2];
 
 %%% define `makespan` boundaries.
 constraint makespan >= min_makespan /\ makespan <= max_makespan;
@@ -96,6 +89,5 @@ output [
     "is_rotated = ", show(is_rotated), "\n",
     "min_makespan = ", show(min_makespan), "\n",
     "max_makespan = ", show(max_makespan), "\n",
-    "makespan = ", show(makespan), "\n",
-    "model = rotation.chuffed"
+    "makespan = ", show(makespan), "\n"
 ];

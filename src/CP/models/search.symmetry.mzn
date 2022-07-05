@@ -55,10 +55,10 @@ constraint assert(
 
 
 %%%  base problem constraints (by definition)
+constraint diffn(x, y, widths, heights) :: domain;
 constraint cumulative(y, heights, widths, width) :: domain;
 constraint cumulative(x, widths, heights, makespan) :: domain;
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
-constraint diffn(x, y, widths, heights) :: domain;
 
 %%%  define `makespan` boundaries.
 constraint makespan >= min_makespan /\ makespan <= max_makespan;
