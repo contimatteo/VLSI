@@ -109,6 +109,9 @@ def main(args):
     ### exec minizinc model
     raw_results = __minizinc_exec_cmd(os_cmd)
 
+    if args.verbose == 2:
+        print("\n", raw_results, "\n")
+
     ### parse raw results
     solutions_dict = __convert_raw_results_to_dict(raw_results, args)
 
@@ -117,11 +120,8 @@ def main(args):
 
     #
 
-    if args.verbose > 0:
-        if args.verbose == 1:
-            print("\n", json.dumps(out_file_content, indent=2), "\n")
-        if args.verbose == 2:
-            print("\n", raw_results, "\n")
+    if args.verbose == 1:
+        print("\n", json.dumps(out_file_content, indent=2), "\n")
 
     if args.plot is True:
         __plot(solutions_dict)
