@@ -1,4 +1,3 @@
-include "alldifferent.mzn";
 include "cumulative.mzn";
 include "diffn.mzn";
 
@@ -21,6 +20,7 @@ array[CIRCUITS,1..2] of int: dims;
 
 %%%  width of the silicon plate
 int: width;
+
 %%%  array of horizontal dimension of the ciruits
 % array[CIRCUITS] of var int: widths = [ (not is_rotated[c]) * dims[c,1] + is_rotated[c] * dims[c,2] | c in CIRCUITS ];
 array[CIRCUITS] of int: widths = [dims[i,1] | i in CIRCUITS];
@@ -29,9 +29,8 @@ array[CIRCUITS] of int: widths = [dims[i,1] | i in CIRCUITS];
 array[CIRCUITS] of int: heights = [dims[i,2] | i in CIRCUITS];
 
 %%% define makespan boundaries
-int: sum_area = sum(c in CIRCUITS)(dims[c,1]*dims[c,2]);
+int: sum_area = sum(c in CIRCUITS)(heights[c]*widths[c]);
 int: min_makespan = round(sum_area / width);
-% int: max_makespan = sum(heights);
 int: max_makespan = sum(c in 1..n_circuits)(if heights[c] < width then min(heights[c], widths[c]) else heights[c] endif);
 
 set of int: Xs = 0..(width - min(dims));
@@ -60,10 +59,10 @@ constraint assert(
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 %%%  base problem constraints (by definition)
-constraint cumulative(y, [r_height(c) | c in CIRCUITS], [r_width(c) | c in CIRCUITS], width);
-constraint cumulative(x, [r_width(c) | c in CIRCUITS], [r_height(c) | c in CIRCUITS], makespan);
+constraint diffn(x, y, [r_width(c) | c in CIRCUITS], [r_height(c) | c in CIRCUITS]) :: domain;
+constraint cumulative(y, [r_height(c) | c in CIRCUITS], [r_width(c) | c in CIRCUITS], width) :: domain;
+constraint cumulative(x, [r_width(c) | c in CIRCUITS], [r_height(c) | c in CIRCUITS], makespan) :: domain;
 constraint forall(c in CIRCUITS)(x[c] + r_width(c) <= width);
-constraint diffn(x, y, [r_width(c) | c in CIRCUITS], [r_height(c) | c in CIRCUITS]);
 
 %%% force the biggest block to be always to the bottom left of the second biggest
 constraint x[1] <= x[2] /\ y[1] <= y[2];

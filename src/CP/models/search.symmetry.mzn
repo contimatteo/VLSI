@@ -1,4 +1,3 @@
-include "alldifferent.mzn";
 include "cumulative.mzn";
 include "diffn.mzn";
 
@@ -11,13 +10,16 @@ include "utils/global.mzn";
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-
-int: width; %%%  width of the silicon plate
-int: n_circuits; %%%  number of circuits
-
-%%%  array of xi and yi: the horizontal and the vertical dimension of the circuit i
+%%%  number of circuits
+int: n_circuits; 
+%%%  set of circuit indexes (used for following arrays)
 set of int: CIRCUITS = 1..n_circuits;
+%%%  array of xi and yi: the horizontal and the vertical dimension of the circuit i
 array[CIRCUITS,1..2] of int: dims;
+
+%%%  width of the silicon plate
+int: width; 
+
 
 %%%  array of horizontal dimension of the ciruits
 array[CIRCUITS] of int: widths = [dims[c,1] | c in CIRCUITS];
@@ -28,13 +30,13 @@ array[CIRCUITS] of int: heights = [dims[c,2] | c in CIRCUITS];
 int: sum_area = sum(c in CIRCUITS)(heights[c]*widths[c]);
 int: min_makespan = round(sum_area / width);
 int: max_makespan = sum(heights);
-var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
 
 set of int: Xs = 0..(width - min(widths));
 set of int: Ys = 0..(max_makespan - min(heights));
 array[CIRCUITS] of var Xs: x;
 array[CIRCUITS] of var Ys: y;
 
+var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
