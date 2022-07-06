@@ -4,7 +4,7 @@ from .storage import CP_data_file_url
 
 ###
 
-MODELS_CHOICES = ["base", "rotation", "rotation.search", "rotation.search.symmetry", "search",  "search.symmetry"]
+MODELS_CHOICES = ["base", "rotation", "rotation.search", "rotation.search.symmetry", "search",  "search.symmetry", "symmetry"]
 SOLVERS_CHOICES = [
     "Chuffed",
     # "COIN-BC",
