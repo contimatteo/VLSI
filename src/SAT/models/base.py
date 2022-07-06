@@ -63,3 +63,5 @@ def baseSAT(data_dict: dict) -> dict:
 
     solutions_dict["solution"] = solutions_dict["all_solutions"][0]
     return solutions_dict
+
+
