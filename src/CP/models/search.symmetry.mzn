@@ -29,7 +29,11 @@ array[CIRCUITS] of int: heights = [dims[c,2] | c in CIRCUITS];
 %%% define makespan boundaries
 int: sum_area = sum(c in CIRCUITS)(heights[c]*widths[c]);
 int: min_makespan = round(sum_area / width);
-int: max_makespan = sum(heights);
+% int: max_makespan = sum(heights);
+int: max_makespan = max(
+    min_makespan, % max(heights), 
+    sum(heights) div (width div max(widths))
+);
 
 set of int: Xs = 0..(width - min(widths));
 set of int: Ys = 0..(max_makespan - min(heights));
@@ -51,7 +55,6 @@ constraint assert(
     CIRCUITS == index_set(x) /\ CIRCUITS == index_set(y) /\ CIRCUITS == index_set(heights) /\ CIRCUITS == index_set(widths),
     "[ERROR] `x`, `y`, `heights` and `widths` arrays must have identical indexes."
 );
-
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
