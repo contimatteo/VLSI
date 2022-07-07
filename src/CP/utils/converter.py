@@ -12,6 +12,11 @@ SPECIAL_VARIABLE_NAMES = ["dims", "pos", "is_rotated"]
 
 ###
 
+def max_makespan(heights, n_cols):
+    col_h = [0 for _ in range(n_cols)]
+    for h in heights:
+        col_h[np.argmin(col_h)] += h
+    return max(col_h)
 
 def convert_txt_file_to_dzn(txt_file_name: str):
     assert isinstance(txt_file_name, str)
@@ -40,6 +45,14 @@ def convert_txt_file_to_dzn(txt_file_name: str):
     for line_idx in range(2, len(txt_lines)):
         x, y = txt_lines[line_idx][:-1].split(sep=' ')
         data_dict['dims'].append((int(x), int(y)))
+    
+    # compute max_makespan
+    widths = [data_dict['dims'][i][0] for i in range(data_dict['n_circuits'])]
+    heights = [data_dict['dims'][i][1] for i in range(data_dict['n_circuits'])]
+    data_dict['max_makespan'] = max_makespan(
+        sorted(heights, reverse=True), 
+        data_dict['width'] // max(widths)
+    )
 
     #
 
@@ -52,7 +65,10 @@ def convert_txt_file_to_dzn(txt_file_name: str):
         # for dim in data_dict['dims']:
         dzn_lines[line_idx] += f"|{dim[0]},{dim[1]},\n"
     dzn_lines[-1] = dzn_lines[-1][:-1]  ### remove last comma
-    dzn_lines[-1] += '|]'  ### close the array
+    dzn_lines[-1] += '|];\n'  ### close the array
+
+    
+    dzn_lines.append('max_makespan = ' + str(data_dict['max_makespan']))
 
     #
 
