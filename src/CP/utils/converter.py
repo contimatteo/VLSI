@@ -1,5 +1,4 @@
 import numpy as np
-import json
 import copy
 import itertools
 
@@ -55,8 +54,11 @@ def __dzn_compute_X_var_domain(max_width: int, original_circuits_widths: list):
     return x_domain_final
 
 
-def convert_txt_file_to_dzn(txt_file_name: str):
+def convert_txt_file_to_dzn(txt_file_name: str, model_name):
     assert isinstance(txt_file_name, str)
+    assert isinstance(model_name, str)
+
+    with_rotation = 'rotation' in model_name
 
     txt_file_url = CP_data_file_url(txt_file_name, "txt")
     dzn_file_url = CP_data_file_url(txt_file_name, "dzn")
