@@ -1,6 +1,7 @@
 import numpy as np
 import json
 import copy
+import itertools
 
 from .storage import CP_data_file_url
 
@@ -12,11 +13,47 @@ SPECIAL_VARIABLE_NAMES = ["dims", "pos", "is_rotated"]
 
 ###
 
-def max_makespan(heights, n_cols):
+
+def __dzn_compute_max_makespan(heights, n_cols):
     col_h = [0 for _ in range(n_cols)]
     for h in heights:
         col_h[np.argmin(col_h)] += h
     return max(col_h)
+
+
+def __dzn_compute_X_var_domain(max_width: int, original_circuits_widths: list):
+    x_domain = np.array([], dtype=int)
+    x_domain = np.concatenate((x_domain, original_circuits_widths), axis=0)
+
+    #
+
+    domain_has_at_least_one_new_value = True
+
+    while domain_has_at_least_one_new_value:
+        domain_has_at_least_one_new_value = False
+
+        combinations = list(itertools.combinations(np.unique(x_domain), 2))
+
+        print("")
+        print(combinations)
+        print("")
+
+    #
+
+    x_domain_final = np.unique(x_domain)
+    x_domain_final = np.sort(x_domain_final)
+    x_domain_final = [0] + x_domain_final.tolist()
+
+    print("")
+    print("")
+    print("max_width = ", max_width)
+    print("original_circuits_widths = ", original_circuits_widths)
+    print("Xs = ", x_domain_final)
+    print("")
+    print("")
+
+    return x_domain_final
+
 
 def convert_txt_file_to_dzn(txt_file_name: str):
     assert isinstance(txt_file_name, str)
@@ -45,14 +82,16 @@ def convert_txt_file_to_dzn(txt_file_name: str):
     for line_idx in range(2, len(txt_lines)):
         x, y = txt_lines[line_idx][:-1].split(sep=' ')
         data_dict['dims'].append((int(x), int(y)))
-    
-    # compute max_makespan
+
     widths = [data_dict['dims'][i][0] for i in range(data_dict['n_circuits'])]
     heights = [data_dict['dims'][i][1] for i in range(data_dict['n_circuits'])]
-    data_dict['max_makespan'] = max_makespan(
-        sorted(heights, reverse=True), 
-        data_dict['width'] // max(widths)
+
+    # compute max_makespan
+    data_dict['max_makespan'] = __dzn_compute_max_makespan(
+        sorted(heights, reverse=True), data_dict['width'] // max(widths)
     )
+
+    # data_dict['Xs'] = __dzn_compute_X_var_domain(data_dict['width'], widths)
 
     #
 
@@ -67,7 +106,6 @@ def convert_txt_file_to_dzn(txt_file_name: str):
     dzn_lines[-1] = dzn_lines[-1][:-1]  ### remove last comma
     dzn_lines[-1] += '|];\n'  ### close the array
 
-    
     dzn_lines.append('max_makespan = ' + str(data_dict['max_makespan']))
 
     #
