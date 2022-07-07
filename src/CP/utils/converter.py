@@ -13,11 +13,18 @@ SPECIAL_VARIABLE_NAMES = ["dims", "pos", "is_rotated"]
 ###
 
 
-def __dzn_compute_max_makespan(heights, n_cols):
+def __dzn_compute_max_makespan(heights, widths, width, with_rotation):
+    n_cols = width // max(widths)
     col_h = [0 for _ in range(n_cols)]
     for h in heights:
         col_h[np.argmin(col_h)] += h
-    return max(col_h)
+    if with_rotation:
+        max_makespan = min(
+            sum([min(widths[c],heights[c]) if heights[c]<width else heights[c] for c in range(len(heights))]),
+            max(col_h)
+        )
+    else: max_makespan = max(col_h)
+    return max_makespan
 
 
 def __dzn_compute_X_var_domain(dims: list, dim_max_value: int):
@@ -91,9 +98,15 @@ def convert_txt_file_to_dzn(txt_file_name: str, model_name):
 
     widths = [data_dict['dims'][i][0] for i in range(data_dict['n_circuits'])]
     heights = [data_dict['dims'][i][1] for i in range(data_dict['n_circuits'])]
+    _dims = np.array(data_dict['dims'])
+    # sort dims wrt heights
+    _dims = _dims[_dims[:, 1].argsort()[::-1]]
 
     data_dict['max_makespan'] = __dzn_compute_max_makespan(
-        sorted(heights, reverse=True), data_dict['width'] // max(widths)
+        _dims[:,1],
+        _dims[:,0],
+        data_dict['width'],
+        with_rotation
     )
 
     data_dict['Xs'] = __dzn_compute_X_var_domain(widths, data_dict['width'])
