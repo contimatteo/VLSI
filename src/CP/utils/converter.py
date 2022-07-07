@@ -20,10 +20,15 @@ def __dzn_compute_max_makespan(heights, widths, width, with_rotation):
         col_h[np.argmin(col_h)] += h
     if with_rotation:
         max_makespan = min(
-            sum([min(widths[c],heights[c]) if heights[c]<width else heights[c] for c in range(len(heights))]),
-            max(col_h)
+            sum(
+                [
+                    min(widths[c], heights[c]) if heights[c] < width else heights[c]
+                    for c in range(len(heights))
+                ]
+            ), max(col_h)
         )
-    else: max_makespan = max(col_h)
+    else:
+        max_makespan = max(col_h)
     return max_makespan
 
 
@@ -65,6 +70,15 @@ def __dzn_compute_X_var_domain(dims: list, dim_max_value: int):
     return domain_final
 
 
+def __dzn_compute_X_var_domain_rotated(dims: list, dim_max_value: int):
+    min_dim_value = np.array(dims).flatten().min(axis=-1)
+
+    domain_min_value = 0
+    domain_max_value = dim_max_value - min_dim_value
+
+    return [0] + list(range(min_dim_value, domain_max_value + 1, 1))
+
+
 def convert_txt_file_to_dzn(txt_file_name: str, model_name):
     assert isinstance(txt_file_name, str)
     assert isinstance(model_name, str)
@@ -99,30 +113,21 @@ def convert_txt_file_to_dzn(txt_file_name: str, model_name):
     widths = [data_dict['dims'][i][0] for i in range(data_dict['n_circuits'])]
     heights = [data_dict['dims'][i][1] for i in range(data_dict['n_circuits'])]
     _dims = np.array(data_dict['dims'])
-    # sort dims wrt heights
+    ### sort dims wrt heights
     _dims = _dims[_dims[:, 1].argsort()[::-1]]
 
     data_dict['max_makespan'] = __dzn_compute_max_makespan(
-        _dims[:,1],
-        _dims[:,0],
-        data_dict['width'],
-        with_rotation
+        _dims[:, 1], _dims[:, 0], data_dict['width'], with_rotation
     )
 
-    data_dict['Xs'] = __dzn_compute_X_var_domain(widths, data_dict['width'])
-    data_dict['Ys'] = __dzn_compute_X_var_domain(heights, data_dict['max_makespan'])
-
-    # print("")
-    # print("")
-    # print("max_width = ", data_dict['width'])
-    # print("widths = ", widths)
-    # print("Xs = ", data_dict['Xs'])
-    # print("")
-    # print("max_makespan = ", data_dict['max_makespan'])
-    # print("heights = ", heights)
-    # print("Ys = ", data_dict['Ys'])
-    # print("")
-    # print("")
+    if not with_rotation:
+        data_dict['Xs'] = __dzn_compute_X_var_domain(widths, data_dict['width'])
+        data_dict['Ys'] = __dzn_compute_X_var_domain(heights, data_dict['max_makespan'])
+    else:
+        data_dict['Xs'] = __dzn_compute_X_var_domain_rotated(data_dict['dims'], data_dict['width'])
+        data_dict['Ys'] = __dzn_compute_X_var_domain_rotated(
+            data_dict['dims'], data_dict['max_makespan']
+        )
 
     #
 
