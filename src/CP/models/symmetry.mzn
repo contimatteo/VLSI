@@ -31,8 +31,8 @@ int: min_makespan = round(sum_area / width);
 int: max_makespan;
 var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
 
-set of int: Xs = 0..(width - min(widths));
-set of int: Ys = 0..(max_makespan - min(heights));
+set of int: Xs;
+set of int: Ys;
 array[CIRCUITS] of var Xs: x;
 array[CIRCUITS] of var Ys: y;
 

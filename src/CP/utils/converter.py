@@ -20,38 +20,42 @@ def __dzn_compute_max_makespan(heights, n_cols):
     return max(col_h)
 
 
-def __dzn_compute_X_var_domain(max_width: int, original_circuits_widths: list):
-    x_domain = np.array([], dtype=int)
-    x_domain = np.concatenate((x_domain, original_circuits_widths), axis=0)
+def __dzn_compute_X_var_domain(dims: list, dim_max_value: int):
+    domain = np.array([], dtype=int)
+    domain = np.concatenate((domain, dims), axis=0)
+
+    domain_min_value = 0
+    domain_max_value = dim_max_value - min(dims)
 
     #
 
-    domain_has_at_least_one_new_value = True
+    while True:
+        ### INFO: in order to create a correct set of pairs we cannot
+        ### use the `unique()` method on the `domain` variable.
+        pairs = np.array(list(itertools.combinations(domain, 2)))
+        pairs_sum = np.sum(pairs, axis=1)
+        pairs_sum_unique = np.unique(pairs_sum)
 
-    while domain_has_at_least_one_new_value:
-        domain_has_at_least_one_new_value = False
+        ### remove out range values
+        candidate_values = pairs_sum_unique[pairs_sum_unique <= domain_max_value]
+        ### compute the new values to add
+        new_values = np.setdiff1d(candidate_values, np.intersect1d(domain, candidate_values))
 
-        combinations = list(itertools.combinations(np.unique(x_domain), 2))
+        ### check if we have to add new values to `domain` list
+        we_have_to_add_at_least_one_new_value = new_values.shape[0] > 0
 
-        print("")
-        print(combinations)
-        print("")
+        if not we_have_to_add_at_least_one_new_value:
+            break
+
+        domain = np.concatenate((domain, new_values), axis=0)
 
     #
 
-    x_domain_final = np.unique(x_domain)
-    x_domain_final = np.sort(x_domain_final)
-    x_domain_final = [0] + x_domain_final.tolist()
+    domain_final = np.unique(domain)
+    domain_final = np.sort(domain_final)
+    domain_final = [domain_min_value] + domain_final.tolist()
 
-    print("")
-    print("")
-    print("max_width = ", max_width)
-    print("original_circuits_widths = ", original_circuits_widths)
-    print("Xs = ", x_domain_final)
-    print("")
-    print("")
-
-    return x_domain_final
+    return domain_final
 
 
 def convert_txt_file_to_dzn(txt_file_name: str, model_name):
@@ -88,12 +92,24 @@ def convert_txt_file_to_dzn(txt_file_name: str, model_name):
     widths = [data_dict['dims'][i][0] for i in range(data_dict['n_circuits'])]
     heights = [data_dict['dims'][i][1] for i in range(data_dict['n_circuits'])]
 
-    # compute max_makespan
     data_dict['max_makespan'] = __dzn_compute_max_makespan(
         sorted(heights, reverse=True), data_dict['width'] // max(widths)
     )
 
-    # data_dict['Xs'] = __dzn_compute_X_var_domain(data_dict['width'], widths)
+    data_dict['Xs'] = __dzn_compute_X_var_domain(widths, data_dict['width'])
+    data_dict['Ys'] = __dzn_compute_X_var_domain(heights, data_dict['max_makespan'])
+
+    # print("")
+    # print("")
+    # print("max_width = ", data_dict['width'])
+    # print("widths = ", widths)
+    # print("Xs = ", data_dict['Xs'])
+    # print("")
+    # print("max_makespan = ", data_dict['max_makespan'])
+    # print("heights = ", heights)
+    # print("Ys = ", data_dict['Ys'])
+    # print("")
+    # print("")
 
     #
 
@@ -108,7 +124,11 @@ def convert_txt_file_to_dzn(txt_file_name: str, model_name):
     dzn_lines[-1] = dzn_lines[-1][:-1]  ### remove last comma
     dzn_lines[-1] += '|];\n'  ### close the array
 
-    dzn_lines.append('max_makespan = ' + str(data_dict['max_makespan']))
+    # dzn_lines.append('max_makespan = ' + str(data_dict['max_makespan']))
+    dzn_lines[-1] += f"max_makespan = {str(data_dict['max_makespan'])};\n"
+
+    dzn_lines[-1] += "Xs = {" + ','.join([str(x) for x in data_dict['Xs']]) + "};\n"
+    dzn_lines[-1] += "Ys = {" + ','.join([str(x) for x in data_dict['Ys']]) + "};\n"
 
     #
 

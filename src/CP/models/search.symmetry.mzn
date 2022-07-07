@@ -30,14 +30,13 @@ array[CIRCUITS] of int: heights = [dims[c,2] | c in CIRCUITS];
 int: sum_area = sum(c in CIRCUITS)(heights[c]*widths[c]);
 int: min_makespan = max(ceil(sum_area / width), max(heights));
 int: max_makespan;
-% int: max_makespan = sum(heights);
 % int: max_makespan = max(
 %     min_makespan, % max(heights), 
 %     sum(heights) div (width div max(widths))
 % );
 
-set of int: Xs = 0..(width - min(widths));
-set of int: Ys = 0..(max_makespan - min(heights));
+set of int: Xs;
+set of int: Ys;
 array[CIRCUITS] of var Xs: x;
 array[CIRCUITS] of var Ys: y;
 
