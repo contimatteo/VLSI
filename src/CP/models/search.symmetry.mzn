@@ -10,16 +10,13 @@ include "utils/global.mzn";
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-%%%  number of circuits
-int: n_circuits; 
-%%%  set of circuit indexes (used for following arrays)
-set of int: CIRCUITS = 1..n_circuits;
+
+int: width; %%%  width of the silicon plate
+int: n_circuits; %%%  number of circuits
+
 %%%  array of xi and yi: the horizontal and the vertical dimension of the circuit i
+set of int: CIRCUITS = 1..n_circuits;
 array[CIRCUITS,1..2] of int: dims;
-
-%%%  width of the silicon plate
-int: width; 
-
 
 %%%  array of horizontal dimension of the ciruits
 array[CIRCUITS] of int: widths = [dims[c,1] | c in CIRCUITS];
@@ -29,18 +26,15 @@ array[CIRCUITS] of int: heights = [dims[c,2] | c in CIRCUITS];
 %%% define makespan boundaries
 int: sum_area = sum(c in CIRCUITS)(heights[c]*widths[c]);
 int: min_makespan = max(ceil(sum_area / width), max(heights));
-int: max_makespan;
-% int: max_makespan = max(
-%     min_makespan, % max(heights), 
-%     sum(heights) div (width div max(widths))
-% );
+int: max_makespan = sum(heights); % max(min_makespan, sum(heights) div (width div max(widths)));
+set of int: MAKESPAN = min_makespan..max_makespan;
+var MAKESPAN: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
 
-set of int: Xs;
-set of int: Ys;
+set of int: Xs = 0..(width - min(widths));
+set of int: Ys = 0..(max_makespan - min(heights));
 array[CIRCUITS] of var Xs: x;
 array[CIRCUITS] of var Ys: y;
 
-var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -66,7 +60,7 @@ constraint cumulative(x, widths, heights, makespan) :: domain;
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
 
 %%%  define `makespan` boundaries.
-constraint makespan >= min_makespan /\ makespan <= max_makespan;
+constraint redundant_constraint(makespan >= min_makespan /\ makespan <= max_makespan);
 
 %%% force the biggest block to be always to the bottom left of the second biggest
 constraint x[1] <= x[2] /\ y[1] <= y[2];
@@ -98,14 +92,4 @@ output [
     "min_makespan = ", show(min_makespan), "\n",
     "max_makespan = ", show(max_makespan), "\n",
     "makespan = ", show(makespan), "\n",
-    % "v_n_circuits = ", show(v_n_circuits), "\n",
-    % "c_pairs = ", show(c_pairs), "\n",
-    % "c_pairs c1 = ", show([c_pairs[1,i] | i in V_CIRCUITS]), "\n",
-    % "c_pairs c2 = ", show([c_pairs[2,i] | i in V_CIRCUITS]), "\n",
-    % "rv_width = ", show(rv_width), "\n",
-    % "vc_height = ", show([ vc_height(c) | c in V_CIRCUITS ]), "\n",
-    % "tot_heights = ", show(tot_heights), "\n",
-    % "tot_x = ", show(tot_x), "\n",
-    % "tot_y = ", show(tot_y), "\n",
-    % "tot_is_valid = ", show(tot_is_valid), "\n"
 ];

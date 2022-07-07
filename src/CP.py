@@ -89,13 +89,15 @@ def main(args):
 
     #
 
-    opts = f"--time-limit {args.time * 1000}"  # --solver-time-limit
-    # opts += " --output-detailed-timing"
+    # opts = f"--time-limit {args.time * 1000}"  # --solver-time-limit
+    opts = f"--time-limit {args.time * 1000} --random-seed 666"
 
     if args.sol > 1:
         opts += " --all-solutions"
     if args.stats is True:
         opts += " --statistics --output-time"
+
+    # opts += " --output-detailed-timing"
 
     #
 

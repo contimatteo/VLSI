@@ -1,4 +1,3 @@
-include "alldifferent.mzn";
 include "cumulative.mzn";
 include "diffn.mzn";
 
@@ -26,13 +25,13 @@ array[CIRCUITS] of int: heights = [dims[c,2] | c in CIRCUITS];
 
 %%% define makespan boundaries
 int: sum_area = sum(c in CIRCUITS)(heights[c]*widths[c]);
-int: min_makespan = round(sum_area / width);
-%int: max_makespan = sum(heights);
-int: max_makespan;
-var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
+int: min_makespan = max(ceil(sum_area / width), max(heights));
+int: max_makespan = sum(heights); % max(min_makespan, sum(heights) div (width div max(widths)));
+set of int: MAKESPAN = min_makespan..max_makespan;
+var MAKESPAN: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
 
-set of int: Xs;
-set of int: Ys;
+set of int: Xs = 0..(width - min(widths));
+set of int: Ys = 0..(max_makespan - min(heights));
 array[CIRCUITS] of var Xs: x;
 array[CIRCUITS] of var Ys: y;
 
@@ -62,7 +61,7 @@ constraint cumulative(x, widths, heights, makespan) :: domain;
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
 
 %%%  define `makespan` boundaries.
-constraint makespan >= min_makespan /\ makespan <= max_makespan;
+constraint redundant_constraint(makespan >= min_makespan /\ makespan <= max_makespan);
 
 %%% force the biggest block to be always to the bottom left of the second biggest
 constraint x[1] <= x[2] /\ y[1] <= y[2];

@@ -142,11 +142,10 @@ def convert_txt_file_to_dzn(txt_file_name: str, model_name):
     dzn_lines[-1] = dzn_lines[-1][:-1]  ### remove last comma
     dzn_lines[-1] += '|];\n'  ### close the array
 
-    # dzn_lines.append('max_makespan = ' + str(data_dict['max_makespan']))
-    dzn_lines[-1] += f"max_makespan = {str(data_dict['max_makespan'])};\n"
+    # dzn_lines[-1] += f"max_makespan = {str(data_dict['max_makespan'])};\n"
 
-    dzn_lines[-1] += "Xs = {" + ','.join([str(x) for x in data_dict['Xs']]) + "};\n"
-    dzn_lines[-1] += "Ys = {" + ','.join([str(x) for x in data_dict['Ys']]) + "};\n"
+    # dzn_lines[-1] += "Xs = {" + ','.join([str(x) for x in data_dict['Xs']]) + "};\n"
+    # dzn_lines[-1] += "Ys = {" + ','.join([str(x) for x in data_dict['Ys']]) + "};\n"
 
     #
 
