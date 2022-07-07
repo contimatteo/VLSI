@@ -35,7 +35,10 @@ def baseSAT(data_dict: dict) -> dict:
     ### define makespan boundaries
     sum_area = sum([heigths[c]*widths[c] for c in CIRCUITS])
     min_makespan = round(sum_area / width)
-    max_makespan = sum(heigths)
+    #max_makespan = sum(heights)
+    max_makespan = max(
+        min_makespan,  # max(heights),
+        sum(heigths) // (width // max(widths)))
 
     solver = Solver()
 
