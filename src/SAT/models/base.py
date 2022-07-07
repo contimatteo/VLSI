@@ -38,9 +38,9 @@ def baseSAT(data_dict: dict) -> dict:
     min_makespan = max(math.ceil(sum_area / width), max(heigths))
     #max_makespan = sum(heights)
     max_makespan = max(
-        min_makespan,  # max(heights),
+        min_makespan,  # max(heights), 
         sum(heigths) // (width // max(widths)))
-
+            
     solver = Solver()
 
     ### list of list of bools for x coordinates
