@@ -18,8 +18,11 @@ def max_makespan(heights, n_cols):
         col_h[np.argmin(col_h)] += h
     return max(col_h)
 
-def convert_txt_file_to_dzn(txt_file_name: str):
+def convert_txt_file_to_dzn(txt_file_name: str, model_name):
     assert isinstance(txt_file_name, str)
+    assert isinstance(model_name, str)
+
+    with_rotation = 'rotation' in model_name
 
     txt_file_url = CP_data_file_url(txt_file_name, "txt")
     dzn_file_url = CP_data_file_url(txt_file_name, "dzn")

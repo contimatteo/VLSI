@@ -84,7 +84,7 @@ def main(args):
     _model_name = f"{args.model}"
     model = CP_model_file_url(_model_name).resolve()
 
-    convert_txt_file_to_dzn(args.data)
+    convert_txt_file_to_dzn(args.data, args.model)
     data = CP_data_file_url(args.data, 'dzn').resolve()
 
     #
