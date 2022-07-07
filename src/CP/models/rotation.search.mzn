@@ -2,6 +2,7 @@ include "cumulative.mzn";
 include "diffn.mzn";
 
 include "components/search.mzn";
+include "components/rotation.mzn";
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %

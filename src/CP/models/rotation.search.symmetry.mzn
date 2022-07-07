@@ -3,6 +3,7 @@ include "diffn.mzn";
 
 include "components/symmetry.mzn";
 include "components/search.mzn";
+include "components/rotation.mzn";
 include "utils/symmetry.mzn";
 include "utils/global.mzn";
 
