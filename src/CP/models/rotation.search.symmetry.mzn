@@ -37,10 +37,11 @@ array[CIRCUITS] of int: heights = [dims[i,2] | i in CIRCUITS];
 %%% define makespan boundaries
 int: sum_area = sum(c in CIRCUITS)(heights[c]*widths[c]);
 int: min_makespan = round(sum_area / width);
-int: max_makespan = sum(c in 1..n_circuits)(if heights[c] < width then min(heights[c], widths[c]) else heights[c] endif);
+%int: max_makespan = sum(c in 1..n_circuits)(if heights[c] < width then min(heights[c], widths[c]) else heights[c] endif);
+int: max_makespan;
 
-set of int: Xs = 0..(width - min(dims));
-set of int: Ys = 0..(max_makespan - min(dims));
+set of int: Xs;  % = 0..(width - min(dims));
+set of int: Ys;  % = 0..(max_makespan - min(dims));
 array[CIRCUITS] of var Xs: x;
 array[CIRCUITS] of var Ys: y;
 

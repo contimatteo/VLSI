@@ -1,6 +1,6 @@
 import numpy as np
-import json
 import copy
+import itertools
 
 from .storage import CP_data_file_url
 
@@ -13,8 +13,77 @@ SPECIAL_VARIABLE_NAMES = ["dims", "pos", "is_rotated"]
 ###
 
 
-def convert_txt_file_to_dzn(txt_file_name: str):
+def __dzn_compute_max_makespan(heights, widths, width, with_rotation):
+    n_cols = width // max(widths)
+    col_h = [0 for _ in range(n_cols)]
+    for h in heights:
+        col_h[np.argmin(col_h)] += h
+    if with_rotation:
+        max_makespan = min(
+            sum(
+                [
+                    min(widths[c], heights[c]) if heights[c] < width else heights[c]
+                    for c in range(len(heights))
+                ]
+            ), max(col_h)
+        )
+    else:
+        max_makespan = max(col_h)
+    return max_makespan
+
+
+def __dzn_compute_X_var_domain(dims: list, dim_max_value: int):
+    domain = np.array([], dtype=int)
+    domain = np.concatenate((domain, dims), axis=0)
+
+    domain_min_value = 0
+    domain_max_value = dim_max_value - min(dims)
+
+    #
+
+    while True:
+        ### INFO: in order to create a correct set of pairs we cannot
+        ### use the `unique()` method on the `domain` variable.
+        pairs = np.array(list(itertools.combinations(domain, 2)))
+        pairs_sum = np.sum(pairs, axis=1)
+        pairs_sum_unique = np.unique(pairs_sum)
+
+        ### remove out range values
+        candidate_values = pairs_sum_unique[pairs_sum_unique <= domain_max_value]
+        ### compute the new values to add
+        new_values = np.setdiff1d(candidate_values, np.intersect1d(domain, candidate_values))
+
+        ### check if we have to add new values to `domain` list
+        we_have_to_add_at_least_one_new_value = new_values.shape[0] > 0
+
+        if not we_have_to_add_at_least_one_new_value:
+            break
+
+        domain = np.concatenate((domain, new_values), axis=0)
+
+    #
+
+    domain_final = np.unique(domain)
+    domain_final = np.sort(domain_final)
+    domain_final = [domain_min_value] + domain_final.tolist()
+
+    return domain_final
+
+
+def __dzn_compute_X_var_domain_rotated(dims: list, dim_max_value: int):
+    min_dim_value = np.array(dims).flatten().min(axis=-1)
+
+    domain_min_value = 0
+    domain_max_value = dim_max_value - min_dim_value
+
+    return [0] + list(range(min_dim_value, domain_max_value + 1, 1))
+
+
+def convert_txt_file_to_dzn(txt_file_name: str, model_name):
     assert isinstance(txt_file_name, str)
+    assert isinstance(model_name, str)
+
+    with_rotation = 'rotation' in model_name
 
     txt_file_url = CP_data_file_url(txt_file_name, "txt")
     dzn_file_url = CP_data_file_url(txt_file_name, "dzn")
@@ -41,6 +110,25 @@ def convert_txt_file_to_dzn(txt_file_name: str):
         x, y = txt_lines[line_idx][:-1].split(sep=' ')
         data_dict['dims'].append((int(x), int(y)))
 
+    widths = [data_dict['dims'][i][0] for i in range(data_dict['n_circuits'])]
+    heights = [data_dict['dims'][i][1] for i in range(data_dict['n_circuits'])]
+    _dims = np.array(data_dict['dims'])
+    ### sort dims wrt heights
+    _dims = _dims[_dims[:, 1].argsort()[::-1]]
+
+    data_dict['max_makespan'] = __dzn_compute_max_makespan(
+        _dims[:, 1], _dims[:, 0], data_dict['width'], with_rotation
+    )
+
+    if not with_rotation:
+        data_dict['Xs'] = __dzn_compute_X_var_domain(widths, data_dict['width'])
+        data_dict['Ys'] = __dzn_compute_X_var_domain(heights, data_dict['max_makespan'])
+    else:
+        data_dict['Xs'] = __dzn_compute_X_var_domain_rotated(data_dict['dims'], data_dict['width'])
+        data_dict['Ys'] = __dzn_compute_X_var_domain_rotated(
+            data_dict['dims'], data_dict['max_makespan']
+        )
+
     #
 
     dzn_lines[0] = f"width = {str(data_dict['width'])};\n"
@@ -52,7 +140,12 @@ def convert_txt_file_to_dzn(txt_file_name: str):
         # for dim in data_dict['dims']:
         dzn_lines[line_idx] += f"|{dim[0]},{dim[1]},\n"
     dzn_lines[-1] = dzn_lines[-1][:-1]  ### remove last comma
-    dzn_lines[-1] += '|]'  ### close the array
+    dzn_lines[-1] += '|];\n'  ### close the array
+
+    # dzn_lines[-1] += f"max_makespan = {str(data_dict['max_makespan'])};\n"
+
+    # dzn_lines[-1] += "Xs = {" + ','.join([str(x) for x in data_dict['Xs']]) + "};\n"
+    # dzn_lines[-1] += "Ys = {" + ','.join([str(x) for x in data_dict['Ys']]) + "};\n"
 
     #
 

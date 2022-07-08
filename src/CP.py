@@ -84,18 +84,20 @@ def main(args):
     _model_name = f"{args.model}"
     model = CP_model_file_url(_model_name).resolve()
 
-    convert_txt_file_to_dzn(args.data)
+    convert_txt_file_to_dzn(args.data, args.model)
     data = CP_data_file_url(args.data, 'dzn').resolve()
 
     #
 
-    opts = f"--time-limit {args.time * 1000}"  # --solver-time-limit
-    # opts += " --output-detailed-timing"
+    # opts = f"--time-limit {args.time * 1000}"  # --solver-time-limit
+    opts = f"--time-limit {args.time * 1000} --random-seed 666"
 
     if args.sol > 1:
         opts += " --all-solutions"
     if args.stats is True:
         opts += " --statistics --output-time"
+
+    # opts += " --output-detailed-timing"
 
     #
 
