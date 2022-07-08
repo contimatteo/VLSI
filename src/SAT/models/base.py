@@ -27,9 +27,9 @@ def baseSAT(data_dict: dict) -> dict:
     width = data_dict["width"]
     CIRCUITS = range(n_circuits)
 
-    ###  array of horizontal dimension of the circuits
+    ###  array of horizontal dimensions of the circuits
     widths = [ data_dict["dims"][c][0] for c in CIRCUITS]
-    ###  array of vertical dimension of the circuits
+    ###  array of vertical dimensions of the circuits
     heigths = [ data_dict["dims"][c][1] for c in CIRCUITS]
 
     ### define makespan boundaries
@@ -43,26 +43,61 @@ def baseSAT(data_dict: dict) -> dict:
             
     solver = Solver()
 
-    ### list of list of bools for x coordinates
-    x = [[Bool(f"c'{i}") for i in range(width)] for c in CIRCUITS]
-    ### list of list of bools for x coordinates
-    y = [[Bool(f"c'{i}") for i in range(max_makespan - min(heigths))] for c in range(n_circuits)]
-    
-    #int values for x and y coordinates
-    list_of_x_coord = [indexOf(x[c], True) for c in CIRCUITS]
-    list_of_y_coord = [indexOf(y[c], True) for c in CIRCUITS]
-
-    circuit_at_max_h = indexOf(list_of_y_coord, max(list_of_y_coord))
-    makespan = list_of_y_coord[circuit_at_max_h] + heigths[circuit_at_max_h]
-
     ### grid (linearized)
     domain = math.ceil(math.log2(width*max_makespan))
-    grid = [ [Bool(f"c{i}") for i in range(domain)] for c in range(sum_area)]
+    grid = [ [Bool(f"point{p}_{coord}") for coord in range(domain)] for p in range(sum_area)]
+    # i assign point p of the sum_area (point p of a circuit) to the coord on the board
 
+    #int values for x coordinate of circuit c
+    def x_int(c: int) -> int:
+        point_of_sum_area = sum([heigths(i)*widths(i) for i in range(c)]) #TODO correct?
+        bool_coord = grid(point_of_sum_area)
+        point_of_grid = 0
+        for digits in bool_coord:
+            point_of_grid = (point_of_grid << 1) | digits
+        return point_of_grid % width
 
+    #int values for y coordinates of circuit c
+    def y_int(c: int) -> int:
+        point_of_sum_area = sum([heigths(i)*widths(i) for i in range(c)])
+        bool_coord = grid(point_of_sum_area)
+        point_of_grid = 0
+        for digits in bool_coord:
+            point_of_grid = (point_of_grid << 1) | digits
+        return point_of_grid // width
+
+    makespan = max([y_int[c] + heigths[c] for c in CIRCUITS])
     
     ### all circuits must have each dimension greater than zero
     assert(min(heigths > 0 and min(widths) > 0))
+    assert(len(heigths) == len(widths) == n_circuits)
+
+    #diffn: noOverlap
+    #alldifferent(grid[]) se grid fosse di int
+    #ma grid è un piano di bit -> alldifferent(strighe di bit)
+    # per ogni coppia di stringhe almeno un bit deve essere diverso
+    # And(#per ogni coppia di stringhe
+    #     for s1 in range(grid.len):
+    #         for s2 in range(grid.len):
+    #             if s1<s2:
+    #                 Or(
+    #                 #almeno una coppia di bit è diversa
+    #                     for bit in range(grid[s1].len):
+    #                         #s1[bit] != s2[bit]
+    #                         #Or( And(s1[bit], Not(s2[bit]), And(Not(s1[bit]), s2[bit]) )
+    #                         Xor(s1[bit], s2[bit])
+    #                 )
+    # )
+    #almeno una coppia di bit è diversa
+    #Or([Xor(s1[bit], s2[bit]) for bit in range(grid[s1].len)])
+    
+    And([
+        Or([Xor(s1[bit], s2[bit]) for bit in range(grid[s1].len)])
+        for s1 in range(grid.len)
+        for s2 in range(grid.len)
+        if s1<s2
+    ])
+
     
 
     solutions_dict["solution"] = solutions_dict["all_solutions"][0]
