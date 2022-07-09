@@ -3,6 +3,7 @@ from operator import indexOf
 from z3 import *
 import numpy as np
 import math
+from components import heuristics
 
 
 def at_least_one(bool_vars):
@@ -37,9 +38,10 @@ def baseSAT(data_dict: dict) -> dict:
     #min_makespan = round(sum_area / width)
     min_makespan = max(math.ceil(sum_area / width), max(heigths))
     #max_makespan = sum(heights)
-    max_makespan = max(
-        min_makespan,  # max(heights), 
-        sum(heigths) // (width // max(widths)))
+    # max_makespan = max(
+    #     min_makespan,  # max(heights), 
+    #     sum(heigths) // (width // max(widths)))
+    max_makespan = heuristics.compute_max_makespan(heigths, widths, width)
             
     solver = Solver()
 
