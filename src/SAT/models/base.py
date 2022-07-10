@@ -108,9 +108,28 @@ def eq(l1:list(Bool), l2:list(Bool)):
 
 
 def lt_int(l:list(Bool), n: int):
-    pass #TODO provide constraint list so that bool2int(l)<n
-    #something similar to atMostK
+    #provide constraint list so that bool2int(l) < n
+    base2 = format(n, "b")
+    if len(l) < len(base2):
+        return
 
+    list_of_1 = [i for i in range(len(base2)) if base2[i] == "1"]
+
+    #all the bools of l before the first 1 in n must be 0
+    constraint_list = [Not(l[i]) for i in range(base2.find("1") + 1)]
+
+    #(each bit in l at list_of_1 and all the previous) -> all the bit after that in l are 0 before the next index of list_of_1
+
+    for i in range(len(list_of_1)-1):
+        index = list_of_1[i]
+        next_index = list_of_1[i+1]
+        constraint_list = constraint_list + \
+        [ Implies( 
+            And([l[list_of_1[k]] for k in range(i+1)]), 
+            Not(l[j])) 
+            for j in range(index+1, next_index)]
+
+    return And(constraint_list)
 
 def baseSAT(data_dict: dict) -> dict:
     #data_dict = {"data":str, "width": int, "n_circuits": int, "dims":[(w,h)]}
