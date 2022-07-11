@@ -22,7 +22,6 @@ def exactly_one(bool_vars):
 
 def bool2int(l):
     result = 0
-
     for digits in l:
         result = (result << 1) | bool(str(digits)) #TODO: wtf?
     return result
@@ -51,7 +50,7 @@ def ge(l1, l2):
             for i in range(n-1)])
 
     return And(first, rest)
-
+    
 
 #NOTE: https://digitalcommons.iwu.edu/cgi/viewcontent.cgi?article=1022&context=cs_honproj
 #contains a more efficient encoding for lex
@@ -102,11 +101,13 @@ def gt(l1, l2):
     return And(first, rest)
 
 
-def ne(l1, l2):
+def ne(l1, l2): # does not change from decimal to one hot encoding
+    assert(len(l1) == len(l2))
     return Or([Xor(l1[bit], l2[bit]) for bit in range(len(l2))])
 
 
-def eq(l1, l2):
+def eq(l1, l2): # does not change from decimal to one hot encoding
+    assert(len(l1) == len(l2))
     return And([Not(Xor(l1[i], l2[i])) for i in range(len(l1))])
 
 
@@ -135,16 +136,24 @@ def lt_int(l, n):
         [ Implies( 
             And([l[list_of_1[k]] for k in range(i+1)]), 
             Not(l[j])) 
-            for j in range(index+1, next_index)]
+            for j in range(index+1, next_index)
+        ]
 
     return And(constraint_list)
 
 
-def sub(a, b):
+def le_int(l, n):
+    pass #TODO
+
+
+def sub(l1, l2):
     #a - b
     pass #TODO
 
-def mul_int(a, b):
+def sub_int(l, n):
+    pass # TODO
+
+def mul_int(l, n):
     #a * b
     pass #TODO
 
@@ -167,12 +176,12 @@ def eq_int(l, n):
     return And(constraint_list)
 
 
-def equation(point_of_grid, x_c, w, y_c, h, width):
+def equation(point_of_grid, x_c, w, y_c, h, width): # does not change from decimal to one hot encoding
     # point_of_grid = (x_c + w) + (y_c + h) * width
     # point_of_grid - x_c - width*y_c = h*width + w
     eq_int(
         sub(
-            sub(point_of_grid, x_c),
+            sub_int(point_of_grid, x_c),
             mul_int(y_c, width)
         ),
         h*width + w

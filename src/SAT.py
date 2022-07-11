@@ -1,5 +1,5 @@
 from SAT.utils.args import parse_args, SAT_data_file_url
-from SAT.models.base import baseSAT
+from SAT.models.base_decimal_encoding import baseSAT
 from SAT.utils.plots import plot_solutions_v2
 
 
