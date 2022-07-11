@@ -5,7 +5,7 @@ import numpy as np
 import math
 from SAT.models.components import heuristics
 
-MAX_ITER = 3
+MAX_ITER =  10
 
 
 def at_least_one(bool_vars):
@@ -21,7 +21,13 @@ def exactly_one(bool_vars):
 
 
 def bool2int(l) -> int:
-    return l.find("1")
+    l_s = [str(l[i]) for i in range(len(l))]
+    result = 0
+    try:
+        result = l_s.index("True")
+    except:
+        pass
+    return result
 
 
 def int2boolList(n:int, len:int):
@@ -64,18 +70,14 @@ def eq(l1, l2): # does not change from decimal to one hot encoding
 
 def lt_int(l, n):
     constraint_list = []
-
     for i in range(n, len(l)):
         constraint_list.append(Not(l[i]))
-    
     return And(constraint_list)
 
 def le_int(l, n):
     constraint_list = []
-
     for i in range(n+1, len(l)):
         constraint_list.append(Not(l[i]))
-    
     return And(constraint_list)
 
 
@@ -112,8 +114,6 @@ def equation(point_of_grid, x_c, w, y_c, h, width): # does not change from decim
         ),
         h*width + w
     )
-    
-    #TODO
 
 
 def baseSAT(data_dict: dict) -> dict:
@@ -160,13 +160,13 @@ def baseSAT(data_dict: dict) -> dict:
     #     return point_of_grid // width
 
 
-    #constraint to bind grid values to x,y
-    for c in CIRCUITS:
-        for h in range(heigths[c]):
-            for w in range(widths[c]):
-                point_of_sum_area = sum([heigths(i)*widths(i) for i in range(c)]) + widths[c]*h + w
-                solver.add(equation(grid[point_of_sum_area], x[c], w, y[c], h, width))
-                #grid[point_of_sum_area] = (x[c]+w) + (y[c]+h)*width
+    # #constraint to bind grid values to x,y
+    # for c in CIRCUITS:
+    #     for h in range(heigths[c]):
+    #         for w in range(widths[c]):
+    #             point_of_sum_area = sum([heigths(i)*widths(i) for i in range(c)]) + widths[c]*h + w
+    #             solver.add(equation(grid[point_of_sum_area], x[c], w, y[c], h, width))
+    #             #grid[point_of_sum_area] = (x[c]+w) + (y[c]+h)*width
 
 
 
@@ -193,7 +193,7 @@ def baseSAT(data_dict: dict) -> dict:
 
     check = sat
     count = 0
-    while check == sat and count < MAX_ITER:
+    while check == sat and max_makespan >= min_makespan and count < MAX_ITER:
 
         solver.push()
         #forall(c in CIRCUITS)(y[c] + heights[c] <= max_makespan)
@@ -208,7 +208,7 @@ def baseSAT(data_dict: dict) -> dict:
             model = solver.model()
             y_int = [bool2int([model.evaluate(y[c][i])for i in range(domain_size_y)]) for c in CIRCUITS]
 
-            makespan = max(y_int) + heigths[indexOf(y_int, max(y_int))]
+            makespan = max([y_int[c] + heigths[c] for c in CIRCUITS])
             print(f"max_makespan:{max_makespan}  sat:{makespan}")
             solution = {"width": data_dict["width"], "n_circuits": data_dict["n_circuits"], "widths": widths, "heights": heigths, 
                 "x": [bool2int([model.evaluate(x[c][i]) for i in range(domain_size_x)]) for c in CIRCUITS], 

@@ -1,11 +1,12 @@
 from itertools import combinations
 from operator import indexOf
+from unicodedata import digit
 from z3 import *
 import numpy as np
 import math
 from SAT.models.components import heuristics
 
-MAX_ITER = 3
+MAX_ITER = 10
 
 
 def at_least_one(bool_vars):
@@ -21,9 +22,23 @@ def exactly_one(bool_vars):
 
 
 def bool2int(l):
+    for i in range(len(l)):
+        print(type(l[i]), end="")
+        print("  ", end="")
+        print(l[i])
+
+    print("\n\n\n")
     result = 0
-    for digits in l:
-        result = (result << 1) | bool(str(digits)) #TODO: wtf?
+    l_b = []
+    for i in range(len(l)):
+        if str(l[i]) == "True":
+            l_b.append(True)
+        else:
+            #assert(str(l[i] == "True" or str(l[i]) == "False"))
+            l_b.append(False)
+
+    for digits in l_b:
+        result = (result << 1) | bool(digits) #TODO: wtf?
     return result
 
 
@@ -186,8 +201,6 @@ def equation(point_of_grid, x_c, w, y_c, h, width): # does not change from decim
         ),
         h*width + w
     )
-    
-    #TODO
 
 
 def baseSAT(data_dict: dict) -> dict:
@@ -214,7 +227,7 @@ def baseSAT(data_dict: dict) -> dict:
     domain_size_y = math.ceil(math.log2(max_makespan - min(heigths)))
     x = [[Bool(f"x_of_c{c}_{i}") for i in range(domain_size_x)] for c in CIRCUITS]
     y = [[Bool(f"y_of_c{c}_{i}") for i in range(domain_size_y)] for c in CIRCUITS]
-
+   
     ### grid (linearized)
     domain_size_grid = math.ceil(math.log2((width-min(widths))*(max_makespan-min(heigths))))
     grid = [ [Bool(f"point{p}_{coord}") for coord in range(domain_size_grid)] for p in range(sum_area)]
@@ -235,13 +248,13 @@ def baseSAT(data_dict: dict) -> dict:
     #     return point_of_grid // width
 
 
-    #constraint to bind grid values to x,y
-    for c in CIRCUITS:
-        for h in range(heigths[c]):
-            for w in range(widths[c]):
-                point_of_sum_area = sum([heigths(i)*widths(i) for i in range(c)]) + widths[c]*h + w
-                solver.add(equation(grid[point_of_sum_area], x[c], w, y[c], h, width))
-                #grid[point_of_sum_area] = (x[c]+w) + (y[c]+h)*width
+    # #constraint to bind grid values to x,y
+    # for c in CIRCUITS:
+    #     for h in range(heigths[c]):
+    #         for w in range(widths[c]):
+    #             point_of_sum_area = sum([heigths(i)*widths(i) for i in range(c)]) + widths[c]*h + w
+    #             solver.add(equation(grid[point_of_sum_area], x[c], w, y[c], h, width))
+    #             #grid[point_of_sum_area] = (x[c]+w) + (y[c]+h)*width
 
 
 
@@ -268,7 +281,7 @@ def baseSAT(data_dict: dict) -> dict:
 
     check = sat
     count = 0
-    while check == sat and count < MAX_ITER:
+    while check == sat and max_makespan >= min_makespan and count < MAX_ITER:
 
         solver.push()
         #forall(c in CIRCUITS)(y[c] + heights[c] <= max_makespan)
@@ -283,7 +296,7 @@ def baseSAT(data_dict: dict) -> dict:
             model = solver.model()
             y_int = [bool2int([model.evaluate(y[c][i])for i in range(domain_size_y)]) for c in CIRCUITS]
 
-            makespan = max(y_int) + heigths[indexOf(y_int, max(y_int))]
+            makespan = max([y_int[c] + heigths[c] for c in CIRCUITS])
             print(f"max_makespan:{max_makespan}  sat:{makespan}")
             solution = {"width": data_dict["width"], "n_circuits": data_dict["n_circuits"], "widths": widths, "heights": heigths, 
                 "x": [bool2int([model.evaluate(x[c][i]) for i in range(domain_size_x)]) for c in CIRCUITS], 
