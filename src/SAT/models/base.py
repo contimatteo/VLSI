@@ -5,6 +5,8 @@ import numpy as np
 import math
 from SAT.models.components import heuristics
 
+MAX_ITER = 3
+
 
 def at_least_one(bool_vars):
     return Or(bool_vars)
@@ -114,6 +116,11 @@ def lt_int(l, n):
     if len(l) < len(base2):
         return
 
+    for i in range(len(l) - len(base2)):
+        base2 = "0" + base2
+
+    assert(len(base2) == len(l))
+
     list_of_1 = [i for i in range(len(base2)) if base2[i] == "1"]
 
     #all the bools of l before the first 1 in n must be 0
@@ -133,9 +140,45 @@ def lt_int(l, n):
     return And(constraint_list)
 
 
-def equation(point_of_grid:list(Bool), x_c:list(Bool), w:int, y_c:list(Bool), h:int, width:int):
-    #point_of_grid = (x_c + w) + (y_c + h) * width
+def sub(a, b):
+    #a - b
     pass #TODO
+
+def mul_int(a, b):
+    #a * b
+    pass #TODO
+
+def eq_int(l, n):
+    #a == b
+    base2 = format(n, "b")
+
+    for i in range(len(l) - len(base2)):
+        base2 = "0" + base2
+
+    assert(len(base2) == len(l))
+    constraint_list = []
+
+    for i in range(len(base2)):
+        if base2[i] == '0':
+            constraint_list.append(Not(l[i]))
+        else:
+            constraint_list.append(l[i])
+    
+    return And(constraint_list)
+
+
+def equation(point_of_grid, x_c, w, y_c, h, width):
+    # point_of_grid = (x_c + w) + (y_c + h) * width
+    # point_of_grid - x_c - width*y_c = h*width + w
+    eq_int(
+        sub(
+            sub(point_of_grid, x_c),
+            mul_int(y_c, width)
+        ),
+        h*width + w
+    )
+    
+    #TODO
 
 
 def baseSAT(data_dict: dict) -> dict:
@@ -182,6 +225,7 @@ def baseSAT(data_dict: dict) -> dict:
     #     point_of_grid = bool2int(bool_coord)
     #     return point_of_grid // width
 
+
     #constraint to bind grid values to x,y
     for c in CIRCUITS:
         for h in range(heigths[c]):
@@ -214,7 +258,8 @@ def baseSAT(data_dict: dict) -> dict:
     solver.add( And([lt_int(x[c], width-widths[c]) for c in CIRCUITS]) )
 
     check = sat
-    while check == sat:
+    count = 0
+    while check == sat and count < MAX_ITER:
 
         solver.push()
         #forall(c in CIRCUITS)(y[c] + heights[c] <= max_makespan)
@@ -244,7 +289,7 @@ def baseSAT(data_dict: dict) -> dict:
             print("unsat")
         max_makespan = makespan - 1
         #it is possible to decrease max_makespan at pace > 1 and when unsat try the skipped values
-
+        count += 1
     #while check == sat
 
     solutions_dict["stats"] = solver.statistics()

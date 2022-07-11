@@ -35,7 +35,8 @@ def main(args):
         pass
 
     # plot
-    plot_solutions_v2(solutions_dict)
+    if args.plot:
+        plot_solutions_v2(solutions_dict)
 
 
 ###
