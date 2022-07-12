@@ -130,31 +130,37 @@ def lt_int(l, n):
     #provide constraint list so that bool2int(l) < n
     base2 = format(n, "b")
     if len(l) < len(base2):
-        return
+        return []
 
     for i in range(len(l) - len(base2)):
         base2 = "0" + base2
-
     assert(len(base2) == len(l))
 
     list_of_1 = [i for i in range(len(base2)) if base2[i] == "1"]
-
+    list_of_1.append(len(l))
+    
     #all the bools of l before the first 1 in n must be 0
-    constraint_list = [Not(l[i]) for i in range(base2.find("1") + 1)]
+    constraint_list = [Not(l[i]) for i in range(list_of_1[0])]
 
-    #(each bit in l at list_of_1 and all the previous) -> all the bit after that in l are 0 before the next index of list_of_1
+    #(each bit in l at the indexes contained in list_of_1 and all the previous) -> all the bit after that in l are 0 before the next index of list_of_1
 
-    for i in range(len(list_of_1)-1):
-        index = list_of_1[i]
-        next_index = list_of_1[i+1]
+    for i in range(len(list_of_1)):
+        index_of_1 = list_of_1[i]
+        next_index_of_1 = list_of_1[min(len(list_of_1)-1, i+1)]
+        
         constraint_list = constraint_list + \
         [ Implies( 
             And([l[list_of_1[k]] for k in range(i+1)]), 
             Not(l[j])) 
-            for j in range(index+1, next_index)
+            for j in range(min(index_of_1 + 1, len(l)), next_index_of_1)
         ]
-
-    return And(constraint_list)
+        
+    if constraint_list:
+        result = And(constraint_list)
+    else:
+        result = []
+    
+    return result
 
 
 def le_int(l, n):
@@ -248,13 +254,13 @@ def baseSAT(data_dict: dict) -> dict:
     #     return point_of_grid // width
 
 
-    # #constraint to bind grid values to x,y
-    # for c in CIRCUITS:
-    #     for h in range(heigths[c]):
-    #         for w in range(widths[c]):
-    #             point_of_sum_area = sum([heigths(i)*widths(i) for i in range(c)]) + widths[c]*h + w
-    #             solver.add(equation(grid[point_of_sum_area], x[c], w, y[c], h, width))
-    #             #grid[point_of_sum_area] = (x[c]+w) + (y[c]+h)*width
+    #constraint to bind grid values to x,y
+    for c in CIRCUITS:
+        for h in range(heigths[c]):
+            for w in range(widths[c]):
+                point_of_sum_area = sum([heigths(i)*widths(i) for i in range(c)]) + widths[c]*h + w
+                solver.add(equation(grid[point_of_sum_area], x[c], w, y[c], h, width))
+                #grid[point_of_sum_area] = (x[c]+w) + (y[c]+h)*width
 
 
 
