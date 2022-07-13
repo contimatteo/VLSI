@@ -31,6 +31,56 @@ def __dzn_compute_max_makespan(heights, widths, width, with_rotation):
         max_makespan = max(col_h)
     return max_makespan
 
+class Node:
+    def __init__(self, c_index, w, h, parent):
+        self.c_index = c_index
+        self.w = w
+        self.h = h
+        self.parent = parent
+        self.children_list = []
+        self.parent_altitude = 0
+
+    def get_remaining_width(self):
+        return self.w - sum([self.children_list[i].w for i in range(len(self.children_list))])
+
+    def get_altitude(self):
+        return self.h + self.parent_altitude
+
+    def attach_child(self, child):
+        self.children_list.append(child)
+        child.parent = self
+        child.parent_altitude = self.h + self.parent_altitude
+
+    def __str__(self):
+        if self.parent:
+            p_index = self.parent.c_index
+        else:
+            p_index = None
+        return f"Node {self.c_index}, w = {self.w}, h = {self.h}, parent = {p_index}, rw = {self.get_remaining_width()}"
+
+
+def compute_max_makespan_tree(heights, widths, width, with_rotation=False):
+    list_of_nodes = [Node(i, widths[i], heights[i], None) for i in range(len(widths))]
+    list_of_nodes = sorted(list_of_nodes, key=lambda a: a.w, reverse=True)
+
+    root = Node(-1, width, 0, None)
+    attached = [root]
+
+    for i in range(len(list_of_nodes)):
+        fringe = [attached[j] for j in range(len(attached)) if attached[j].get_remaining_width() >= list_of_nodes[i].w]
+        fringe = sorted(fringe, key=lambda b: b.get_altitude())
+
+        fringe[0].attach_child(list_of_nodes[i])
+        attached.append(list_of_nodes[i])
+
+    #        print([fringe[k].c_index for k in range(len(fringe))])
+    #        print([str(attached[k]) for k in range(len(attached))])
+
+    max_makespan = max([list_of_nodes[k].get_altitude() for k in range(len(list_of_nodes))])
+
+    return max_makespan
+
+
 
 def __dzn_compute_X_var_domain(dims: list, dim_max_value: int):
     domain = np.array([], dtype=int)
@@ -116,7 +166,11 @@ def convert_txt_file_to_dzn(txt_file_name: str, model_name):
     ### sort dims wrt heights
     _dims = _dims[_dims[:, 1].argsort()[::-1]]
 
-    data_dict['max_makespan'] = __dzn_compute_max_makespan(
+    # data_dict['max_makespan'] = __dzn_compute_max_makespan(
+    #    _dims[:, 1], _dims[:, 0], data_dict['width'], with_rotation
+    # )
+
+    data_dict['max_makespan'] = compute_max_makespan_tree(
         _dims[:, 1], _dims[:, 0], data_dict['width'], with_rotation
     )
 
@@ -142,7 +196,7 @@ def convert_txt_file_to_dzn(txt_file_name: str, model_name):
     dzn_lines[-1] = dzn_lines[-1][:-1]  ### remove last comma
     dzn_lines[-1] += '|];\n'  ### close the array
 
-    # dzn_lines[-1] += f"max_makespan = {str(data_dict['max_makespan'])};\n"
+    dzn_lines[-1] += f"max_makespan = {str(data_dict['max_makespan'])};\n"
 
     # dzn_lines[-1] += "Xs = {" + ','.join([str(x) for x in data_dict['Xs']]) + "};\n"
     # dzn_lines[-1] += "Ys = {" + ','.join([str(x) for x in data_dict['Ys']]) + "};\n"
