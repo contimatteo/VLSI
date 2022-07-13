@@ -10,3 +10,4 @@ python-dotenv
 matplotlib
 python-dotenv
 numpy
+z3
