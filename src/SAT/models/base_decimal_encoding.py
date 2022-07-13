@@ -225,10 +225,8 @@ def baseSAT(data_dict: dict) -> dict:
     sum_area = sum([heigths[c]*widths[c] for c in CIRCUITS])
     min_makespan = max(math.ceil(sum_area / width), max(heigths))
     #max_makespan = sum(heights)
-    max_makespan = min(
-        heuristics.compute_max_makespan(heigths, widths, width), 
-        heuristics.compute_max_makespan_tree(heigths, widths, width)
-        )
+    # max_makespan = heuristics.compute_max_makespan(heigths, widths, width);
+    max_makespan = heuristics.compute_max_makespan_tree(heigths, widths, width)
             
     solver = Solver()
         
