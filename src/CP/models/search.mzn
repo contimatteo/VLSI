@@ -23,7 +23,7 @@ array[CIRCUITS] of int: heights = [dims[c,2] | c in CIRCUITS];
 
 %%% define makespan boundaries
 int: sum_area = sum(c in CIRCUITS)(heights[c]*widths[c]);
-int: min_makespan = round(sum_area / width);
+int: min_makespan = max(ceil(sum_area / width), max(heights));
 %int: max_makespan = sum(heights);
 int: max_makespan;
 
