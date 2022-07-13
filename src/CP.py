@@ -95,9 +95,11 @@ def main(args):
     if args.sol > 1:
         opts += " --all-solutions"
     if args.stats is True:
-        opts += " --statistics --output-time"
-
-    # opts += " --output-detailed-timing"
+        opts += " --output-detailed-timing"
+        opts += " --output-time"
+        opts += " --statistics "
+        opts += " --solver-statistics"
+        opts += " --verbose-solving"
 
     #
 
@@ -120,7 +122,7 @@ def main(args):
 
     #
 
-    if args.verbose >= 1:
+    if args.verbose == 1:
         print("\n", json.dumps(out_file_content, indent=2), "\n")
 
     if args.plot is True:

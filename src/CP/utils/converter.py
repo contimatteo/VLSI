@@ -210,72 +210,6 @@ def __convert_raw_var_to_special_type(raw_var_name: str, raw_var_value: str):
     raise Exception("raw variable format not supported.")
 
 
-# def __convert_raw_result_to_solutions_dict__(raw_output: str, n_max_solutions: int) -> dict:
-#     results = []
-#     best_result_index = None
-#     best_makespan_found = None
-#     #
-#     raw_output_split = raw_output.split("%%%mzn-stat-end")
-#     raw_stats = raw_output_split[0] + "\n"
-#     if "==========" in raw_output_split[1]:
-#         raw_stats += raw_output_split[1].split("==========")[1]
-#         raw_solutions = raw_output_split[1].split("==========")[0]
-#         raw_solutions = raw_solutions.split("----------")
-#     else:
-#         raw_stats += raw_output_split[1].split("----------")[1]
-#         raw_solutions = [raw_output_split[1].split("----------")[0]]
-#     stats = {}
-#     for (si, raw_stat) in enumerate(raw_stats.split("\n")):
-#         if raw_stat.startswith("% ") or raw_stat.startswith("%%%mzn-stat-end"):
-#             continue
-#         if raw_stat.startswith("%%%mzn-stat"):
-#             tmp_value = (raw_stat.replace("%%%mzn-stat: ", "")).split("=")
-#             var_name, var_value = tmp_value[0], tmp_value[1]
-#             if var_name not in ["method"]:
-#                 var_value = float(var_value) if '.' in var_value else int(var_value)
-#                 stats[var_name] = var_value
-#             continue
-#     stats["TOTAL_TIME"] = round(stats["initTime"] + stats["solveTime"] + stats["flatTime"], 2)
-#     #
-#     for (si, raw_solution) in enumerate(raw_solutions):
-#         result = {"stats": copy.deepcopy(stats)}
-#         raw_variables = raw_solution.split("\n")
-#         if len(raw_variables) < 1:
-#             continue
-#         for (_, raw_variable) in enumerate(raw_variables):
-#             raw_variable = raw_variable.strip()
-#             if len(raw_variable) < 1 or "===" in raw_variable:
-#                 continue
-#             if len(raw_variable.split(" = ")) < 2:
-#                 continue
-#             var_name = raw_variable.split(" = ")[0]
-#             var_value = raw_variable.split(" = ")[1]
-#             if var_name in NUMERIC_VARIABLE_NAMES:
-#                 var_value = __convert_raw_var_to_number(var_value)
-#             elif var_name in LIST_VARIABLE_NAMES:
-#                 var_value = __convert_raw_var_to_list(var_value, True)
-#             elif var_name in SPECIAL_VARIABLE_NAMES:
-#                 var_value = __convert_raw_var_to_special_type(var_name, var_value)
-#             else:
-#                 continue
-#                 # raise Exception(f"`{var_name}` not recognized.")
-#             if var_name == "makespan":
-#                 if best_makespan_found is None or var_value < best_makespan_found:
-#                     best_result_index = si
-#                     best_makespan_found = var_value
-#             result[var_name] = var_value
-#         if len(result.keys()) > 1:
-#             results.append(result)
-#     #
-#     results = sorted(results, key=lambda sol: sol["makespan"], reverse=False)
-#     results = results[0:n_max_solutions]
-#     return {
-#         "results": results,
-#         "best_result_index": best_result_index,
-#         "best_makespan": best_makespan_found,
-#         "solution": results[best_result_index],
-#     }
-
 ###
 
 
@@ -309,6 +243,8 @@ def convert_raw_result_to_solutions_dict(raw_output: str, n_max_solutions: int) 
         if raw_line.startswith("%%%mzn-stat-end"):
             continue
         if raw_line.startswith("%%%mzn-stat: method="):
+            continue
+        if raw_line.startswith("%%%mzn-stat: profiling="):
             continue
         if raw_line.startswith("---") or raw_line.startswith("==="):
             continue
