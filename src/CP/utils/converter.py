@@ -1,7 +1,6 @@
-import numpy as np
 import copy
 import itertools
-
+import numpy as np
 from .storage import CP_data_file_url
 
 ###
@@ -31,7 +30,9 @@ def __dzn_compute_max_makespan(heights, widths, width, with_rotation):
         max_makespan = max(col_h)
     return max_makespan
 
+
 class Node:
+
     def __init__(self, c_index, w, h, parent):
         self.c_index = c_index
         self.w = w
@@ -67,7 +68,10 @@ def compute_max_makespan_tree(heights, widths, width, with_rotation=False):
     attached = [root]
 
     for i in range(len(list_of_nodes)):
-        fringe = [attached[j] for j in range(len(attached)) if attached[j].get_remaining_width() >= list_of_nodes[i].w]
+        fringe = [
+            attached[j] for j in range(len(attached))
+            if attached[j].get_remaining_width() >= list_of_nodes[i].w
+        ]
         fringe = sorted(fringe, key=lambda b: b.get_altitude())
 
         fringe[0].attach_child(list_of_nodes[i])
@@ -79,7 +83,6 @@ def compute_max_makespan_tree(heights, widths, width, with_rotation=False):
     max_makespan = max([list_of_nodes[k].get_altitude() for k in range(len(list_of_nodes))])
 
     return max_makespan
-
 
 
 def __dzn_compute_X_var_domain(dims: list, dim_max_value: int):
@@ -123,7 +126,6 @@ def __dzn_compute_X_var_domain(dims: list, dim_max_value: int):
 def __dzn_compute_X_var_domain_rotated(dims: list, dim_max_value: int):
     min_dim_value = np.array(dims).flatten().min(axis=-1)
 
-    domain_min_value = 0
     domain_max_value = dim_max_value - min_dim_value
 
     return [0] + list(range(min_dim_value, domain_max_value + 1, 1))

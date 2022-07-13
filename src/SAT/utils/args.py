@@ -10,7 +10,9 @@ DEFAULT_SECONDS_TIME_LIMIT = 300
 DEFAULT_N_SOLUTIONS = 1
 DEFAULT_VERBOSE = 1
 DEFAULT_MODEL_NAME = "base.py"
-MODELS_CHOICES = ["base", "rotation", "rotation.search", "rotation.search.symmetry", "search",  "search.symmetry"]
+MODELS_CHOICES = [
+    "base", "rotation", "rotation.search", "rotation.search.symmetry", "search", "search.symmetry"
+]
 
 ###
 

@@ -21,6 +21,7 @@ def compute_max_makespan(heights, widths, width, with_rotation=False) -> int:
 
 
 class Node:
+
     def __init__(self, c_index, w, h, parent):
         self.c_index = c_index
         self.w = w
@@ -56,7 +57,10 @@ def compute_max_makespan_tree(heights, widths, width, with_rotation=False):
     attached = [root]
 
     for i in range(len(list_of_nodes)):
-        fringe = [attached[j] for j in range(len(attached)) if attached[j].get_remaining_width() >= list_of_nodes[i].w]
+        fringe = [
+            attached[j] for j in range(len(attached))
+            if attached[j].get_remaining_width() >= list_of_nodes[i].w
+        ]
         fringe = sorted(fringe, key=lambda b: b.get_altitude())
 
         fringe[0].attach_child(list_of_nodes[i])

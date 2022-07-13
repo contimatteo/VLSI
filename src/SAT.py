@@ -1,6 +1,8 @@
-from SAT.utils.args import parse_args, SAT_data_file_url
-#from SAT.models.base_decimal_encoding import baseSAT
-from SAT.models.base_one_hot_encoding import baseSAT
+from SAT.models.base_decimal_encoding_diffn import baseSAT
+# from SAT.models.base_decimal_encoding import baseSAT
+
+from SAT.utils.args import parse_args
+from SAT.utils.storage import SAT_data_file_url
 from SAT.utils.plots import plot_solutions_v2
 
 
@@ -13,7 +15,12 @@ def main(args):
         txt_lines = f.readlines()
         f.close()
 
-    data_dict = {"data": args.data, 'width': int(txt_lines[0][:-1]), 'n_circuits': int(txt_lines[1][:-1]), 'dims': []}
+    data_dict = {
+        "data": args.data,
+        'width': int(txt_lines[0][:-1]),
+        'n_circuits': int(txt_lines[1][:-1]),
+        'dims': []
+    }
     for line_idx in range(2, len(txt_lines)):
         x, y = txt_lines[line_idx][:-1].split(sep=' ')
         data_dict['dims'].append((int(x), int(y)))
