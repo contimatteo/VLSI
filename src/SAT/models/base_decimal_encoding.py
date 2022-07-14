@@ -17,15 +17,15 @@ def exactly_one(bool_vars: 'list[Bool]'):
 
 
 def bool2int(l: 'list[Bool]'):
-    for i in range(len(l)):
-        print(type(l[i]), end="")
+    for _, l_i in enumerate(l):
+        print(type(l_i), end="")
         print("  ", end="")
-        print(l[i])
+        print(l_i)
 
     result = 0
     l_b = []
-    for i in range(len(l)):
-        if str(l[i]) == "True":
+    for _, l_i in enumerate(l):
+        if str(l_i) == "True":
             l_b.append(True)
         else:
             #assert(str(l[i] == "True" or str(l[i]) == "False"))
@@ -150,8 +150,8 @@ def lt_int(l: 'list[Bool]', n: int):
 
     #(each bit in l at the indexes contained in list_of_1 and all the previous) -> all the bit after that in l are 0 before the next index of list_of_1
 
-    for i in range(len(list_of_1)):
-        index_of_1 = list_of_1[i]
+    for i, list_of_1_i in enumerate(list_of_1):
+        index_of_1 = list_of_1_i
         next_index_of_1 = list_of_1[min(len(list_of_1) - 1, i + 1)]
 
         constraint_list = constraint_list + \
@@ -197,8 +197,8 @@ def eq_int(l: 'list[Bool]', n: int):
     assert (len(base2) == len(l))
     constraint_list = []
 
-    for i in range(len(base2)):
-        if base2[i] == '0':
+    for i, base2_i in enumerate(base2):
+        if base2_i == '0':
             constraint_list.append(Not(l[i]))
         else:
             constraint_list.append(l[i])
