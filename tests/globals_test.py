@@ -1,13 +1,10 @@
 from typing import Any
 
 import z3
-import pytest
 
 from z3 import Solver
 
 from SAT.models.components import foundation as FN
-
-###
 
 ###
 
@@ -38,7 +35,7 @@ def test_eq():
         ([True], [True]),
         ([False], [False]),
         ([True, True], [True, True]),
-        ([False, False], [True, False]),
+        ([False, False], [False, False]),
     ]
 
     F_exprs = [
