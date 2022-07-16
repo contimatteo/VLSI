@@ -12,6 +12,13 @@ Z3Clause = BoolRef
 ###
 
 
+def __is_bool(val: Union[bool, BoolRef]) -> bool:
+    return isinstance(val, bool) or isinstance(val, BoolRef)
+
+
+###
+
+
 def all_F(l: 'list[Bool]'):
     return And([Not(b) for b in l])
 
@@ -37,10 +44,10 @@ def eq(bol1: BoolOrList, bol2: BoolOrList) -> Z3Clause:
     def __eq(b1: Bool, b2: Bool) -> Z3Clause:
         return Not(Xor(b1, b2))
 
-    assert isinstance(bol1, list) or isinstance(bol2, bool)
-    assert isinstance(bol1, list) or isinstance(bol2, bool)
+    assert isinstance(bol1, list) or __is_bool(bol1)
+    assert isinstance(bol1, list) or __is_bool(bol2)
 
-    if isinstance(bol1, bool) and isinstance(bol2, bool):
+    if __is_bool(bol1) and __is_bool(bol2):
         return __eq(bol1, bol2)
 
     if isinstance(bol1, list) and isinstance(bol2, list):
