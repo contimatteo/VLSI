@@ -1,8 +1,7 @@
 import math
 from itertools import combinations
 from z3 import And, Or, Not, Xor, Solver, Bool, sat, Implies
-
-from SAT.models.components import heuristics
+from SAT.models.components.heuristics import compute_max_makespan_tree
 
 
 def at_least_one(bool_vars: 'list[Bool]'):
@@ -55,10 +54,12 @@ def ge(l1: 'list[Bool]', l2: 'list[Bool]'):
         diff = len(l1) - len(l2)
         l1_same_len = l1[diff:]
         l1_exceeding = l1[:diff]
+        print("GE L1>L2")
         #if there are Trues in the diff then for sure l1>l2
         return Implies(Not(at_least_one(l1_exceeding)), ge_same_len(l1_same_len, l2))
 
     if len(l1) == len(l2):
+        print("GE L1=L2")
         return ge_same_len(l1, l2)
 
     #l1 =      010101
@@ -68,6 +69,7 @@ def ge(l1: 'list[Bool]', l2: 'list[Bool]'):
     l2_exceeding = l2[:diff]
     first = all_zeros(l2_exceeding)  #there must not be any Trues in the exceeding part
     rest = ge_same_len(l1, l2_same_len)
+    print("GE L1<L2")
     return And(first, rest)
 
 
@@ -94,6 +96,7 @@ def gt(l1: 'list[Bool]', l2: 'list[Bool]'):
     #l1 = 10101010101
     #l2 =      010101
     if len(l1) > len(l2):
+        print("GT L1>L2")
         diff = len(l1) - len(l2)
         l1_same_len = l1[diff:]
         l1_exceeding = l1[:diff]
@@ -101,6 +104,7 @@ def gt(l1: 'list[Bool]', l2: 'list[Bool]'):
         return Implies(Not(at_least_one(l1_exceeding)), gt_same_len(l1_same_len, l2))
 
     if len(l1) == len(l2):
+        print("GT L1=L2")
         return gt_same_len(l1, l2)
 
     #l1 =      010101
@@ -110,6 +114,7 @@ def gt(l1: 'list[Bool]', l2: 'list[Bool]'):
     l2_exceeding = l2[:diff]
     first = all_zeros(l2_exceeding)
     rest = gt_same_len(l1, l2_same_len)
+    print("GT L1<L2")
     return And(first, rest)
 
 
@@ -156,20 +161,24 @@ def gt_same_len(l1: 'list[Bool]', l2: 'list[Bool]'):
 
 
 def le(l1: 'list[Bool]', l2: 'list[Bool]'):
+    print("LE")
     return ge(l1=l2, l2=l1)
 
 
 def lt(l1: 'list[Bool]', l2: 'list[Bool]'):
+    print("LT")
     return gt(l1=l2, l2=l1)
 
 
 def ne(l1: 'list[Bool]', l2: 'list[Bool]'):  ### does not change from decimal to one hot encoding
     assert (len(l1) == len(l2))
+    print("NE")
     return Or([Xor(l1[bit], l2[bit]) for bit in range(len(l2))])
 
 
 def eq(l1: 'list[Bool]', l2: 'list[Bool]'):  ### does not change from decimal to one hot encoding
     assert (len(l1) == len(l2))
+    print("EQ")
     return And([Not(Xor(l1[i], l2[i])) for i in range(len(l1))])
 
 
@@ -179,9 +188,11 @@ def lt_int(l: 'list[Bool]', n: int):
     base2 = format(n, "b")
 
     if len(base2) > len(l):
+        print("LT_INT 1")
         return []
 
     if len(base2) < len(l):
+        print("LT_INT 2")
         base2 = ("0" * (len(l) - len(base2))) + base2
 
     assert (len(base2) == len(l))
@@ -219,12 +230,9 @@ def lt_int(l: 'list[Bool]', n: int):
 #     #rifare a partire da lt_int
 
 
-def lt_eq(l1: 'list[Bool]', l2: 'list[Bool]'):
-    return Or(lt(l1, l2), eq(l1, l2))
-
-
 def eq_int(l: 'list[Bool]', n: int):
     ### a == b
+    print("EQ_INT")
     base2 = format(n, "b")
 
     for i in range(len(l) - len(base2)):
@@ -243,6 +251,7 @@ def eq_int(l: 'list[Bool]', n: int):
 
 
 def sum_int(l: 'list[Bool]', n: int):
+    print("SUM_INT")
     base2 = base2 = format(n, "b")
 
     base2 = '0' * (len(l) - len(base2)) + base2
@@ -278,8 +287,8 @@ def diffn(x: 'list[Bool]', y: 'list[Bool]', widths: 'list[int]', heigths: 'list[
         ### if i < j: useless
         l.append(
             Or(
-                lt_eq(sum_int(x[i], widths[i]), x[j]), lt_eq(sum_int(y[i], heigths[i]), y[j]),
-                lt_eq(sum_int(x[j], widths[j]), x[i]), lt_eq(sum_int(y[j], heigths[j]), y[i])
+                le(sum_int(x[i], widths[i]), x[j]), le(sum_int(y[i], heigths[i]), y[j]),
+                le(sum_int(x[j], widths[j]), x[i]), le(sum_int(y[j], heigths[j]), y[i])
             )
         )
     return And(l)
@@ -302,7 +311,7 @@ def baseSAT(data_dict: dict) -> dict:
     min_makespan = max(math.ceil(sum_area / width), max(heigths))
     # max_makespan = sum(heights)
     # max_makespan = heuristics.compute_max_makespan(heigths, widths, width);
-    max_makespan = heuristics.compute_max_makespan_tree(heigths, widths, width)
+    max_makespan = compute_max_makespan_tree(heigths, widths, width)
 
     solver = Solver()
 
