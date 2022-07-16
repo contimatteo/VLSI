@@ -54,12 +54,10 @@ def ge(l1: 'list[Bool]', l2: 'list[Bool]'):
         diff = len(l1) - len(l2)
         l1_same_len = l1[diff:]
         l1_exceeding = l1[:diff]
-        print("GE L1>L2")
         #if there are Trues in the diff then for sure l1>l2
         return Implies(Not(at_least_one(l1_exceeding)), ge_same_len(l1_same_len, l2))
 
     if len(l1) == len(l2):
-        print("GE L1=L2")
         return ge_same_len(l1, l2)
 
     #l1 =      010101
@@ -69,7 +67,6 @@ def ge(l1: 'list[Bool]', l2: 'list[Bool]'):
     l2_exceeding = l2[:diff]
     first = all_zeros(l2_exceeding)  #there must not be any Trues in the exceeding part
     rest = ge_same_len(l1, l2_same_len)
-    print("GE L1<L2")
     return And(first, rest)
 
 
@@ -96,7 +93,6 @@ def gt(l1: 'list[Bool]', l2: 'list[Bool]'):
     #l1 = 10101010101
     #l2 =      010101
     if len(l1) > len(l2):
-        print("GT L1>L2")
         diff = len(l1) - len(l2)
         l1_same_len = l1[diff:]
         l1_exceeding = l1[:diff]
@@ -104,7 +100,6 @@ def gt(l1: 'list[Bool]', l2: 'list[Bool]'):
         return Implies(Not(at_least_one(l1_exceeding)), gt_same_len(l1_same_len, l2))
 
     if len(l1) == len(l2):
-        print("GT L1=L2")
         return gt_same_len(l1, l2)
 
     #l1 =      010101
@@ -114,7 +109,6 @@ def gt(l1: 'list[Bool]', l2: 'list[Bool]'):
     l2_exceeding = l2[:diff]
     first = all_zeros(l2_exceeding)
     rest = gt_same_len(l1, l2_same_len)
-    print("GT L1<L2")
     return And(first, rest)
 
 
@@ -161,24 +155,20 @@ def gt_same_len(l1: 'list[Bool]', l2: 'list[Bool]'):
 
 
 def le(l1: 'list[Bool]', l2: 'list[Bool]'):
-    print("LE")
     return ge(l1=l2, l2=l1)
 
 
 def lt(l1: 'list[Bool]', l2: 'list[Bool]'):
-    print("LT")
     return gt(l1=l2, l2=l1)
 
 
 def ne(l1: 'list[Bool]', l2: 'list[Bool]'):  ### does not change from decimal to one hot encoding
     assert (len(l1) == len(l2))
-    print("NE")
     return Or([Xor(l1[bit], l2[bit]) for bit in range(len(l2))])
 
 
 def eq(l1: 'list[Bool]', l2: 'list[Bool]'):  ### does not change from decimal to one hot encoding
     assert (len(l1) == len(l2))
-    print("EQ")
     return And([Not(Xor(l1[i], l2[i])) for i in range(len(l1))])
 
 
@@ -188,11 +178,9 @@ def lt_int(l: 'list[Bool]', n: int):
     base2 = format(n, "b")
 
     if len(base2) > len(l):
-        print("LT_INT 1")
         return []
 
     if len(base2) < len(l):
-        print("LT_INT 2")
         base2 = ("0" * (len(l) - len(base2))) + base2
 
     assert (len(base2) == len(l))
@@ -225,20 +213,19 @@ def lt_int(l: 'list[Bool]', n: int):
     return result
 
 
-# def lt_eq_int(l: 'list[Bool]', n: int):
-#     return Or(lt_int(l, n), eq_int(l, n))
-#     #rifare a partire da lt_int
+def le_int(l: 'list[Bool]', n: int):
+    return Or(lt_int(l, n), eq_int(l, n))
+    #rifare a partire da lt_int
 
 
 def eq_int(l: 'list[Bool]', n: int):
     ### a == b
-    print("EQ_INT")
     base2 = format(n, "b")
 
     for i in range(len(l) - len(base2)):
         base2 = "0" + base2
 
-    assert (len(base2) == len(l))
+    assert len(base2) == len(l)
     constraint_list = []
 
     for i, base2_i in enumerate(base2):
@@ -251,7 +238,6 @@ def eq_int(l: 'list[Bool]', n: int):
 
 
 def sum_int(l: 'list[Bool]', n: int):
-    print("SUM_INT")
     base2 = base2 = format(n, "b")
 
     base2 = '0' * (len(l) - len(base2)) + base2
@@ -337,11 +323,11 @@ def baseSAT(data_dict: dict) -> dict:
     ### makespan is not known yet
 
     ### all circuits must have each dimension greater than zero
-    assert (min(heigths) > 0 and min(widths) > 0)
-    assert (len(heigths) == len(widths) == n_circuits)
+    assert min(heigths) > 0 and min(widths) > 0
+    assert len(heigths) == len(widths) == n_circuits
 
     ### forall(c in CIRCUITS)(x[c] + widths[c] <= width)
-    solver.add(And([lt_int(x[c], width - widths[c]) for c in CIRCUITS]))
+    solver.add(And([le_int(x[c], width - widths[c]) for c in CIRCUITS]))
 
     solutions_dict = {
         "all_solutions": [],
@@ -361,7 +347,7 @@ def baseSAT(data_dict: dict) -> dict:
 
         solver.push()
         ### forall(c in CIRCUITS)(y[c] + heights[c] <= max_makespan)
-        solver.add(And([lt_int(y[c], max_makespan - heigths[c]) for c in CIRCUITS]))
+        solver.add(And([le_int(y[c], max_makespan - heigths[c]) for c in CIRCUITS]))
 
         solution = {}
         check = solver.check()
@@ -397,7 +383,9 @@ def baseSAT(data_dict: dict) -> dict:
                 makespan
             }
             solutions_dict["all_solutions"].append(solution)
-            print(solution)
+            print(
+                f"max_makespan = {max_makespan}  min_makespan = {min_makespan}  makespan = {makespan}"
+            )
             solutions_dict["stats"] = solver.statistics()
             solver.pop()
         else:
@@ -407,7 +395,7 @@ def baseSAT(data_dict: dict) -> dict:
         ### or implement binary search...
     ### while check == sat
 
+    solutions_dict["all_solutions"] = solutions_dict["all_solutions"][::-1]
     if solutions_dict["all_solutions"]:
-        solutions_dict["solution"] = solutions_dict["all_solutions"][
-            len(solutions_dict["all_solutions"]) - 1]
+        solutions_dict["solution"] = solutions_dict["all_solutions"][0]
     return solutions_dict
