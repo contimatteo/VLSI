@@ -163,18 +163,18 @@ def lt(l1: 'list[Bool]', l2: 'list[Bool]'):
     return gt(l1=l2, l2=l1)
 
 
-def ne(l1: 'list[Bool]', l2: 'list[Bool]'):  # does not change from decimal to one hot encoding
+def ne(l1: 'list[Bool]', l2: 'list[Bool]'):  ### does not change from decimal to one hot encoding
     assert (len(l1) == len(l2))
     return Or([Xor(l1[bit], l2[bit]) for bit in range(len(l2))])
 
 
-def eq(l1: 'list[Bool]', l2: 'list[Bool]'):  # does not change from decimal to one hot encoding
+def eq(l1: 'list[Bool]', l2: 'list[Bool]'):  ### does not change from decimal to one hot encoding
     assert (len(l1) == len(l2))
     return And([Not(Xor(l1[i], l2[i])) for i in range(len(l1))])
 
 
 def lt_int(l: 'list[Bool]', n: int):
-    #provide constraint list so that bool2int(l) < n
+    ### provide constraint list so that bool2int(l) < n
 
     base2 = format(n, "b")
 
@@ -189,12 +189,12 @@ def lt_int(l: 'list[Bool]', n: int):
     list_of_1 = [i for i in range(len(base2)) if base2[i] == "1"]
     list_of_1.append(len(l))
 
-    #all the bools of l before the first 1 in n must be 0
+    ### all the bools of l before the first 1 in n must be 0
     constraint_list = [Not(l[i]) for i in range(list_of_1[0])]
 
-    #(each bit in l at the indexes contained in list_of_1 and all the previous) ->
-    # all the bit after that in l are 0 before the next index of list_of_1
-    #for i in range(len(list_of_1)):
+    ### (each bit in l at the indexes contained in list_of_1 and all the previous) ->
+    ### all the bit after that in l are 0 before the next index of list_of_1
+    ### for i in range(len(list_of_1)):
     for i, list_of_1_i in enumerate(list_of_1):
         index_of_1 = list_of_1_i
         next_index_of_1 = list_of_1[min(len(list_of_1) - 1, i + 1)]
@@ -220,11 +220,11 @@ def lt_int(l: 'list[Bool]', n: int):
 
 
 def lt_eq(l1: 'list[Bool]', l2: 'list[Bool]'):
-    return Or(lt(l1, l2), eq(l1, l2))  #TODO rifare a partire da lt
+    return Or(lt(l1, l2), eq(l1, l2))
 
 
 def eq_int(l: 'list[Bool]', n: int):
-    #a == b
+    ### a == b
     base2 = format(n, "b")
 
     for i in range(len(l) - len(base2)):
@@ -233,7 +233,6 @@ def eq_int(l: 'list[Bool]', n: int):
     assert (len(base2) == len(l))
     constraint_list = []
 
-    #for i in range(len(base2)):
     for i, base2_i in enumerate(base2):
         if base2_i == '0':
             constraint_list.append(Not(l[i]))
@@ -276,7 +275,7 @@ def diffn(x: 'list[Bool]', y: 'list[Bool]', widths: 'list[int]', heigths: 'list[
 
     l = []
     for i, j in combinations(range(len(x)), 2):
-        #if i < j: useless
+        ### if i < j: useless
         l.append(
             Or(
                 lt_eq(sum_int(x[i], widths[i]), x[j]), lt_eq(sum_int(y[i], heigths[i]), y[j]),
@@ -287,7 +286,7 @@ def diffn(x: 'list[Bool]', y: 'list[Bool]', widths: 'list[int]', heigths: 'list[
 
 
 def baseSAT(data_dict: dict) -> dict:
-    #data_dict = {"data":str, "width": int, "n_circuits": int, "dims":[(w,h)]}
+    ### data_dict = {"data":str, "width": int, "n_circuits": int, "dims":[(w,h)]}
 
     n_circuits = data_dict["n_circuits"]
     width = data_dict["width"]
@@ -301,21 +300,21 @@ def baseSAT(data_dict: dict) -> dict:
     ### define makespan boundaries
     sum_area = sum([heigths[c] * widths[c] for c in CIRCUITS])
     min_makespan = max(math.ceil(sum_area / width), max(heigths))
-    #max_makespan = sum(heights)
+    # max_makespan = sum(heights)
     # max_makespan = heuristics.compute_max_makespan(heigths, widths, width);
     max_makespan = heuristics.compute_max_makespan_tree(heigths, widths, width)
 
     solver = Solver()
 
     max_domain_x = width - min(widths) + max(widths)
-    # + max(widths) is necessary for summing the width later
+    ### + max(widths) is necessary for summing the width later
     if max_domain_x > 0:
         domain_size_x = math.ceil(math.log2(max_domain_x))
     else:
         domain_size_x = 1
 
     domain_size_y = max_makespan - min(heigths) + max(heigths)
-    # + max(heigths) is necessary for summing the height later
+    ### + max(heigths) is necessary for summing the height later
     if domain_size_y > 0:
         domain_size_y = math.ceil(math.log2(domain_size_y))
     else:
@@ -326,13 +325,13 @@ def baseSAT(data_dict: dict) -> dict:
     ### diffn
     solver.add(diffn(x, y, widths, heigths))
 
-    #makespan is not known yet
+    ### makespan is not known yet
 
     ### all circuits must have each dimension greater than zero
     assert (min(heigths) > 0 and min(widths) > 0)
     assert (len(heigths) == len(widths) == n_circuits)
 
-    #forall(c in CIRCUITS)(x[c] + widths[c] <= width)
+    ### forall(c in CIRCUITS)(x[c] + widths[c] <= width)
     solver.add(And([lt_int(x[c], width - widths[c]) for c in CIRCUITS]))
 
     solutions_dict = {
@@ -343,7 +342,7 @@ def baseSAT(data_dict: dict) -> dict:
         "data": data_dict["data"],
         "solver": "z3 SAT"
     }
-    # each solution in all_solutions is a dict
+    ### each solution in all_solutions is a dict
 
     print(f"max_makespan = {max_makespan}")
     print(f"min_maekspan = {min_makespan}")
@@ -352,7 +351,7 @@ def baseSAT(data_dict: dict) -> dict:
     while check == sat and max_makespan >= min_makespan:
 
         solver.push()
-        #forall(c in CIRCUITS)(y[c] + heights[c] <= max_makespan)
+        ### forall(c in CIRCUITS)(y[c] + heights[c] <= max_makespan)
         solver.add(And([lt_int(y[c], max_makespan - heigths[c]) for c in CIRCUITS]))
 
         solution = {}
@@ -395,9 +394,9 @@ def baseSAT(data_dict: dict) -> dict:
         else:
             print("unsat")
         max_makespan = makespan - 1
-        #it is possible to decrease max_makespan at pace > 1 and when unsat try the skipped values
-        #or implement binary search...
-    #while check == sat
+        ### it is possible to decrease max_makespan at pace > 1 and when unsat try the skipped values
+        ### or implement binary search...
+    ### while check == sat
 
     if solutions_dict["all_solutions"]:
         solutions_dict["solution"] = solutions_dict["all_solutions"][
