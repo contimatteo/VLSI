@@ -81,22 +81,26 @@ def test_ne():
     __apply_clause = lambda values: FN.ne(*values)
 
     T_exprs = [
-        (True, Bool("x11")),
-        (False, Bool("x21")),
-        ([True], [Bool("x31")]),
-        ([False], [Bool("x41")]),
-        ([True, True], [Bool("x51"), Bool("x52")]),
-        ([False, False], [Bool("x61"), Bool("x62")]),
-        ([True, False], [Bool("x71"), Bool("x72")]),
-        ([False, True], [Bool("x81"), Bool("x82")]),
+        (True, Bool("t11")),
+        (False, Bool("t21")),
+        ([True], [Bool("t31")]),
+        ([False], [Bool("t41")]),
+        ([True, True], [Bool("t51"), Bool("t52")]),
+        ([False, False], [Bool("t61"), Bool("t62")]),
+        ([True, False], [Bool("t71"), Bool("t72")]),
+        ([False, True], [Bool("t81"), Bool("t82")]),
     ]
 
-    for expr in T_exprs:
-        clause = __apply_clause(expr)
+    F_exprs = [(True, True)]
 
-        satisfied, solver = __solve(clause)
+    for expr in T_exprs:
+        satisfied, solver = __solve(__apply_clause(expr))
         assert satisfied is True, str(expr)
 
         if satisfied:
             val1, val2 = __evaluate(solver, expr)
             print(val1, val2)
+
+    for expr in F_exprs:
+        satisfied, solver = __solve(__apply_clause(expr))
+        assert satisfied is False, str(expr)
