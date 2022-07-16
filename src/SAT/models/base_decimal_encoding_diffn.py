@@ -156,7 +156,7 @@ def gt_same_len(l1: 'list[Bool]', l2: 'list[Bool]'):
 
 
 def le(l1: 'list[Bool]', l2: 'list[Bool]'):
-    return ge(l1=l2, l2=l1)  #TODO ok invertire in questo modo vero?
+    return ge(l1=l2, l2=l1)
 
 
 def lt(l1: 'list[Bool]', l2: 'list[Bool]'):

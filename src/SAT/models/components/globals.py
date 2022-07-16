@@ -13,41 +13,27 @@ Z3Operators = List[Z3Operator]
 ###
 
 
+def all_F(l: 'list[Bool]'):
+    return And([Not(b) for b in l])
+
+
 def at_least_one_T(bools: List[Bool]) -> Z3Operator:
     return Or(bools)
 
 
-def at_most_one_T(bools: List[Bool]) -> Z3Operators:
-
-    def __T_values(b1: Bool, b2: Bool) -> Z3Operator:
-        return And(b1, b2)
-
-    return [Not(__T_values(b1, b2)) for b1, b2 in combinations(bools, 2)]
+def at_most_one_T(bools: List[Bool]) -> Z3Operator:
+    return And([Not(And(b1, b2)) for b1, b2 in combinations(bools, 2)])
 
 
-def exactly_one_T(bools: List[Bool]) -> Z3Operators:
-    return at_most_one_T(bools) + [at_least_one_T(bools)]
+def exactly_one_T(bools: List[Bool]) -> Z3Operator:
+    return And(at_most_one_T(bools) + [at_least_one_T(bools)])
 
 
-def ne(bol1: BoolOrList, bol2: BoolOrList) -> Union[Z3Operator, Z3Operators]:
-
-    def __ne(b1: Bool, b2: Bool) -> Z3Operator:
-        return Xor(b1, b2)
-
-    assert isinstance(bol1, list) or isinstance(bol2, Z3Operator)
-    assert isinstance(bol1, list) or isinstance(bol2, Z3Operator)
-
-    if isinstance(bol1, Z3Operator) and isinstance(bol2, Z3Operator):
-        return __ne(bol1, bol2)
-
-    if isinstance(bol1, list) and isinstance(bol2, list):
-        assert len(bol1) == len(bol2)
-        return Or([__ne(b1, b2) for b1, b2 in zip(bol1, bol2)])
-
-    raise Exception("[ne] invalid parameters types.")
+def ne(bol1: BoolOrList, bol2: BoolOrList) -> Z3Operator:
+    return Not(eq(bol1, bol2))
 
 
-def eq(bol1: BoolOrList, bol2: BoolOrList) -> Union[Z3Operator, Z3Operators]:
+def eq(bol1: BoolOrList, bol2: BoolOrList) -> Z3Operator:
 
     def __eq(b1: Bool, b2: Bool) -> Z3Operator:
         return Not(Xor(b1, b2))
@@ -59,7 +45,17 @@ def eq(bol1: BoolOrList, bol2: BoolOrList) -> Union[Z3Operator, Z3Operators]:
         return __eq(bol1, bol2)
 
     if isinstance(bol1, list) and isinstance(bol2, list):
-        assert len(bol1) == len(bol2)
-        return And([__eq(b1, b2) for b1, b2 in zip(bol1, bol2)])
+        if len(bol1) == len(bol2):
+            return And([__eq(b1, b2) for b1, b2 in zip(bol1, bol2)])
+
+        if len(bol1) > len(bol2):
+            return And(
+                [__eq(b1, b2) for b1, b2 in zip(bol1[len(bol2):], bol2)] + all_F(bol1[:len(bol2)])
+            )
+
+        ### len(bol1) < len(bol2)
+        return And(
+            [__eq(b1, b2) for b2, b1 in zip(bol2[len(bol1):], bol1)] + all_F(bol2[:len(bol1)])
+        )
 
     raise Exception("[eq] invalid parameters types.")
