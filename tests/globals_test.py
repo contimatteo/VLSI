@@ -99,6 +99,4 @@ def test_ne():
 
         if satisfied:
             val1, val2 = __evaluate(solver, expr)
-
-            # print(solver.model().evaluate(clause))
             print(val1, val2)
