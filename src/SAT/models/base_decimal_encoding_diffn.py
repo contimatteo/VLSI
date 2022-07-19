@@ -1,27 +1,60 @@
+from typing import List
+
 import math
 import uuid
+import time
+
 from itertools import combinations
 from operator import indexOf
-from typing import List
-import time
 from z3 import And, Or, Not, Xor, Solver, Bool, sat, Implies, BoolRef, unsat
+
 from SAT.models.components.heuristics import compute_max_makespan_tree
+from SAT.models.components.foundation import at_least_one_T, all_F
 
+###
 
-def at_least_one(bool_vars: 'list[Bool]') -> BoolRef:
-    return Or(bool_vars)
+# def at_least_one(bool_vars: 'list[Bool]') -> BoolRef:
+#     return Or(bool_vars)
+# def at_most_one(bool_vars: 'list[Bool]') -> List[BoolRef]:
+#     return [Not(And(pair[0], pair[1])) for pair in combinations(bool_vars, 2)]
+# def exactly_one(bool_vars: 'list[Bool]') -> List[BoolRef]:
+#     return at_most_one(bool_vars), [at_least_one(bool_vars)]
+# def all_F(l: 'list[Bool]') -> BoolRef:
+#     return And([Not(l[i]) for i in range(len(l))])
+# def ne(
+#     l1: 'list[Bool]', l2: 'list[Bool]'
+# ) -> BoolRef:  ### does not change from decimal to one hot encoding
+#     return Or([Xor(l1[bit], l2[bit]) for bit in range(min(len(l1), len(l2)))])
+# def eq(
+#     l1: 'list[Bool]', l2: 'list[Bool]'
+# ) -> BoolRef:  ### does not change from decimal to one hot encoding
+#     ### the probability of a different bit is bigger close to the lsb
+#     l1 = l1[::-1]
+#     l2 = l2[::-1]
+#     result = []
+#     if len(l1) > len(l2):
+#         #l1 = 10101010101
+#         #l2 =     010101
+#         diff = len(l1) - len(l2)
+#         l1_same_len = l1[diff:]
+#         l1_exceeding = l1[:diff]
+#         first = all_F(l1_exceeding)  #there must not be any Trues in the exceeding part
+#         rest = And([Not(Xor(l1_same_len[i], l2[i])) for i in range(len(l2))])
+#         result = And(first, rest)
+#     elif len(l1) == len(l2):
+#         result = And([Not(Xor(l1[i], l2[i])) for i in range(len(l2))])
+#     else:
+#         #l1 =      010101
+#         #l2 = 10101010101
+#         diff = len(l2) - len(l1)
+#         l2_same_len = l2[diff:]
+#         l2_exceeding = l2[:diff]
+#         first = all_F(l2_exceeding)  #there must not be any Trues in the exceeding part
+#         rest = And([Not(Xor(l2_same_len[i], l1[i])) for i in range(len(l1))])
+#         result = And(first, rest)
+#     return result
 
-
-def at_most_one(bool_vars: 'list[Bool]') -> List[BoolRef]:
-    return [Not(And(pair[0], pair[1])) for pair in combinations(bool_vars, 2)]
-
-
-def exactly_one(bool_vars: 'list[Bool]') -> List[BoolRef]:
-    return at_most_one(bool_vars), [at_least_one(bool_vars)]
-
-
-def all_zeros(l: 'list[Bool]') -> BoolRef:
-    return And([Not(l[i]) for i in range(len(l))])
+###
 
 
 def bool2int(l: 'list[Bool]') -> int:
@@ -36,6 +69,7 @@ def bool2int(l: 'list[Bool]') -> int:
     for digits in l_b:
         result = (result << 1) | bool(int(digits))
     return result
+
 
 def int2boolList(n: int) -> List[bool]:
     result = []
@@ -58,7 +92,7 @@ def ge(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
         l1_same_len = l1[diff:]
         l1_exceeding = l1[:diff]
         ### if there are Trues in the diff then for sure l1>l2
-        result = Implies(Not(at_least_one(l1_exceeding)), ge_same_len(l1_same_len, l2))
+        result = Implies(Not(at_least_one_T(l1_exceeding)), ge_same_len(l1_same_len, l2))
     elif len(l1) == len(l2):
         result = ge_same_len(l1, l2)
     else:
@@ -67,7 +101,7 @@ def ge(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
         diff = len(l2) - len(l1)
         l2_same_len = l2[diff:]
         l2_exceeding = l2[:diff]
-        first = all_zeros(l2_exceeding)  ### there must not be any Trues in the exceeding part
+        first = all_F(l2_exceeding)  ### there must not be any Trues in the exceeding part
         rest = ge_same_len(l1, l2_same_len)
         result = And(first, rest)
     return result
@@ -96,7 +130,6 @@ def ge_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
 
     x = [Bool(f"xge_{str(uuid.uuid4())}") for i in range(len(l1) - 1)]
 
-
     first = Or(l1[0], Not(l2[0]))
     second = (x[0] == Not(Xor(l1[0], l2[0])))
     third = []
@@ -108,6 +141,7 @@ def ge_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
 
     return And(first, second, And(third), And(fourth))
 
+
 def gt(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
     #l1 > l2
 
@@ -118,7 +152,7 @@ def gt(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
         l1_same_len = l1[diff:]
         l1_exceeding = l1[:diff]
         #if there are Trues in the diff then for sure l1>l2
-        result = Implies(Not(at_least_one(l1_exceeding)), gt_same_len(l1_same_len, l2))
+        result = Implies(Not(at_least_one_T(l1_exceeding)), gt_same_len(l1_same_len, l2))
 
     elif len(l1) == len(l2):
         result = gt_same_len(l1, l2)
@@ -128,7 +162,7 @@ def gt(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
         diff = len(l2) - len(l1)
         l2_same_len = l2[diff:]
         l2_exceeding = l2[:diff]
-        first = all_zeros(l2_exceeding)
+        first = all_F(l2_exceeding)
         rest = gt_same_len(l1, l2_same_len)
         result = And(first, rest)
     return result
@@ -167,44 +201,6 @@ def lt(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
     return gt(l1=l2, l2=l1)
 
 
-def ne(
-    l1: 'list[Bool]', l2: 'list[Bool]'
-) -> BoolRef:  ### does not change from decimal to one hot encoding
-    return Or([Xor(l1[bit], l2[bit]) for bit in range(min(len(l1), len(l2)))])
-
-
-def eq(
-    l1: 'list[Bool]', l2: 'list[Bool]'
-) -> BoolRef:  ### does not change from decimal to one hot encoding
-    ### the probability of a different bit is bigger close to the lsb
-    l1 = l1[::-1]
-    l2 = l2[::-1]
-
-    result = []
-    if len(l1) > len(l2):
-        #l1 = 10101010101
-        #l2 =     010101
-        diff = len(l1) - len(l2)
-        l1_same_len = l1[diff:]
-        l1_exceeding = l1[:diff]
-        first = all_zeros(l1_exceeding)  #there must not be any Trues in the exceeding part
-        rest = And([Not(Xor(l1_same_len[i], l2[i])) for i in range(len(l2))])
-        result = And(first, rest)
-    elif len(l1) == len(l2):
-        result = And([Not(Xor(l1[i], l2[i])) for i in range(len(l2))])
-    else:
-        #l1 =      010101
-        #l2 = 10101010101
-        diff = len(l2) - len(l1)
-        l2_same_len = l2[diff:]
-        l2_exceeding = l2[:diff]
-        first = all_zeros(l2_exceeding)  #there must not be any Trues in the exceeding part
-        rest = And([Not(Xor(l2_same_len[i], l1[i])) for i in range(len(l1))])
-        result = And(first, rest)
-
-    return result
-
-
 def lt_int(l: 'list[Bool]', n: int) -> BoolRef:
     ### provide constraint list so that bool2int(l) < n
 
@@ -223,7 +219,7 @@ def lt_int(l: 'list[Bool]', n: int) -> BoolRef:
 
     ### all the bools of l before the first 1 in n must be 0
     constraint_list = []
-    constraint_list.append(all_zeros(l[:list_of_1[0]]))
+    constraint_list.append(all_F(l[:list_of_1[0]]))
 
     ### (each bit in l at the indexes contained in list_of_1 and all the previous) ->
     ### all the bit after that in l are 0 before the next index of list_of_1
@@ -372,8 +368,8 @@ def baseSAT(data_dict: dict) -> dict:
     ### simmetry braking constraint: biggest circuit in 0,0
     area_list = [dimensions[c][0] * dimensions[c][1] for c in CIRCUITS]
     max_area = indexOf(area_list, max(area_list))
-    solver.add(all_zeros(y[max_area]))
-    solver.add(all_zeros(x[max_area]))
+    solver.add(all_F(y[max_area]))
+    solver.add(all_F(x[max_area]))
 
     target_makespan = min_makespan  ### use target_makespan to iterate during optimization
 
