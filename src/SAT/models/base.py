@@ -190,4 +190,4 @@ def solve(data: dict) -> dict:
     #     solutions_dict["solution"] = solutions_dict["all_solutions"][0]
     # return solutions_dict
 
-    exit(0)
+    return {"leonardo": "ciaoooone"}

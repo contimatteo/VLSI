@@ -1,9 +1,14 @@
-from SAT.models.base import solve
-# from SAT.models.base_legacy import solve
+from importlib import import_module
 
 from SAT.utils.args import parse_args
 from SAT.utils.storage import SAT_data_file_url
 from SAT.utils.plots import plot_solutions_v2
+
+###
+
+MODELS_MODULE_NAMESPACE = "SAT.models"
+
+###
 
 
 def main(args):
@@ -27,20 +32,10 @@ def main(args):
 
     solutions_dict = {}
 
-    # lancia il python con dentro z3py
-    _model_name = f"{args.model}"
-    if _model_name == "base":
-        solutions_dict = solve(data_dict)
-    elif _model_name == "rotation":
-        pass
-    elif _model_name == "rotation.search":
-        pass
-    elif _model_name == "rotation.search.symmetry":
-        pass
-    elif _model_name == "symmetry":
-        pass
-    else:  # if _model_name == "search.symmetry"
-        pass
+    CURRENT_MODEL_MODULE = import_module(f"{MODELS_MODULE_NAMESPACE}.{args.model}")
+    fn_model_solve = getattr(CURRENT_MODEL_MODULE, "solve")
+
+    solutions_dict = fn_model_solve(data_dict)
 
     # plot
     if args.plot:
