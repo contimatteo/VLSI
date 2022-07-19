@@ -302,7 +302,7 @@ def diffn(x: 'list[Bool]', y: 'list[Bool]', widths: 'list[int]', heigths: 'list[
     return And(l)
 
 
-def baseSAT(data_dict: dict) -> dict:
+def main(data_dict: dict) -> dict:
     ### data_dict = {"data":str, "width": int, "n_circuits": int, "dims":[(w,h)]}
 
     t0 = time.time()

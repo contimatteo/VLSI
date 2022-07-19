@@ -1,4 +1,4 @@
-from SAT.models.base_decimal_encoding_diffn import baseSAT
+from SAT.models.base_decimal_encoding_diffn import main
 # from SAT.models.base_decimal_encoding import baseSAT
 
 from SAT.utils.args import parse_args
@@ -30,7 +30,7 @@ def main(args):
     # lancia il python con dentro z3py
     _model_name = f"{args.model}"
     if _model_name == "base":
-        solutions_dict = baseSAT(data_dict)
+        solutions_dict = main(data_dict)
     elif _model_name == "rotation":
         pass
     elif _model_name == "rotation.search":
