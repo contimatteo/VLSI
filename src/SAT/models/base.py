@@ -41,8 +41,6 @@ def variables(data: dict) -> dict:
     min_makespan = max(math.ceil(_c_area_sum / width), max(heigths))
     max_makespan = compute_max_makespan(heigths, widths, width)
 
-    #
-
     ### + max(widths) is necessary for summing the width later
     _x_domain_max = width - min(widths) + max(widths)
     _x_domain_size = math.ceil(math.log2(_x_domain_max)) if _x_domain_max > 0 else 1
@@ -65,7 +63,9 @@ def variables(data: dict) -> dict:
         "max_makespan"
     ]
 
-    return {[var_name]: locals()[var_name] for var_name in VARS_TO_RETURN}
+    _local_vars = locals()
+
+    return {var_name: _local_vars[var_name] for var_name in VARS_TO_RETURN}
 
 
 ###
@@ -80,7 +80,7 @@ def constraints(var: dict) -> List[Z3Clause]:
 
 
 def symmetries_breaking(var: dict) -> List[Z3Clause]:
-    return [sym_bigger_circuit_origin(var["x"], var["y"], var["widths"], var["heights"])]
+    return [sym_bigger_circuit_origin(var["x"], var["y"], var["widths"], var["heigths"])]
 
 
 ###
@@ -100,21 +100,26 @@ def solve(data: dict) -> dict:
 
     ##########################################################################################
 
-    width, n_circuits, CIRCUITS = None, None, None
-    widths, heigths, x, y = [], [], [], []
-    min_makespan, max_makespan = None, None
+    vars_dict = variables(data)
 
-    variables_dict = variables(data)
-    locals().update(variables_dict)
+    width = vars_dict["width"]
+    n_circuits, CIRCUITS = vars_dict["n_circuits"], vars_dict["CIRCUITS"]
 
+    widths, heigths = vars_dict["widths"], vars_dict["heigths"]
+    x, y = vars_dict["x"], vars_dict["y"]
+    min_makespan, max_makespan = vars_dict["min_makespan"], vars_dict["max_makespan"]
+
+    assert width is not None
+    assert n_circuits is not None
+    assert CIRCUITS is not None
     assert width is not None and n_circuits is not None and CIRCUITS is not None
     assert len(widths) > 0 and len(heigths) > 0 and len(x) > 0 and len(y) > 0
     assert min_makespan is not None and max_makespan is not None
 
-    for clause in constraints(variables_dict):
+    for clause in constraints(vars_dict):
         solver.add(clause)
 
-    for clause in symmetries_breaking(variables_dict):
+    for clause in symmetries_breaking(vars_dict):
         solver.add(clause)
 
     ##########################################################################################
@@ -136,6 +141,7 @@ def solve(data: dict) -> dict:
         # makespan = 0
         if check == z3.sat:
             print("SAT")
+            print("makespan =", target_makespan)
             # model = solver.model()
             # y_int = [
             #     bool2int([model.evaluate(y[c][i]) for i in range(domain_size_y)]) for c in CIRCUITS
@@ -183,3 +189,5 @@ def solve(data: dict) -> dict:
     # if solutions_dict["all_solutions"]:
     #     solutions_dict["solution"] = solutions_dict["all_solutions"][0]
     # return solutions_dict
+
+    exit(0)
