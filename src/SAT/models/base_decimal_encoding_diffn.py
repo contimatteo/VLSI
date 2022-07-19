@@ -426,6 +426,7 @@ def baseSAT(data_dict: dict) -> dict:
             solver.pop()
         else:
             print("unsat")
+            target_makespan += 1
         print(round(time.time() - t1))
         ### it is possible to decrease max_makespan at pace > 1 and when unsat try the skipped values
         ### or implement binary search...
