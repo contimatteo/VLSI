@@ -1,6 +1,5 @@
-# from SAT.models.base_decimal_encoding import baseSAT
 from SAT.models.base import solve
-# from SAT.models.base_decimal_encoding_diffn import solve
+# from SAT.models.base_legacy import solve
 
 from SAT.utils.args import parse_args
 from SAT.utils.storage import SAT_data_file_url
