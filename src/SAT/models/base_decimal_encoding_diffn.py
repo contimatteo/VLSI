@@ -1,4 +1,5 @@
 import math
+import uuid
 from itertools import combinations
 from operator import indexOf
 from typing import List
@@ -35,7 +36,6 @@ def bool2int(l: 'list[Bool]') -> int:
     for digits in l_b:
         result = (result << 1) | bool(int(digits))
     return result
-
 
 def int2boolList(n: int) -> List[bool]:
     result = []
@@ -94,7 +94,8 @@ def ge_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
     ### AND-CSE Encoding: Common SubExpression Elimination
     ### non credo che si riesca a fare ge
 
-    x = [Bool(f"x_{time.time()}") for i in range(len(l1) - 1)]
+    x = [Bool(f"xge_{str(uuid.uuid4())}") for i in range(len(l1) - 1)]
+
 
     first = Or(l1[0], Not(l2[0]))
     second = (x[0] == Not(Xor(l1[0], l2[0])))
@@ -106,7 +107,6 @@ def ge_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
         fourth.append(Implies(x[i], Or(l1[i + 1], Not(l2[i + 1]))))
 
     return And(first, second, And(third), And(fourth))
-
 
 def gt(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
     #l1 > l2
