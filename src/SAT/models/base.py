@@ -98,23 +98,26 @@ def solve(data: dict) -> dict:
     #     "solver": "z3 SAT"
     # }
 
-    ##########################################################################################
+    #
 
     vars_dict = variables(data)
 
     width = vars_dict["width"]
+    assert width is not None
+
     n_circuits, CIRCUITS = vars_dict["n_circuits"], vars_dict["CIRCUITS"]
+    assert n_circuits is not None and CIRCUITS is not None
 
     widths, heigths = vars_dict["widths"], vars_dict["heigths"]
-    x, y = vars_dict["x"], vars_dict["y"]
-    min_makespan, max_makespan = vars_dict["min_makespan"], vars_dict["max_makespan"]
+    assert len(widths) > 0 and len(heigths) > 0
 
-    assert width is not None
-    assert n_circuits is not None
-    assert CIRCUITS is not None
-    assert width is not None and n_circuits is not None and CIRCUITS is not None
-    assert len(widths) > 0 and len(heigths) > 0 and len(x) > 0 and len(y) > 0
+    x, y = vars_dict["x"], vars_dict["y"]
+    assert len(x) > 0 and len(y) > 0
+
+    min_makespan, max_makespan = vars_dict["min_makespan"], vars_dict["max_makespan"]
     assert min_makespan is not None and max_makespan is not None
+
+    #
 
     for clause in constraints(vars_dict):
         solver.add(clause)
@@ -122,7 +125,7 @@ def solve(data: dict) -> dict:
     for clause in symmetries_breaking(vars_dict):
         solver.add(clause)
 
-    ##########################################################################################
+    #
 
     target_makespan = min_makespan  ### use target_makespan to iterate during optimization
 
