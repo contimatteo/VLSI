@@ -8,7 +8,7 @@ from itertools import combinations
 from operator import indexOf
 from z3 import And, Or, Not, Xor, Solver, Bool, sat, Implies, BoolRef, unsat
 
-from SAT.models.components.heuristics import compute_max_makespan_tree
+from SAT.models.components.helper import compute_max_makespan
 from SAT.models.components.foundation import at_least_one_T, all_F
 
 ###
@@ -302,7 +302,7 @@ def diffn(x: 'list[Bool]', y: 'list[Bool]', widths: 'list[int]', heigths: 'list[
     return And(l)
 
 
-def main(data_dict: dict) -> dict:
+def solve(data_dict: dict) -> dict:
     ### data_dict = {"data":str, "width": int, "n_circuits": int, "dims":[(w,h)]}
 
     t0 = time.time()
@@ -323,7 +323,7 @@ def main(data_dict: dict) -> dict:
     min_makespan = max(math.ceil(sum_area / width), max(heigths))
     # max_makespan = sum(heights)
     # max_makespan = heuristics.compute_max_makespan(heigths, widths, width);
-    max_makespan = compute_max_makespan_tree(heigths, widths, width)
+    max_makespan = compute_max_makespan(heigths, widths, width)
 
     solver = Solver()
 

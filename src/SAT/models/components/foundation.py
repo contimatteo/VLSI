@@ -1,8 +1,11 @@
 from typing import List, Union
+
+import uuid
+
 from itertools import combinations
 
 from z3 import Bool, BoolRef
-from z3 import Or, And, Not, Xor
+from z3 import Or, And, Not, Xor, Implies
 
 ###
 
@@ -45,7 +48,7 @@ def eq(bol1: BoolOrList, bol2: BoolOrList) -> Z3Clause:
         return Not(Xor(b1, b2))
 
     assert isinstance(bol1, list) or __is_bool(bol1)
-    assert isinstance(bol1, list) or __is_bool(bol2)
+    assert isinstance(bol2, list) or __is_bool(bol2)
 
     if __is_bool(bol1) and __is_bool(bol2):
         return __eq(bol1, bol2)
