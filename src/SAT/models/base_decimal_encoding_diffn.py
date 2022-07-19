@@ -1,8 +1,9 @@
 import math
 from itertools import combinations
+from operator import indexOf
 from typing import List
 import time
-from z3 import And, Or, Not, Xor, Solver, Bool, sat, Implies, BoolRef
+from z3 import And, Or, Not, Xor, Solver, Bool, sat, Implies, BoolRef, unsat
 from SAT.models.components.heuristics import compute_max_makespan_tree
 
 
@@ -314,6 +315,8 @@ def baseSAT(data_dict: dict) -> dict:
     width = data_dict["width"]
     CIRCUITS = range(n_circuits)
 
+    dimensions = data_dict["dims"]
+
     ###  array of horizontal dimensions of the circuits
     widths = [data_dict["dims"][c][0] for c in CIRCUITS]
     ###  array of vertical dimensions of the circuits
@@ -356,7 +359,8 @@ def baseSAT(data_dict: dict) -> dict:
     ### forall(c in CIRCUITS)(x[c] + widths[c] <= width)
     solver.add(And([le_int(x[c], width - widths[c]) for c in CIRCUITS]))
 
-    solutions_dict = {
+    solutions_dict = { ### each solution in all_solutions is a dict
+
         "all_solutions": [],
         "solution": {},
         "stats": [],
@@ -364,14 +368,22 @@ def baseSAT(data_dict: dict) -> dict:
         "data": data_dict["data"],
         "solver": "z3 SAT"
     }
-    ### each solution in all_solutions is a dict
 
-    check = sat
-    while check == sat and max_makespan >= min_makespan and time.time() - t0 < 300:
+    ### simmetry braking constraint: biggest circuit in 0,0
+    area_list = [dimensions[c][0] * dimensions[c][1] for c in CIRCUITS]
+    max_area = indexOf(area_list, max(area_list))
+    solver.add(all_zeros(y[max_area]))
+    solver.add(all_zeros(x[max_area]))
+
+    target_makespan = min_makespan  ### use target_makespan to iterate during optimization
+
+    check = unsat
+    while check == unsat and min_makespan <= target_makespan <= max_makespan and time.time(
+    ) - t0 < 300:
         t1 = time.time()
         solver.push()
-        ### forall(c in CIRCUITS)(y[c] + heights[c] <= max_makespan)
-        solver.add(And([le_int(y[c], max_makespan - heigths[c]) for c in CIRCUITS]))
+        ### forall(c in CIRCUITS)(y[c] + heights[c] <= target_makespan)
+        solver.add(And([le_int(y[c], target_makespan - heigths[c]) for c in CIRCUITS]))
 
         solution = {}
         check = solver.check()
@@ -408,19 +420,18 @@ def baseSAT(data_dict: dict) -> dict:
             }
             solutions_dict["all_solutions"].append(solution)
             print(
-                f"max_makespan = {max_makespan}  min_makespan = {min_makespan}  makespan = {makespan}"
+                f"target_makespan = {target_makespan}  min_makespan = {min_makespan}  makespan = {makespan}"
             )
             solutions_dict["stats"] = solver.statistics()
             solver.pop()
         else:
             print("unsat")
         print(round(time.time() - t1))
-        max_makespan = makespan - 1
         ### it is possible to decrease max_makespan at pace > 1 and when unsat try the skipped values
         ### or implement binary search...
-    ### while check == sat
+    ### while
 
-    print(round(time.time() - t0))
+    print(f"TOTAL TIME = {round(time.time() - t0, 2)}")
 
     solutions_dict["all_solutions"] = solutions_dict["all_solutions"][::-1]
     if solutions_dict["all_solutions"]:
