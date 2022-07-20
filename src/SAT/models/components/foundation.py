@@ -193,7 +193,7 @@ def gte(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
     return Or(c1, And(c2, __gte_same_len(l1[start_idx[0]:], l2[start_idx[1]:])))
 
 
-def gt_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
+def __gt_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
     ### AND-CSE Encoding: Common SubExpression Elimination
     x = [Bool(f"x_{i}") for i in range(len(l1) - 1)]
 
