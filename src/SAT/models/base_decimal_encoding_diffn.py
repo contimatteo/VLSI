@@ -6,7 +6,7 @@ from operator import indexOf
 from z3 import And, Solver, Bool, sat, unsat, set_option
 
 from SAT.models.components.helper import compute_max_makespan
-from SAT.models.components.foundation import bool2int, diffn, lte_int, all_F, axial_symmetry
+from SAT.models.components.foundation import bool2int, diffn, lte_int, all_F, axial_symmetry, sub_b
 
 ### NOTE: https://digitalcommons.iwu.edu/cgi/viewcontent.cgi?article=1022&context=cs_honproj
 ### contains a more efficient encoding for lex
@@ -36,7 +36,6 @@ def solve(data_dict: dict) -> dict:
     max_makespan = compute_max_makespan(heigths, widths, width)
 
     solver = Solver()
-    solver.set('timeout',1*1000)
 
     max_domain_x = width - min(widths) + max(widths)
     ### + max(widths) is necessary for summing the width later

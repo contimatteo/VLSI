@@ -44,9 +44,9 @@ def exactly_one_T(bools: List[Bool]) -> Z3Clause:
 
 
 def ne(bol1: BoolOrList, bol2: BoolOrList) -> Z3Clause:
-    return Not(eq(bol1, bol2))
+    return Not(eq(bol1, bol2)) # [Xor(l1,l2)...]
 
-
+"""
 def eq(bol1: BoolOrList, bol2: BoolOrList) -> Z3Clause:
 
     def __eq(b1: Bool, b2: Bool) -> Z3Clause:
@@ -73,6 +73,7 @@ def eq(bol1: BoolOrList, bol2: BoolOrList) -> Z3Clause:
         )
 
     raise Exception("[eq] invalid parameters types.")
+    """
 
 
 def bool2int(l: 'list[Bool]') -> int:
@@ -180,6 +181,30 @@ def __gte_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
     return And(first, second, And(third), And(fourth))
 
 
+def gt_da(l1, l2):
+    
+    l1, l2 = get_bool_lists(l1, l2)
+
+    min_len = min(len(l1), len(l2))
+    start_idx = [len(l1)-min_len, len(l2)-min_len]
+    
+    al11 = at_least_one_T(l1[:start_idx[0]])
+    al12 = at_least_one_T(l2[:start_idx[1]])
+
+    """
+    len(l1)>len(l2)
+    Implies(Not(al11),__gt_same_len())
+
+    len(l1)==len(l2)
+    __gt_same_len()
+
+    len(l1)<len(l2)
+    And(all_F(l2), __gt_same_len())
+    """
+    
+    return Or(al1, Or(__gt_same_len(l1[start_idx[0]:],l2[start_idx[1]:])))
+
+
 def gt(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
     #l1 > l2
 
@@ -270,51 +295,44 @@ def lt_int(l: 'list[Bool]', n: int) -> BoolRef:
 
 
 def lte_int(l: 'list[Bool]', n: int) -> BoolRef:
-    return Or(lt_int(l, n), eq_int(l, n))
+    return Or(lt_int(l, n), eq(l, n))
     #rifare a partire da lt_int
 
 
-def eq_int(l: 'list[Bool]', n: int) -> BoolRef:
-    ### a == b
-    base2 = format(n, "b")
+def eq(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
+    l1, l2 = get_bool_lists(l1, l2)
+    max_len = max(len(l1), len(l2))
+    l1 = pad(l1, max_len)
+    l2 = pad(l2, max_len)
 
-    for i in range(len(l) - len(base2)):
-        base2 = "0" + base2
-
-    assert len(base2) == len(l)
-    constraint_list = []
-
-    for i, base2_i in enumerate(base2):
-        if base2_i == '0':
-            constraint_list.append(Not(l[i]))
-        else:
-            constraint_list.append(l[i])
-
-    return And(constraint_list)
+    return And([Not(Xor(l1[i],l2[i])) for i in range(max_len)])
 
 
-def sum_int(l: 'list[Bool]', n: int) -> BoolRef:
-    base2 = format(n, "b")
-
-    base2 = '0' * (len(l) - len(base2)) + base2
+###  check argument type
+def sum_int(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
+    l1, l2 = get_bool_lists(l1, l2)
+    max_len = max(len(l1), len(l2))
+    l1 = pad(l1, max_len)
+    l2 = pad(l2, max_len)
     result = []
 
     carry_in = False
     carry_out = False
 
-    for i in range(len(base2) - 1, -1, -1):
-        a = l[i]
-        b = bool(int(base2[i]))
+    for i in range(max_len - 1, -1, -1):
+        a = l1[i]
+        b = l2[i]
         result.append(Xor(Xor(a, b), carry_in))
 
         carry_out = Or(And(Xor(a, b), carry_in), And(a, b))
         carry_in = carry_out
 
     result = result[::-1]
+    
     return result
 
 
-def sub_b(l1, l2) -> BoolRef:
+def sub_b(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
     l1, l2 = get_bool_lists(l1, l2)
     max_len = max(len(l1), len(l2))
     l1 = pad(l1, max_len)
