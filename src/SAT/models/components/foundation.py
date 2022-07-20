@@ -21,8 +21,8 @@ def __is_bool(val: Union[bool, BoolRef]) -> bool:
     return isinstance(val, bool) or isinstance(val, BoolRef)
 
 
-def pad(l:'list[Bool]', length: int) -> 'list[Bool]':
-    return [False for _ in range(length-len(l))] + l
+def pad(l: 'list[Bool]', length: int) -> 'list[Bool]':
+    return [False for _ in range(length - len(l))] + l
 
 
 ###
@@ -48,11 +48,11 @@ def ne(l1, l2) -> Z3Clause:
     l1, l2 = get_bool_lists(l1, l2)
 
     min_len = min(len(l1), len(l2))
-    start_idx = [len(l1)-min_len, len(l2)-min_len]
-    
+    start_idx = [len(l1) - min_len, len(l2) - min_len]
+
     c1 = at_least_one_T(l1[:start_idx[0]])
     c2 = at_least_one_T(l2[:start_idx[1]])
-    return Or([c1,c2]+[Xor(l1i, l2i) for l1i,l2i in zip(l1,l2)])
+    return Or([c1, c2] + [Xor(l1i, l2i) for l1i, l2i in zip(l1, l2)])
 
 
 """
@@ -109,7 +109,6 @@ def int2boolList(n: int) -> List[bool]:
             result.append(False)
     return result
 
-
     result = []
     base2 = format(n, "b")
     for bit in base2:
@@ -123,10 +122,11 @@ def int2boolList(n: int) -> List[bool]:
 def get_bool_lists(*ll):
     ll = list(ll)
     for i in range(len(ll)):
-        if isinstance(ll[i], int): ll[i] = int2boolList(ll[i])
-        elif not isinstance(ll[i], list): 
+        if isinstance(ll[i], int):
+            ll[i] = int2boolList(ll[i])
+        elif not isinstance(ll[i], list):
             assert __is_bool(ll[i])
-            ll[i] = [ll[i]]        
+            ll[i] = [ll[i]]
     return ll
 
 
@@ -136,15 +136,13 @@ def eq(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
     l1 = pad(l1, max_len)
     l2 = pad(l2, max_len)
 
-    return And([Not(Xor(l1[i],l2[i])) for i in range(max_len)])
+    return And([Not(Xor(l1[i], l2[i])) for i in range(max_len)])
 
 
 """
 def gte(l1,l2):
     return Or(gt(l1,l2), eq(l1,l2))
 """
-
-
 """
 def __gte_same_len_n2(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
     assert (len(l1) == len(l2))
@@ -183,18 +181,35 @@ def __gte_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> Z3Clause:
 
 
 def gte(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
-    
+
     l1, l2 = get_bool_lists(l1, l2)
 
     min_len = min(len(l1), len(l2))
-    start_idx = [len(l1)-min_len, len(l2)-min_len]
-    
+    start_idx = [len(l1) - min_len, len(l2) - min_len]
+
     c1 = at_least_one_T(l1[:start_idx[0]])
     c2 = all_F(l2[:start_idx[1]])
-    
-    return Or(c1, And(c2, __gte_same_len(l1[start_idx[0]:],l2[start_idx[1]:])))
+
+    return Or(c1, And(c2, __gte_same_len(l1[start_idx[0]:], l2[start_idx[1]:])))
 
 
+def gt_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
+    ### AND-CSE Encoding: Common SubExpression Elimination
+    x = [Bool(f"x_{i}") for i in range(len(l1) - 1)]
+
+    first = And(l1[0], Not(l2[0]))
+    second = (x[0] == Not(Xor(l1[0], l2[0])))
+    third = []
+    for i in range(len(l1) - 2):
+        third.append(x[i + 1] == (And(x[i], Not(Xor(l1[i + 1], l2[i + 1])))))
+    fourth = []
+    for i in range(len(l1) - 1):
+        fourth.append(And(x[i], And(l1[i + 1], Not(l2[i + 1]))))
+
+    return Or(first, And(second, And(third), Or(fourth)))
+
+
+"""
 def __gt_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> Z3Clause:
     assert (len(l1) == len(l2))
     #AND encoding: complexity n^2 -> not very good, will be done better
@@ -214,19 +229,20 @@ def __gt_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> Z3Clause:
         ]
     )
     return And(first, rest)
+"""
 
 
 def gt(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
-    
+
     l1, l2 = get_bool_lists(l1, l2)
 
     min_len = min(len(l1), len(l2))
-    start_idx = [len(l1)-min_len, len(l2)-min_len]
-    
+    start_idx = [len(l1) - min_len, len(l2) - min_len]
+
     c1 = at_least_one_T(l1[:start_idx[0]])
     c2 = all_F(l2[:start_idx[1]])
-    
-    return Or(c1, And(c2, __gt_same_len(l1[start_idx[0]:],l2[start_idx[1]:])))
+
+    return Or(c1, And(c2, __gt_same_len(l1[start_idx[0]:], l2[start_idx[1]:])))
 
 
 """
@@ -299,8 +315,6 @@ def lte_int(l: 'list[Bool]', n: int) -> BoolRef:
 
     return And(constraint_list)
 """
-
-
 """
 def lte_int(l: 'list[Bool]', n: int) -> BoolRef:
     return Or(lte_int(l, n), eq(l, n))
@@ -328,7 +342,7 @@ def sum_b(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
         carry_in = carry_out
 
     result = result[::-1]
-    
+
     return result
 
 
@@ -347,14 +361,16 @@ def sub_b(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
         b = l2[i]
         result.append(Xor(Xor(a, b), borr_in))
 
-        borr_out = Or(And(Not(Xor(a,b)), borr_in), And(Not(a),b))
+        borr_out = Or(And(Not(Xor(a, b)), borr_in), And(Not(a), b))
         borr_in = borr_out
 
     result = result[::-1]
     return result
 
 
-def diffn(x: 'list[list[Bool]]', y: 'list[list[Bool]]', widths: BoolOrInt, heigths: BoolOrInt) -> Z3Clause:
+def diffn(
+    x: 'list[list[Bool]]', y: 'list[list[Bool]]', widths: BoolOrInt, heigths: BoolOrInt
+) -> Z3Clause:
     # predicate fzn_diffn(array[int] of var int: x,
     #                 array[int] of var int: y,
     #                 array[int] of var int: dx,
@@ -377,15 +393,15 @@ def diffn(x: 'list[list[Bool]]', y: 'list[list[Bool]]', widths: BoolOrInt, heigt
 
 
 def symmetrical(x: 'list[list[Bool]]', dx: BoolOrInt, start: int, end: int) -> Z3Clause:
-    assert start>=0 and end>start
+    assert start >= 0 and end > start
 
     ###  x' = end - (x[i]-start+dx[i])
-    x_symm = [sub_b(end,sum_b(sub_b(x[i],start),dx[i])) for i in range(len(x))]
+    x_symm = [sub_b(end, sum_b(sub_b(x[i], start), dx[i])) for i in range(len(x))]
     return x_symm
 
 
 def axial_symmetry(x: 'list[list[Bool]]', dx: BoolOrInt, start: int, end: int) -> Z3Clause:
-    x_symm = symmetrical(x,dx,start,end)
+    x_symm = symmetrical(x, dx, start, end)
     max_len = max(max([len(xi) for xi in x]), max([len(xi) for xi in x_symm]))
     x_flat = []
     x_symm_flat = []
@@ -393,4 +409,4 @@ def axial_symmetry(x: 'list[list[Bool]]', dx: BoolOrInt, start: int, end: int) -
     for i in range(len(x)):
         x_flat += pad(x[i], max_len)
         x_symm_flat += pad(x_symm[i], max_len)
-    return lte(x_flat, x_symm_flat) 
+    return lte(x_flat, x_symm_flat)
