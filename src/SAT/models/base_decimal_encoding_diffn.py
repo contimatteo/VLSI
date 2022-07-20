@@ -1,10 +1,12 @@
 import math
+from socket import timeout
 import time
+import timeout_decorator
 from operator import indexOf
-from z3 import And, Solver, Bool, sat, unsat
+from z3 import And, Solver, Bool, sat, unsat, set_option
 
 from SAT.models.components.helper import compute_max_makespan
-from SAT.models.components.foundation import bool2int, diffn, lte_int, all_F
+from SAT.models.components.foundation import bool2int, diffn, lte_int, all_F, axial_symmetry
 
 ### NOTE: https://digitalcommons.iwu.edu/cgi/viewcontent.cgi?article=1022&context=cs_honproj
 ### contains a more efficient encoding for lex
@@ -34,6 +36,7 @@ def solve(data_dict: dict) -> dict:
     max_makespan = compute_max_makespan(heigths, widths, width)
 
     solver = Solver()
+    solver.set('timeout',1*1000)
 
     max_domain_x = width - min(widths) + max(widths)
     ### + max(widths) is necessary for summing the width later
@@ -74,10 +77,12 @@ def solve(data_dict: dict) -> dict:
     }
 
     ### simmetry braking constraint: biggest circuit in 0,0
-    area_list = [dimensions[c][0] * dimensions[c][1] for c in CIRCUITS]
-    max_area = indexOf(area_list, max(area_list))
-    solver.add(all_F(y[max_area]))
-    solver.add(all_F(x[max_area]))
+    #area_list = [dimensions[c][0] * dimensions[c][1] for c in CIRCUITS]
+    #max_area = indexOf(area_list, max(area_list))
+    #solver.add(all_F(y[max_area]))
+    #solver.add(all_F(x[max_area]))
+
+    # solver.add(axial_symmetry(x, widths, start=0, end=width))
 
     target_makespan = min_makespan  ### use target_makespan to iterate during optimization
 
@@ -85,9 +90,12 @@ def solve(data_dict: dict) -> dict:
     while check == unsat and min_makespan <= target_makespan <= max_makespan and time.time(
     ) - t0 < 300:
         t1 = time.time()
+        # set_option(timeout=1000)
         solver.push()
         ### forall(c in CIRCUITS)(y[c] + heights[c] <= target_makespan)
         solver.add(And([lte_int(y[c], target_makespan - heigths[c]) for c in CIRCUITS]))
+        
+        # solver.add(axial_symmetry(y, heigths, start=0, end=target_makespan))
 
         solution = {}
         check = solver.check()

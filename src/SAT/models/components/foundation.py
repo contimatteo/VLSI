@@ -20,6 +20,10 @@ def __is_bool(val: Union[bool, BoolRef]) -> bool:
     return isinstance(val, bool) or isinstance(val, BoolRef)
 
 
+def pad(l, length):
+    return [False for _ in range(length-len(l))] + l
+
+
 ###
 
 
@@ -94,6 +98,26 @@ def int2boolList(n: int) -> List[bool]:
         else:
             result.append(False)
     return result
+
+
+    result = []
+    base2 = format(n, "b")
+    for bit in base2:
+        if bit == "1":
+            result.append(True)
+        else:
+            result.append(False)
+    return result
+
+
+def get_bool_lists(*ll):
+    ll = list(ll)
+    for i in range(len(ll)):
+        if isinstance(ll[i], int): ll[i] = int2boolList(ll[i])
+        elif not isinstance(ll[i], list): 
+            assert __is_bool(ll[i])
+            ll[i] = [ll[i]]        
+    return ll
 
 
 def ge(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
@@ -290,6 +314,28 @@ def sum_int(l: 'list[Bool]', n: int) -> BoolRef:
     return result
 
 
+def sub_b(l1, l2) -> BoolRef:
+    l1, l2 = get_bool_lists(l1, l2)
+    max_len = max(len(l1), len(l2))
+    l1 = pad(l1, max_len)
+    l2 = pad(l2, max_len)
+    result = []
+
+    borr_in = False
+    borr_out = False
+
+    for i in range(len(l1) - 1, -1, -1):
+        a = l1[i]
+        b = l2[i]
+        result.append(Xor(Xor(a, b), borr_in))
+
+        borr_out = Or(And(Not(Xor(a,b)), borr_in), And(Not(a),b))
+        borr_in = borr_out
+
+    result = result[::-1]
+    return result
+
+
 def diffn(x: 'list[Bool]', y: 'list[Bool]', widths: 'list[int]', heigths: 'list[int]') -> BoolRef:
     # predicate fzn_diffn(array[int] of var int: x,
     #                 array[int] of var int: y,
@@ -310,3 +356,23 @@ def diffn(x: 'list[Bool]', y: 'list[Bool]', widths: 'list[int]', heigths: 'list[
             )
         )
     return And(l)
+
+
+def symmetrical(x: 'list[list[Bool]]', dx: 'list[int]', start: int, end: int):
+    assert start>=0 and end>start
+
+    ###  x' = end - (x[i]-start+dx[i])
+    x_symm = [sub_b(end,sum_int(sub_b(x[i],start),dx[i])) for i in range(len(x))]
+    return x_symm
+
+
+def axial_symmetry(x, dx, start, end):
+    x_symm = symmetrical(x,dx,start,end)
+    max_len = max(max([len(xi) for xi in x]), max([len(xi) for xi in x_symm]))
+    x_flat = []
+    x_symm_flat = []
+    ###  maybe padding is useless
+    for i in range(len(x)):
+        x_flat += pad(x[i], max_len)
+        x_symm_flat += pad(x_symm[i], max_len)
+    return le(x_flat, x_symm_flat) 
