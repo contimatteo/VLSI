@@ -270,7 +270,7 @@ def eq_int(l: 'list[Bool]', n: int) -> BoolRef:
 
 
 def sum_int(l: 'list[Bool]', n: int) -> BoolRef:
-    base2 = base2 = format(n, "b")
+    base2 = format(n, "b")
 
     base2 = '0' * (len(l) - len(base2)) + base2
     result = []
