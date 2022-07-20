@@ -10,6 +10,7 @@ from z3 import Or, And, Not, Xor, Implies
 
 ###
 
+BoolOrInt = Union[List[Bool], int]
 BoolOrList = Union[List[Bool], Bool]
 Z3Clause = BoolRef
 
@@ -20,14 +21,14 @@ def __is_bool(val: Union[bool, BoolRef]) -> bool:
     return isinstance(val, bool) or isinstance(val, BoolRef)
 
 
-def pad(l, length):
+def pad(l:'list[Bool]', length: int) -> 'list[Bool]':
     return [False for _ in range(length-len(l))] + l
 
 
 ###
 
 
-def all_F(l: 'list[Bool]'):
+def all_F(l: 'list[Bool]') -> Z3Clause:
     return And([Not(b) for b in l])
 
 
@@ -43,8 +44,16 @@ def exactly_one_T(bools: List[Bool]) -> Z3Clause:
     return And(at_most_one_T(bools) + [at_least_one_T(bools)])
 
 
-def ne(bol1: BoolOrList, bol2: BoolOrList) -> Z3Clause:
-    return Not(eq(bol1, bol2)) # [Xor(l1,l2)...]
+def ne(l1, l2) -> Z3Clause:
+    l1, l2 = get_bool_lists(l1, l2)
+
+    min_len = min(len(l1), len(l2))
+    start_idx = [len(l1)-min_len, len(l2)-min_len]
+    
+    c1 = at_least_one_T(l1[:start_idx[0]])
+    c2 = at_least_one_T(l2[:start_idx[1]])
+    return Or([c1,c2]+[Xor(l1i, l2i) for l1i,l2i in zip(l1,l2)])
+
 
 """
 def eq(bol1: BoolOrList, bol2: BoolOrList) -> Z3Clause:
@@ -121,31 +130,22 @@ def get_bool_lists(*ll):
     return ll
 
 
-def ge(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
-    ### l1 >= l2
+def eq(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
+    l1, l2 = get_bool_lists(l1, l2)
+    max_len = max(len(l1), len(l2))
+    l1 = pad(l1, max_len)
+    l2 = pad(l2, max_len)
 
-    ### l1 = 10101010101
-    ### l2 =      010101
-    if len(l1) > len(l2):
-        diff = len(l1) - len(l2)
-        l1_same_len = l1[diff:]
-        l1_exceeding = l1[:diff]
-        ### if there are Trues in the diff then for sure l1>l2
-        result = Implies(Not(at_least_one_T(l1_exceeding)), __gte_same_len(l1_same_len, l2))
-    elif len(l1) == len(l2):
-        result = __gte_same_len(l1, l2)
-    else:
-        ### l1 =      010101
-        ### l2 = 10101010101
-        diff = len(l2) - len(l1)
-        l2_same_len = l2[diff:]
-        l2_exceeding = l2[:diff]
-        first = all_F(l2_exceeding)  ### there must not be any Trues in the exceeding part
-        rest = __gte_same_len(l1, l2_same_len)
-        result = And(first, rest)
-    return result
+    return And([Not(Xor(l1[i],l2[i])) for i in range(max_len)])
 
 
+"""
+def gte(l1,l2):
+    return Or(gt(l1,l2), eq(l1,l2))
+"""
+
+
+"""
 def __gte_same_len_n2(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
     assert (len(l1) == len(l2))
     ### AND encoding: complexity n^2 -> not very good, will be done better
@@ -161,9 +161,10 @@ def __gte_same_len_n2(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
         ]
     )
     return And(first, rest)
+"""
 
 
-def __gte_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
+def __gte_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> Z3Clause:
     ### AND-CSE Encoding: Common SubExpression Elimination
     ### non credo che si riesca a fare ge
 
@@ -181,30 +182,54 @@ def __gte_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
     return And(first, second, And(third), And(fourth))
 
 
-def gt_da(l1, l2):
+def gte(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
     
     l1, l2 = get_bool_lists(l1, l2)
 
     min_len = min(len(l1), len(l2))
     start_idx = [len(l1)-min_len, len(l2)-min_len]
     
-    al11 = at_least_one_T(l1[:start_idx[0]])
-    al12 = at_least_one_T(l2[:start_idx[1]])
-
-    """
-    len(l1)>len(l2)
-    Implies(Not(al11),__gt_same_len())
-
-    len(l1)==len(l2)
-    __gt_same_len()
-
-    len(l1)<len(l2)
-    And(all_F(l2), __gt_same_len())
-    """
+    c1 = at_least_one_T(l1[:start_idx[0]])
+    c2 = all_F(l2[:start_idx[1]])
     
-    return Or(al1, Or(__gt_same_len(l1[start_idx[0]:],l2[start_idx[1]:])))
+    return Or(c1, And(c2, __gte_same_len(l1[start_idx[0]:],l2[start_idx[1]:])))
 
 
+def __gt_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> Z3Clause:
+    assert (len(l1) == len(l2))
+    #AND encoding: complexity n^2 -> not very good, will be done better
+    n = len(l1)
+    first = Or(l1[0], Not(l2[0]))  #l1[0] >= l2[0]
+    rest = And(
+        [
+            Implies(
+                And(
+                    [
+                        Not(Xor(l1[j], l2[j]))  # if l1[j] == l2[j] for every j up to i
+                        for j in range(i + 1)
+                    ]
+                ),
+                And(l1[i + 1], Not(l2[i + 1]))  # then l1[i+1] > l2[i+1]
+            ) for i in range(n - 1)
+        ]
+    )
+    return And(first, rest)
+
+
+def gt(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
+    
+    l1, l2 = get_bool_lists(l1, l2)
+
+    min_len = min(len(l1), len(l2))
+    start_idx = [len(l1)-min_len, len(l2)-min_len]
+    
+    c1 = at_least_one_T(l1[:start_idx[0]])
+    c2 = all_F(l2[:start_idx[1]])
+    
+    return Or(c1, And(c2, __gt_same_len(l1[start_idx[0]:],l2[start_idx[1]:])))
+
+
+"""
 def gt(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
     #l1 > l2
 
@@ -229,38 +254,19 @@ def gt(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
         rest = __gt_same_len(l1, l2_same_len)
         result = And(first, rest)
     return result
+"""
 
 
-def __gt_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
-    assert (len(l1) == len(l2))
-    #AND encoding: complexity n^2 -> not very good, will be done better
-    n = len(l1)
-    first = Or(l1[0], Not(l2[0]))  #l1[0] >= l2[0]
-    rest = And(
-        [
-            Implies(
-                And(
-                    [
-                        Not(Xor(l1[j], l2[j]))  # if l1[j] == l2[j] for every j up to i
-                        for j in range(i + 1)
-                    ]
-                ),
-                And(l1[i + 1], Not(l2[i + 1]))  # then l1[i+1] > l2[i+1]
-            ) for i in range(n - 1)
-        ]
-    )
-    return And(first, rest)
+def lte(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
+    return gte(l1=l2, l2=l1)
 
 
-def le(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
-    return ge(l1=l2, l2=l1)
-
-
-def lt(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
+def lt(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
     return gt(l1=l2, l2=l1)
 
 
-def lt_int(l: 'list[Bool]', n: int) -> BoolRef:
+"""
+def lte_int(l: 'list[Bool]', n: int) -> BoolRef:
     ### provide constraint list so that bool2int(l) < n
 
     base2 = format(n, "b")
@@ -292,24 +298,18 @@ def lt_int(l: 'list[Bool]', n: int) -> BoolRef:
         ]
 
     return And(constraint_list)
+"""
 
 
+"""
 def lte_int(l: 'list[Bool]', n: int) -> BoolRef:
-    return Or(lt_int(l, n), eq(l, n))
+    return Or(lte_int(l, n), eq(l, n))
     #rifare a partire da lt_int
-
-
-def eq(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
-    l1, l2 = get_bool_lists(l1, l2)
-    max_len = max(len(l1), len(l2))
-    l1 = pad(l1, max_len)
-    l2 = pad(l2, max_len)
-
-    return And([Not(Xor(l1[i],l2[i])) for i in range(max_len)])
+"""
 
 
 ###  check argument type
-def sum_int(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
+def sum_b(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
     l1, l2 = get_bool_lists(l1, l2)
     max_len = max(len(l1), len(l2))
     l1 = pad(l1, max_len)
@@ -332,7 +332,7 @@ def sum_int(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
     return result
 
 
-def sub_b(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
+def sub_b(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
     l1, l2 = get_bool_lists(l1, l2)
     max_len = max(len(l1), len(l2))
     l1 = pad(l1, max_len)
@@ -354,7 +354,7 @@ def sub_b(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
     return result
 
 
-def diffn(x: 'list[Bool]', y: 'list[Bool]', widths: 'list[int]', heigths: 'list[int]') -> BoolRef:
+def diffn(x: 'list[list[Bool]]', y: 'list[list[Bool]]', widths: BoolOrInt, heigths: BoolOrInt) -> Z3Clause:
     # predicate fzn_diffn(array[int] of var int: x,
     #                 array[int] of var int: y,
     #                 array[int] of var int: dx,
@@ -369,22 +369,22 @@ def diffn(x: 'list[Bool]', y: 'list[Bool]', widths: 'list[int]', heigths: 'list[
         ### if i < j: useless
         l.append(
             Or(
-                le(sum_int(x[i], widths[i]), x[j]), le(sum_int(y[i], heigths[i]), y[j]),
-                le(sum_int(x[j], widths[j]), x[i]), le(sum_int(y[j], heigths[j]), y[i])
+                lte(sum_b(x[i], widths[i]), x[j]), lte(sum_b(y[i], heigths[i]), y[j]),
+                lte(sum_b(x[j], widths[j]), x[i]), lte(sum_b(y[j], heigths[j]), y[i])
             )
         )
     return And(l)
 
 
-def symmetrical(x: 'list[list[Bool]]', dx: 'list[int]', start: int, end: int):
+def symmetrical(x: 'list[list[Bool]]', dx: BoolOrInt, start: int, end: int) -> Z3Clause:
     assert start>=0 and end>start
 
     ###  x' = end - (x[i]-start+dx[i])
-    x_symm = [sub_b(end,sum_int(sub_b(x[i],start),dx[i])) for i in range(len(x))]
+    x_symm = [sub_b(end,sum_b(sub_b(x[i],start),dx[i])) for i in range(len(x))]
     return x_symm
 
 
-def axial_symmetry(x, dx, start, end):
+def axial_symmetry(x: 'list[list[Bool]]', dx: BoolOrInt, start: int, end: int) -> Z3Clause:
     x_symm = symmetrical(x,dx,start,end)
     max_len = max(max([len(xi) for xi in x]), max([len(xi) for xi in x_symm]))
     x_flat = []
@@ -393,4 +393,4 @@ def axial_symmetry(x, dx, start, end):
     for i in range(len(x)):
         x_flat += pad(x[i], max_len)
         x_symm_flat += pad(x_symm[i], max_len)
-    return le(x_flat, x_symm_flat) 
+    return lte(x_flat, x_symm_flat) 
