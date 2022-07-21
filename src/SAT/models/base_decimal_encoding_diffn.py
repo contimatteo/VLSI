@@ -1,7 +1,6 @@
 import math
 from socket import timeout
 import time
-import timeout_decorator
 from operator import indexOf
 from z3 import And, Solver, Bool, sat, unsat, set_option
 
@@ -93,7 +92,7 @@ def solve(data_dict: dict) -> dict:
         solver.push()
         ### forall(c in CIRCUITS)(y[c] + heights[c] <= target_makespan)
         solver.add(And([lte(y[c], sub_b(target_makespan, heights[c])) for c in CIRCUITS]))
-        
+
         # solver.add(axial_symmetry(y, heights, start=0, end=target_makespan))
 
         solution = {}
