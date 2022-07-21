@@ -12,9 +12,25 @@ from SAT.models.components.symmetry import sym_bigger_circuit_origin
 
 ###
 
-Z3Clause = BoolRef
+T_Z3Clause = BoolRef
+T_Z3Solver = Solver
 
 ###
+
+
+def __solver() -> T_Z3Solver:
+    solver = Solver()
+
+    solver.set('sat.random_seed', 666)
+
+    # if custom_search:
+    #     s.set("sat.local_search", True)
+    #     s.set("sat.local_search_threads", 1)
+    #     s.set("sat.threads", 3)
+    #     s.set("sat.lookahead_simplify", True)
+    #     s.set("sat.lookahead.use_learned", True)
+
+    return solver
 
 
 def __variables_support(data: dict) -> dict:
@@ -71,7 +87,7 @@ def variables(data: dict) -> dict:
 ###
 
 
-def constraints(var: dict) -> List[Z3Clause]:
+def constraints(var: dict) -> List[T_Z3Clause]:
     return [
         diffn(var["x"], var["y"], var["widths"], var["heigths"]),
         ### forall(c in CIRCUITS)(x[c] + widths[c] <= width)
@@ -79,7 +95,7 @@ def constraints(var: dict) -> List[Z3Clause]:
     ]
 
 
-def symmetries_breaking(var: dict) -> List[Z3Clause]:
+def symmetries_breaking(var: dict) -> List[T_Z3Clause]:
     return [sym_bigger_circuit_origin(var["x"], var["y"], var["widths"], var["heigths"])]
 
 
@@ -88,7 +104,9 @@ def symmetries_breaking(var: dict) -> List[Z3Clause]:
 
 def solve(data: dict) -> dict:
     t0 = time.time()
-    solver = Solver()
+
+    solver = __solver()
+
     # solutions_dict = { ### each solution in all_solutions is a dict
     #     "all_solutions": [],
     #     "solution": {},
