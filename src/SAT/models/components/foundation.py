@@ -10,9 +10,11 @@ from z3 import Or, And, Not, Xor, Implies
 
 ###
 
-BoolOrInt = Union[List[Bool], int]
-BoolOrList = Union[List[Bool], Bool]
-Z3Clause = BoolRef
+T_NumberAsBoolList = List[Bool]
+T_NumbersAsBoolLists = List[T_NumberAsBoolList]
+T_Number = Union[T_NumberAsBoolList, int]
+# T_BoolOrList = Union[T_NumberAsBoolList, Bool]
+T_Z3Clause = BoolRef
 
 ###
 
@@ -21,71 +23,13 @@ def __is_bool(val: Union[bool, BoolRef]) -> bool:
     return isinstance(val, bool) or isinstance(val, BoolRef)
 
 
-def pad(l: 'list[Bool]', length: int) -> 'list[Bool]':
+def pad(l: T_NumberAsBoolList, length: int) -> T_NumberAsBoolList:
+    assert length > 0 and length >= len(l)
+
     return [False for _ in range(length - len(l))] + l
 
 
-###
-
-
-def all_F(l: 'list[Bool]') -> Z3Clause:
-    return And([Not(b) for b in l])
-
-
-def at_least_one_T(bools: List[Bool]) -> Z3Clause:
-    return Or(bools)
-
-
-def at_most_one_T(bools: List[Bool]) -> Z3Clause:
-    return And([Not(And(b1, b2)) for b1, b2 in combinations(bools, 2)])
-
-
-def exactly_one_T(bools: List[Bool]) -> Z3Clause:
-    return And(at_most_one_T(bools) + [at_least_one_T(bools)])
-
-
-def ne(l1, l2) -> Z3Clause:
-    l1, l2 = get_bool_lists(l1, l2)
-
-    min_len = min(len(l1), len(l2))
-    start_idx = [len(l1) - min_len, len(l2) - min_len]
-
-    c1 = at_least_one_T(l1[:start_idx[0]])
-    c2 = at_least_one_T(l2[:start_idx[1]])
-    return Or([c1, c2] + [Xor(l1i, l2i) for l1i, l2i in zip(l1, l2)])
-
-
-"""
-def eq(bol1: BoolOrList, bol2: BoolOrList) -> Z3Clause:
-
-    def __eq(b1: Bool, b2: Bool) -> Z3Clause:
-        return Not(Xor(b1, b2))
-
-    assert isinstance(bol1, list) or __is_bool(bol1)
-    assert isinstance(bol2, list) or __is_bool(bol2)
-
-    if __is_bool(bol1) and __is_bool(bol2):
-        return __eq(bol1, bol2)
-
-    if isinstance(bol1, list) and isinstance(bol2, list):
-        if len(bol1) == len(bol2):
-            return And([__eq(b1, b2) for b1, b2 in zip(bol1, bol2)])
-
-        if len(bol1) > len(bol2):
-            return And(
-                [__eq(b1, b2) for b1, b2 in zip(bol1[len(bol2):], bol2)] + all_F(bol1[:len(bol2)])
-            )
-
-        ### len(bol1) < len(bol2)
-        return And(
-            [__eq(b1, b2) for b2, b1 in zip(bol2[len(bol1):], bol1)] + all_F(bol2[:len(bol1)])
-        )
-
-    raise Exception("[eq] invalid parameters types.")
-    """
-
-
-def bool2int(l: 'list[Bool]') -> int:
+def bool2int(l: T_NumberAsBoolList) -> int:
     result = 0
     l_b = []
     for _, l_i in enumerate(l):
@@ -119,6 +63,66 @@ def int2boolList(n: int) -> List[bool]:
     return result
 
 
+###
+
+
+def all_F(l: T_NumberAsBoolList) -> T_Z3Clause:
+    return And([Not(b) for b in l])
+
+
+def at_least_one_T(bools: List[Bool]) -> T_Z3Clause:
+    return Or(bools)
+
+
+def at_most_one_T(bools: List[Bool]) -> T_Z3Clause:
+    return And([Not(And(b1, b2)) for b1, b2 in combinations(bools, 2)])
+
+
+def exactly_one_T(bools: List[Bool]) -> T_Z3Clause:
+    return And(at_most_one_T(bools) + [at_least_one_T(bools)])
+
+
+def ne(l1, l2) -> T_Z3Clause:
+    l1, l2 = get_bool_lists(l1, l2)
+
+    min_len = min(len(l1), len(l2))
+    start_idx = [len(l1) - min_len, len(l2) - min_len]
+
+    c1 = at_least_one_T(l1[:start_idx[0]])
+    c2 = at_least_one_T(l2[:start_idx[1]])
+    return Or([c1, c2] + [Xor(l1i, l2i) for l1i, l2i in zip(l1, l2)])
+
+
+"""
+def eq(bol1: T_BoolOrList, bol2: T_BoolOrList) -> T_Z3Clause:
+
+    def __eq(b1: Bool, b2: Bool) -> T_Z3Clause:
+        return Not(Xor(b1, b2))
+
+    assert isinstance(bol1, list) or __is_bool(bol1)
+    assert isinstance(bol2, list) or __is_bool(bol2)
+
+    if __is_bool(bol1) and __is_bool(bol2):
+        return __eq(bol1, bol2)
+
+    if isinstance(bol1, list) and isinstance(bol2, list):
+        if len(bol1) == len(bol2):
+            return And([__eq(b1, b2) for b1, b2 in zip(bol1, bol2)])
+
+        if len(bol1) > len(bol2):
+            return And(
+                [__eq(b1, b2) for b1, b2 in zip(bol1[len(bol2):], bol2)] + all_F(bol1[:len(bol2)])
+            )
+
+        ### len(bol1) < len(bol2)
+        return And(
+            [__eq(b1, b2) for b2, b1 in zip(bol2[len(bol1):], bol1)] + all_F(bol2[:len(bol1)])
+        )
+
+    raise Exception("[eq] invalid parameters types.")
+    """
+
+
 def get_bool_lists(*ll):
     ll = list(ll)
     for i in range(len(ll)):
@@ -130,7 +134,7 @@ def get_bool_lists(*ll):
     return ll
 
 
-def eq(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
+def eq(l1: T_Number, l2: T_Number) -> T_Z3Clause:
     l1, l2 = get_bool_lists(l1, l2)
     max_len = max(len(l1), len(l2))
     l1 = pad(l1, max_len)
@@ -144,7 +148,7 @@ def gte(l1,l2):
     return Or(gt(l1,l2), eq(l1,l2))
 """
 """
-def __gte_same_len_n2(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
+def __gte_same_len_n2(l1: T_NumberAsBoolList, l2: T_NumberAsBoolList) -> BoolRef:
     assert (len(l1) == len(l2))
     ### AND encoding: complexity n^2 -> not very good, will be done better
     n = len(l1)
@@ -162,7 +166,7 @@ def __gte_same_len_n2(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
 """
 
 
-def __gte_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> Z3Clause:
+def __gte_same_len(l1: T_NumberAsBoolList, l2: T_NumberAsBoolList) -> T_Z3Clause:
     ### AND-CSE Encoding: Common SubExpression Elimination
     if len(l1) == 1:
         return Or(l1[0], Not(l2[0]))
@@ -181,7 +185,7 @@ def __gte_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> Z3Clause:
     return And(first, second, And(third), And(fourth))
 
 
-def gte(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
+def gte(l1: T_Number, l2: T_Number) -> T_Z3Clause:
 
     l1, l2 = get_bool_lists(l1, l2)
 
@@ -194,7 +198,7 @@ def gte(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
     return Or(c1, And(c2, __gte_same_len(l1[start_idx[0]:], l2[start_idx[1]:])))
 
 
-def __gt_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> Z3Clause:
+def __gt_same_len(l1: T_NumberAsBoolList, l2: T_NumberAsBoolList) -> T_Z3Clause:
     ### AND-CSE Encoding: Common SubExpression Elimination
     if len(l1) == 1:
         return And(l1[0], Not(l2[0]))
@@ -214,7 +218,7 @@ def __gt_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> Z3Clause:
 
 
 """
-def __gt_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> Z3Clause:
+def __gt_same_len(l1: T_NumberAsBoolList, l2: T_NumberAsBoolList) -> T_Z3Clause:
     assert (len(l1) == len(l2))
     #AND encoding: complexity n^2 -> not very good, will be done better
     n = len(l1)
@@ -236,7 +240,7 @@ def __gt_same_len(l1: 'list[Bool]', l2: 'list[Bool]') -> Z3Clause:
 """
 
 
-def gt(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
+def gt(l1: T_Number, l2: T_Number) -> T_Z3Clause:
 
     l1, l2 = get_bool_lists(l1, l2)
 
@@ -250,7 +254,7 @@ def gt(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
 
 
 """
-def gt(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
+def gt(l1: T_NumberAsBoolList, l2: T_NumberAsBoolList) -> BoolRef:
     #l1 > l2
 
     #l1 = 10101010101
@@ -277,16 +281,16 @@ def gt(l1: 'list[Bool]', l2: 'list[Bool]') -> BoolRef:
 """
 
 
-def lte(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
+def lte(l1: T_Number, l2: T_Number) -> T_Z3Clause:
     return gte(l1=l2, l2=l1)
 
 
-def lt(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
+def lt(l1: T_Number, l2: T_Number) -> T_Z3Clause:
     return gt(l1=l2, l2=l1)
 
 
 """
-def lte_int(l: 'list[Bool]', n: int) -> BoolRef:
+def lte_int(l: T_NumberAsBoolList, n: int) -> BoolRef:
     ### provide constraint list so that bool2int(l) < n
 
     base2 = format(n, "b")
@@ -320,14 +324,14 @@ def lte_int(l: 'list[Bool]', n: int) -> BoolRef:
     return And(constraint_list)
 """
 """
-def lte_int(l: 'list[Bool]', n: int) -> BoolRef:
+def lte_int(l: T_NumberAsBoolList, n: int) -> BoolRef:
     return Or(lte_int(l, n), eq(l, n))
     #rifare a partire da lt_int
 """
 
 
 ###  check argument type
-def sum_b(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
+def sum_b(l1: T_Number, l2: T_Number) -> T_Z3Clause:
     l1, l2 = get_bool_lists(l1, l2)
     max_len = max(len(l1), len(l2))
     l1 = pad(l1, max_len)
@@ -350,7 +354,7 @@ def sum_b(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
     return result
 
 
-def sub_b(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
+def sub_b(l1: T_Number, l2: T_Number) -> T_Z3Clause:
     l1, l2 = get_bool_lists(l1, l2)
     max_len = max(len(l1), len(l2))
     l1 = pad(l1, max_len)
@@ -373,8 +377,8 @@ def sub_b(l1: BoolOrInt, l2: BoolOrInt) -> Z3Clause:
 
 
 def diffn(
-    x: 'list[list[Bool]]', y: 'list[list[Bool]]', widths: BoolOrInt, heigths: BoolOrInt
-) -> Z3Clause:
+    x: 'list[list[Bool]]', y: 'list[list[Bool]]', widths: T_Number, heigths: T_Number
+) -> T_Z3Clause:
     # predicate fzn_diffn(array[int] of var int: x,
     #                 array[int] of var int: y,
     #                 array[int] of var int: dx,
@@ -396,7 +400,10 @@ def diffn(
     return And(l)
 
 
-def symmetrical(x: 'list[list[Bool]]', dx: BoolOrInt, start: int, end: int) -> Z3Clause:
+###
+
+
+def symmetrical(x: T_NumbersAsBoolLists, dx: T_Number, start: int, end: int) -> T_Z3Clause:
     assert start >= 0 and end > start
 
     ###  x' = end - (x[i]-start+dx[i])
@@ -404,7 +411,7 @@ def symmetrical(x: 'list[list[Bool]]', dx: BoolOrInt, start: int, end: int) -> Z
     return x_symm
 
 
-def axial_symmetry(x: 'list[list[Bool]]', dx: BoolOrInt, start: int, end: int) -> Z3Clause:
+def axial_symmetry(x: T_NumbersAsBoolLists, dx: T_Number, start: int, end: int) -> T_Z3Clause:
     x_symm = symmetrical(x, dx, start, end)
     max_len = max(max([len(xi) for xi in x]), max([len(xi) for xi in x_symm]))
     x_flat = []
