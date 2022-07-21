@@ -7,7 +7,7 @@ from z3 import And, Solver, Bool, sat, unsat, Implies, Not, Xor, Or
 
 from SAT.models.components.helper import compute_max_makespan
 from SAT.models.components.foundation import bool2int, diffn, lte, all_F, axial_symmetry, pad, sub_b, int2boolList
-
+#hello
 ### NOTE: https://digitalcommons.iwu.edu/cgi/viewcontent.cgi?article=1022&context=cs_honproj
 ### contains a more efficient encoding for lex
 
