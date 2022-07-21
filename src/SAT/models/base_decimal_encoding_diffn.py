@@ -1,10 +1,12 @@
 import math
+from socket import timeout
 import time
+import timeout_decorator
 from operator import indexOf
-from z3 import And, Solver, Bool, sat, unsat
+from z3 import And, Solver, Bool, sat, unsat, set_option
 
 from SAT.models.components.helper import compute_max_makespan
-from SAT.models.components.foundation import bool2int, diffn, lte_int, all_F
+from SAT.models.components.foundation import bool2int, diffn, lte, all_F, axial_symmetry, sub_b
 
 ### NOTE: https://digitalcommons.iwu.edu/cgi/viewcontent.cgi?article=1022&context=cs_honproj
 ### contains a more efficient encoding for lex
@@ -24,14 +26,14 @@ def solve(data_dict: dict) -> dict:
     ###  array of horizontal dimensions of the circuits
     widths = [data_dict["dims"][c][0] for c in CIRCUITS]
     ###  array of vertical dimensions of the circuits
-    heigths = [data_dict["dims"][c][1] for c in CIRCUITS]
+    heights = [data_dict["dims"][c][1] for c in CIRCUITS]
 
     ### define makespan boundaries
-    sum_area = sum([heigths[c] * widths[c] for c in CIRCUITS])
-    min_makespan = max(math.ceil(sum_area / width), max(heigths))
+    sum_area = sum([heights[c] * widths[c] for c in CIRCUITS])
+    min_makespan = max(math.ceil(sum_area / width), max(heights))
     # max_makespan = sum(heights)
-    # max_makespan = heuristics.compute_max_makespan(heigths, widths, width);
-    max_makespan = compute_max_makespan(heigths, widths, width)
+    # max_makespan = heuristics.compute_max_makespan(heights, widths, width);
+    max_makespan = compute_max_makespan(heights, widths, width)
 
     solver = Solver()
 
@@ -42,8 +44,8 @@ def solve(data_dict: dict) -> dict:
     else:
         domain_size_x = 1
 
-    domain_size_y = max_makespan - min(heigths) + max(heigths)
-    ### + max(heigths) is necessary for summing the height later
+    domain_size_y = max_makespan - min(heights) + max(heights)
+    ### + max(heights) is necessary for summing the height later
     if domain_size_y > 0:
         domain_size_y = math.ceil(math.log2(domain_size_y))
     else:
@@ -52,16 +54,16 @@ def solve(data_dict: dict) -> dict:
     y = [[Bool(f"y_of_c{c}_{i}") for i in range(domain_size_y)] for c in CIRCUITS]
 
     ### diffn
-    solver.add(diffn(x, y, widths, heigths))
+    solver.add(diffn(x, y, widths, heights))
 
     ### makespan is not known yet
 
     ### all circuits must have each dimension greater than zero
-    assert min(heigths) > 0 and min(widths) > 0
-    assert len(heigths) == len(widths) == n_circuits
+    assert min(heights) > 0 and min(widths) > 0
+    assert len(heights) == len(widths) == n_circuits
 
     ### forall(c in CIRCUITS)(x[c] + widths[c] <= width)
-    solver.add(And([lte_int(x[c], width - widths[c]) for c in CIRCUITS]))
+    solver.add(And([lte(x[c], sub_b(width, widths[c])) for c in CIRCUITS]))
 
     solutions_dict = { ### each solution in all_solutions is a dict
 
@@ -74,10 +76,12 @@ def solve(data_dict: dict) -> dict:
     }
 
     ### simmetry braking constraint: biggest circuit in 0,0
-    area_list = [dimensions[c][0] * dimensions[c][1] for c in CIRCUITS]
-    max_area = indexOf(area_list, max(area_list))
-    solver.add(all_F(y[max_area]))
-    solver.add(all_F(x[max_area]))
+    #area_list = [dimensions[c][0] * dimensions[c][1] for c in CIRCUITS]
+    #max_area = indexOf(area_list, max(area_list))
+    #solver.add(all_F(y[max_area]))
+    #solver.add(all_F(x[max_area]))
+
+    # solver.add(axial_symmetry(x, widths, start=0, end=width))
 
     target_makespan = min_makespan  ### use target_makespan to iterate during optimization
 
@@ -85,9 +89,12 @@ def solve(data_dict: dict) -> dict:
     while check == unsat and min_makespan <= target_makespan <= max_makespan and time.time(
     ) - t0 < 300:
         t1 = time.time()
+        # set_option(timeout=1000)
         solver.push()
         ### forall(c in CIRCUITS)(y[c] + heights[c] <= target_makespan)
-        solver.add(And([lte_int(y[c], target_makespan - heigths[c]) for c in CIRCUITS]))
+        solver.add(And([lte(y[c], sub_b(target_makespan, heights[c])) for c in CIRCUITS]))
+        
+        # solver.add(axial_symmetry(y, heights, start=0, end=target_makespan))
 
         solution = {}
         check = solver.check()
@@ -97,8 +104,11 @@ def solve(data_dict: dict) -> dict:
             y_int = [
                 bool2int([model.evaluate(y[c][i]) for i in range(domain_size_y)]) for c in CIRCUITS
             ]
+            #heights_int = [
+            #    bool2int([model.evaluate(heights[c][i]) for i in range(domain_size_y)]) for c in CIRCUITS
+            #]
 
-            makespan = max([y_int[c] + heigths[c] for c in CIRCUITS])
+            makespan = max([y_int[c] + heights[c] for c in CIRCUITS])
             print("sat")
             solution = {
                 "width":
@@ -108,7 +118,7 @@ def solve(data_dict: dict) -> dict:
                 "widths":
                 widths,
                 "heights":
-                heigths,
+                heights,
                 "x": [
                     bool2int([model.evaluate(x[c][i]) for i in range(domain_size_x)])
                     for c in CIRCUITS
