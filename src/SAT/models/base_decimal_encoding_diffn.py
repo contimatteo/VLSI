@@ -14,8 +14,6 @@ from SAT.models.components.foundation import bool2int, diffn, lte, all_F, axial_
 def solve(data_dict: dict) -> dict:
     ### data_dict = {"data":str, "width": int, "n_circuits": int, "dims":[(w,h)]}
 
-    t0 = time.time()
-
     n_circuits = data_dict["n_circuits"]
     width = data_dict["width"]
     CIRCUITS = range(n_circuits)
@@ -85,6 +83,7 @@ def solve(data_dict: dict) -> dict:
     target_makespan = min_makespan  ### use target_makespan to iterate during optimization
 
     check = unsat
+    t0 = time.time()
     while check == unsat and min_makespan <= target_makespan <= max_makespan and time.time(
     ) - t0 < 300:
         t1 = time.time()
@@ -99,43 +98,45 @@ def solve(data_dict: dict) -> dict:
         check = solver.check()
         makespan = 0
         if check == sat:
-            model = solver.model()
-            y_int = [
-                bool2int([model.evaluate(y[c][i]) for i in range(domain_size_y)]) for c in CIRCUITS
-            ]
-            #heights_int = [
-            #    bool2int([model.evaluate(heights[c][i]) for i in range(domain_size_y)]) for c in CIRCUITS
-            #]
+            print("SAT")
+            print("makespan =", target_makespan)
+            # model = solver.model()
+            # y_int = [
+            #     bool2int([model.evaluate(y[c][i]) for i in range(domain_size_y)]) for c in CIRCUITS
+            # ]
+            # #heights_int = [
+            # #    bool2int([model.evaluate(heights[c][i]) for i in range(domain_size_y)]) for c in CIRCUITS
+            # #]
 
-            makespan = max([y_int[c] + heights[c] for c in CIRCUITS])
-            print("sat")
-            solution = {
-                "width":
-                data_dict["width"],
-                "n_circuits":
-                data_dict["n_circuits"],
-                "widths":
-                widths,
-                "heights":
-                heights,
-                "x": [
-                    bool2int([model.evaluate(x[c][i]) for i in range(domain_size_x)])
-                    for c in CIRCUITS
-                ],
-                "y":
-                y_int,
-                "min_makespan":
-                min_makespan,
-                "max_makespan":
-                max_makespan,
-                "makespan":
-                makespan
-            }
-            solutions_dict["all_solutions"].append(solution)
-            print(
-                f"target_makespan = {target_makespan}  min_makespan = {min_makespan}  makespan = {makespan}"
-            )
-            solutions_dict["stats"] = solver.statistics()
+            # makespan = max([y_int[c] + heights[c] for c in CIRCUITS])
+            # print("sat")
+            # solution = {
+            #     "width":
+            #     data_dict["width"],
+            #     "n_circuits":
+            #     data_dict["n_circuits"],
+            #     "widths":
+            #     widths,
+            #     "heights":
+            #     heights,
+            #     "x": [
+            #         bool2int([model.evaluate(x[c][i]) for i in range(domain_size_x)])
+            #         for c in CIRCUITS
+            #     ],
+            #     "y":
+            #     y_int,
+            #     "min_makespan":
+            #     min_makespan,
+            #     "max_makespan":
+            #     max_makespan,
+            #     "makespan":
+            #     makespan
+            # }
+            # solutions_dict["all_solutions"].append(solution)
+            # print(
+            #     f"target_makespan = {target_makespan}  min_makespan = {min_makespan}  makespan = {makespan}"
+            # )
+            # solutions_dict["stats"] = solver.statistics()
             solver.pop()
         else:
             print("unsat")

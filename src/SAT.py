@@ -33,9 +33,17 @@ def main(args):
     solutions_dict = {}
 
     CURRENT_MODEL_MODULE = import_module(f"{MODELS_MODULE_NAMESPACE}.{args.model}")
-    fn_model_solve = getattr(CURRENT_MODEL_MODULE, "solve")
 
-    solutions_dict = fn_model_solve(data_dict)
+    if args.model == "base":
+        ModelClass = getattr(CURRENT_MODEL_MODULE, "Z3Model")
+        model = ModelClass()
+        model.initialize(data_dict)
+        solutions_dict = model.solve()
+    else:
+        fn_model_solve = getattr(CURRENT_MODEL_MODULE, "solve")
+        solutions_dict = fn_model_solve(data_dict)
+
+    assert solutions_dict is not None and isinstance(solutions_dict, dict)
 
     # plot
     if args.plot:
