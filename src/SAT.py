@@ -34,7 +34,7 @@ def main(args):
 
     CURRENT_MODEL_MODULE = import_module(f"{MODELS_MODULE_NAMESPACE}.{args.model}")
 
-    if args.model == "base" or args.model == "base_rotation":
+    if args.model == "base" or args.model == "rotation":
         ModelClass = getattr(CURRENT_MODEL_MODULE, "Z3Model")
         model = ModelClass()
         model.initialize(data_dict)

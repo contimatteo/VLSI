@@ -14,7 +14,7 @@ MODELS_CHOICES = [
     # "base", "rotation", "rotation.search", "rotation.search.symmetry", "search", "search.symmetry"
     "base",
     "base_decimal_encoding_diffn",
-    "base_rotation"
+    "rotation"
 ]
 
 ###
