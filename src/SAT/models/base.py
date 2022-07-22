@@ -29,11 +29,11 @@ class Z3Model(Z3DefaultModel):
 
         ### + max(widths) is necessary for summing the width later
         _x_domain_max = width - min(widths) + max(widths)
-        _x_domain_size = math.ceil(math.log2(_x_domain_max)) if _x_domain_max > 0 else 1
+        _x_domain_size = math.ceil(math.log2(_x_domain_max)+1) if _x_domain_max > 0 else 1
 
         ### + max(heights) is necessary for summing the height later
         _y_domain_max = max_makespan - min(heights) + max(heights)
-        _y_domain_size = math.ceil(math.log2(_y_domain_max)) if _y_domain_max > 0 else 1
+        _y_domain_size = math.ceil(math.log2(_y_domain_max)+1) if _y_domain_max > 0 else 1
 
         x = [[Bool(f"x_of_c{c}_{i}") for i in range(_x_domain_size)] for c in CIRCUITS]
         y = [[Bool(f"y_of_c{c}_{i}") for i in range(_y_domain_size)] for c in CIRCUITS]
@@ -46,7 +46,7 @@ class Z3Model(Z3DefaultModel):
 
         VARS_TO_RETURN = [
             "width", "n_circuits", "CIRCUITS", "widths", "heights", "x", "y", "min_makespan",
-            "max_makespan"
+            "max_makespan", "_x_domain_size", "_y_domain_size"
         ]
 
         _local_vars = locals()
