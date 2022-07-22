@@ -123,7 +123,7 @@ class Z3Model(Z3BaseModel):
         
         return solution
 
-    def solve(self) -> dict:
-        solution_dict = super().solve()
+    def solve(self, file_name: str) -> dict:
+        solution_dict = super().solve(file_name)
         solution_dict['model'] = 'rotation'
         return solution_dict

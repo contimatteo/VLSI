@@ -115,12 +115,13 @@ class Z3Model():
         self.__validate_variables()
         self.__configure_solver()
 
-    def solve(self) -> dict:
+    def solve(self, file_name: str) -> dict:
         solutions_dict = { ### each solution in all_solutions is a dict
             "all_solutions": [],
             "solution": {},
             "stats": [],
             "model": "base",
+            "file": file_name,
             "data": self.variables,
             "solver": "z3 SAT"
         }

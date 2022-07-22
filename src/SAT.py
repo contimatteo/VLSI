@@ -38,7 +38,7 @@ def main(args):
         ModelClass = getattr(CURRENT_MODEL_MODULE, "Z3Model")
         model = ModelClass()
         model.initialize(data_dict)
-        solutions_dict = model.solve()
+        solutions_dict = model.solve(args.data)
     else:
         fn_model_solve = getattr(CURRENT_MODEL_MODULE, "solve")
         solutions_dict = fn_model_solve(data_dict)
