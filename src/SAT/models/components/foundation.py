@@ -24,7 +24,7 @@ def __is_bool(val: Union[bool, BoolRef]) -> bool:
 
 
 def pad(l: T_NumberAsBoolList, length: int) -> T_NumberAsBoolList:
-    assert length > 0 and length >= len(l)
+    assert length > 0 and length >= len(l), '\nl:\t{}\nlength:\t{}'.format(l, length)
 
     return [False for _ in range(length - len(l))] + l
 
