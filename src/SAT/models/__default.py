@@ -6,6 +6,8 @@ import z3
 
 from z3 import BoolRef, Solver
 
+from SAT.models.components.foundation import bool2int
+
 ###
 
 T_Z3Clause = BoolRef
@@ -83,6 +85,27 @@ class Z3Model():
     def _dynamic_symmetries_breaking(self, makespan: int) -> List[T_Z3Clause]:
         raise NotImplementedError
 
+    def _evaluate_solution(self, model, min_makespan, max_makespan, target_makespan):
+        solution = {
+            "width": self.variables['width'],
+            "n_circuits": self.variables["n_circuits"],
+            "widths": self.variables['widths'],
+            "heights": self.variables['heights'],
+            "x": [
+                bool2int([model.evaluate(self.variables['x'][c][i]) for i in range(self.variables['_x_domain_size'])])
+                for c in self.variables['CIRCUITS']
+            ],
+            "y": [
+                bool2int([model.evaluate(self.variables['y'][c][i]) for i in range(self.variables['_y_domain_size'])])
+                for c in self.variables['CIRCUITS']
+            ],
+            "min_makespan": min_makespan,
+            "max_makespan": max_makespan,
+            "makespan": target_makespan
+        } 
+        
+        return solution
+
     ###
 
     def initialize(self, raw_data: dict) -> None:
@@ -93,14 +116,14 @@ class Z3Model():
         self.__configure_solver()
 
     def solve(self) -> dict:
-        # solutions_dict = { ### each solution in all_solutions is a dict
-        #     "all_solutions": [],
-        #     "solution": {},
-        #     "stats": [],
-        #     "model": "base",
-        #     "data": data["data"],
-        #     "solver": "z3 SAT"
-        # }
+        solutions_dict = { ### each solution in all_solutions is a dict
+            "all_solutions": [],
+            "solution": {},
+            "stats": [],
+            "model": "base",
+            "data": self.variables,
+            "solver": "z3 SAT"
+        }
         # vars_dict = self._variables(raw_data)
         # width = vars_dict["width"]
         # assert width is not None
@@ -149,39 +172,14 @@ class Z3Model():
             if check == z3.sat:
                 print("SAT")
                 print("makespan =", target_makespan)
-                # model = solver.model()
-                # y_int = [
-                #     bool2int([model.evaluate(y[c][i]) for i in range(domain_size_y)]) for c in CIRCUITS
-                # ]
-                # makespan = max([y_int[c] + heigths[c] for c in CIRCUITS])
-                # print("sat")
-                # solution = {
-                #     "width":
-                #     data_dict["width"],
-                #     "n_circuits":
-                #     data_dict["n_circuits"],
-                #     "widths":
-                #     widths,
-                #     "heights":
-                #     heigths,
-                #     "x": [
-                #         bool2int([model.evaluate(x[c][i]) for i in range(domain_size_x)])
-                #         for c in CIRCUITS
-                #     ],
-                #     "y":
-                #     y_int,
-                #     "min_makespan":
-                #     min_makespan,
-                #     "max_makespan":
-                #     max_makespan,
-                #     "makespan":
-                #     makespan
-                # }
-                # solutions_dict["all_solutions"].append(solution)
+                model = self.solver.model()
+
+                solution = self._evaluate_solution(model, min_makespan, max_makespan, target_makespan)
+                solutions_dict["all_solutions"].append(solution)
                 # print(
                 #     f"target_makespan = {target_makespan}  min_makespan = {min_makespan}  makespan = {makespan}"
                 # )
-                # solutions_dict["stats"] = solver.statistics()
+                solutions_dict["stats"] = self.solver.statistics()
                 self.solver.pop()
             else:
                 print("unsat")
@@ -193,9 +191,7 @@ class Z3Model():
         print(f"TOTAL TIME = {round(time.time() - t0, 2)}")
         print("")
 
-        # solutions_dict["all_solutions"] = solutions_dict["all_solutions"][::-1]
-        # if solutions_dict["all_solutions"]:
-        #     solutions_dict["solution"] = solutions_dict["all_solutions"][0]
-        # return solutions_dict
-
-        return None
+        solutions_dict["all_solutions"] = solutions_dict["all_solutions"][::-1]
+        if solutions_dict["all_solutions"]:
+            solutions_dict["solution"] = solutions_dict["all_solutions"][0]
+        return solutions_dict
