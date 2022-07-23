@@ -224,7 +224,7 @@ class Z3Model():
                     min_m = min_makespan, 
                     max_m = max_makespan, 
                     target_m = target_makespan, 
-                    sat = True, 
+                    sat = False, 
                     search = search
                 )
             print(round(time.time() - t1))
