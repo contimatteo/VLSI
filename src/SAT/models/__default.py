@@ -148,7 +148,8 @@ class Z3Model():
             "model": "base",
             "file": file_name,
             "data": self.variables,
-            "solver": "z3 SAT"
+            "solver": "z3 SAT",
+            "totalTime": 0
         }
         # vars_dict = self._variables(raw_data)
         # width = vars_dict["width"]
@@ -238,6 +239,7 @@ class Z3Model():
         print(f"TOTAL TIME = {round(time.time() - t0, 2)}")
         print("")
 
+        solutions_dict["totalTime"] = time_spent
         solutions_dict["all_solutions"] = solutions_dict["all_solutions"][::-1]
         if solutions_dict["all_solutions"]:
             solutions_dict["solution"] = solutions_dict["all_solutions"][0]
