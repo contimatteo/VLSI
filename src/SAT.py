@@ -53,7 +53,7 @@ def main(args):
         plot_solutions_v2(solutions_dict)
 
     
-    filename = os.path.join('src', 'SAT', 'out', args.model, args.search)
+    filename = os.path.join('SAT', 'out', args.model, args.search)
     if args.symmetry: filename = os.path.join(filename, 'symmetry')
     if not os.path.exists(filename):
         os.makedirs(filename)
