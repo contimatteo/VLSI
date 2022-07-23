@@ -114,8 +114,9 @@ class Z3Model():
             target_makespan = min_makespan
             done = sat
         elif search=='binary':
+            ###  ISSUE: optimal solution evaluated twice
             ###  target makespan == mean value between min and max makespan
-            ###  if sat decrease max makespan, if sat increase min makespan
+            ###  if sat -> decrease max makespan, if unsat -> increase min makespan
             min_makespan = min_m    if sat else target_m +1
             max_makespan = target_m if sat else max_m
             target_makespan = (max_makespan+min_makespan) // 2
@@ -181,7 +182,7 @@ class Z3Model():
         time_spent = 0
         done = False
         ###  to solve case: optimal_makespan == max_makespan for binary search
-        if search == 'binary': max_makespan += 1
+        # if search == 'binary': max_makespan += 1
 
         while (not done) and (time_spent < 300):
             t1 = time.time()
