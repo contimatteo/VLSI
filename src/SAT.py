@@ -36,7 +36,7 @@ def main(args):
 
     if args.model == "base" or args.model == "rotation":
         ModelClass = getattr(CURRENT_MODEL_MODULE, "Z3Model")
-        model = ModelClass()
+        model = ModelClass(timeout=args.time)
         model.initialize(data_dict)
         solutions_dict = model.solve(args.data)
     else:

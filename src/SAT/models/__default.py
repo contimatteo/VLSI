@@ -154,11 +154,12 @@ class Z3Model():
 
         check = z3.unsat
         t0 = time.time()
-        while check == z3.unsat and min_makespan <= target_makespan <= max_makespan and time.time(
-        ) - t0 < 300:
+        time_spent = 0
+        while check == z3.unsat and min_makespan <= target_makespan <= max_makespan and time_spent < 300:
             t1 = time.time()
 
             self.solver.push()
+            self.solver.set('timeout', (self.solver_timeout-time_spent) * 1000)
 
             for clause in self._dynamic_constraints(target_makespan):
                 self.solver.add(clause)
@@ -186,6 +187,7 @@ class Z3Model():
                 print("unsat")
                 target_makespan += 1
             print(round(time.time() - t1))
+            time_spent = time.time() - t0
             ### it is possible to decrease max_makespan at pace > 1 and when unsat try the skipped values
             ### or implement binary search...
 
