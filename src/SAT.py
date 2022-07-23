@@ -58,7 +58,7 @@ def main(args):
     if not os.path.exists(filename):
         os.makedirs(filename)
     filename = os.path.join(filename, solutions_dict['file']+'.json')
-    output_string = json.dumps({'file': solutions_dict['file'], 'totalTime': solutions_dict['totalTime']})
+    output_string = json.dumps({'file': solutions_dict['file'], 'TOTAL_TIME': solutions_dict['TOTAL_TIME']})
     #if not os.path.exists(filename):
     #    os.makedirs(filename)
     with open(filename, 'w') as file:

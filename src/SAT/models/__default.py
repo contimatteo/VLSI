@@ -239,7 +239,7 @@ class Z3Model():
         print(f"TOTAL TIME = {round(time.time() - t0, 2)}")
         print("")
 
-        solutions_dict["totalTime"] = time_spent
+        solutions_dict["TOTAL_TIME"] = time_spent
         solutions_dict["all_solutions"] = solutions_dict["all_solutions"][::-1]
         if solutions_dict["all_solutions"]:
             solutions_dict["solution"] = solutions_dict["all_solutions"][0]
