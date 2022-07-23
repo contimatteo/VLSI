@@ -140,7 +140,7 @@ class Z3Model():
         self.__validate_variables()
         self.__configure_solver()
 
-    def solve(self, file_name: str, search: str) -> dict:
+    def solve(self, file_name: str, search: str, symmetry: bool) -> dict:
         solutions_dict = { ### each solution in all_solutions is a dict
             "all_solutions": [],
             "solution": {},
@@ -170,8 +170,9 @@ class Z3Model():
         for clause in self._constraints():
             self.solver.add(clause)
 
-        for clause in self._symmetries_breaking():
-            self.solver.add(clause)
+        if symmetry:
+            for clause in self._symmetries_breaking():
+                self.solver.add(clause)
 
         #
 
@@ -193,8 +194,9 @@ class Z3Model():
             for clause in self._dynamic_constraints(target_makespan):
                 self.solver.add(clause)
 
-            for clause in self._dynamic_symmetries_breaking(target_makespan):
-                self.solver.add(clause)
+            if symmetry:
+                for clause in self._dynamic_symmetries_breaking(target_makespan):
+                    self.solver.add(clause)
 
             check = self.solver.check()
 

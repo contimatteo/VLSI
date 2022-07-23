@@ -81,6 +81,9 @@ def parse_args():
         choices=SEARCH_CHOICES,
         help='makespan search strategy'
     )
+    parser.add_argument(
+        '--symmetry', required=False, action="store_true", help='add symmetry constraints'
+    )
 
     #
 

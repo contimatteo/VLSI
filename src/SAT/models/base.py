@@ -81,7 +81,7 @@ class Z3Model(Z3DefaultModel):
 
         return [
             # sym_bigger_circuit_origin(x, y, widths, heights),
-            # axial_symmetry(x, widths, start=0, end=width),
+            axial_symmetry(x, widths, start=0, end=width),
         ]
 
     #
@@ -108,5 +108,5 @@ class Z3Model(Z3DefaultModel):
         heights = var["heights"]
 
         return [
-            # axial_symmetry(y, heights, start=0, end=makespan),
+            axial_symmetry(y, heights, start=0, end=makespan),
         ]
