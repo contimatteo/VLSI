@@ -85,7 +85,7 @@ class Z3Model():
     def _dynamic_symmetries_breaking(self, makespan: int) -> List[T_Z3Clause]:
         raise NotImplementedError
 
-    def _evaluate_solution(self, model, min_makespan, max_makespan, target_makespan):
+    def _evaluate_solution(self, model, min_makespan: int, max_makespan: int, target_makespan: int):
         solution = {
             "width": self.variables['width'],
             "n_circuits": self.variables["n_circuits"],
@@ -106,6 +106,30 @@ class Z3Model():
         
         return solution
 
+    def _get_target_makespan(self, min_m: int, max_m: int, target_m: int, sat: bool, search: str):
+        if search=='linear':
+            ###  if unsat increase target makespan
+            min_makespan = min_m if sat else min_m + 1
+            max_makespan = max_m
+            target_makespan = min_makespan
+            done = sat
+        elif search=='binary':
+            ###  target makespan == mean value between min and max makespan
+            ###  if sat decrease max makespan, if sat increase min makespan
+            min_makespan = min_m    if sat else target_m +1
+            max_makespan = target_m if sat else max_m
+            target_makespan = (max_makespan+min_makespan) // 2
+            ###  if min makespan is sat, done=True
+            done = True if sat and target_m==min_m else False
+        else:
+            raise NotImplementedError('Not implemented {} search strategy'.format(search))
+
+        ###  if done, do not update parameters
+        if done: 
+            return done, min_m, max_m, target_m
+        else:
+            return done, min_makespan, max_makespan, target_makespan
+
     ###
 
     def initialize(self, raw_data: dict) -> None:
@@ -115,7 +139,7 @@ class Z3Model():
         self.__validate_variables()
         self.__configure_solver()
 
-    def solve(self, file_name: str) -> dict:
+    def solve(self, file_name: str, search: str) -> dict:
         solutions_dict = { ### each solution in all_solutions is a dict
             "all_solutions": [],
             "solution": {},
@@ -155,7 +179,11 @@ class Z3Model():
         check = z3.unsat
         t0 = time.time()
         time_spent = 0
-        while check == z3.unsat and min_makespan <= target_makespan <= max_makespan and time_spent < 300:
+        done = False
+        ###  to solve case: optimal_makespan == max_makespan for binary search
+        if search == 'binary': max_makespan += 1
+
+        while (not done) and (time_spent < 300):
             t1 = time.time()
 
             self.solver.push()
@@ -182,10 +210,23 @@ class Z3Model():
                 #     f"target_makespan = {target_makespan}  min_makespan = {min_makespan}  makespan = {makespan}"
                 # )
                 solutions_dict["stats"] = self.solver.statistics()
+                done, min_makespan, max_makespan, target_makespan = self._get_target_makespan(
+                    min_m = min_makespan, 
+                    max_m = max_makespan, 
+                    target_m = target_makespan, 
+                    sat = True, 
+                    search = search
+                )
                 self.solver.pop()
             else:
                 print("unsat")
-                target_makespan += 1
+                done, min_makespan, max_makespan, target_makespan = self._get_target_makespan(
+                    min_m = min_makespan, 
+                    max_m = max_makespan, 
+                    target_m = target_makespan, 
+                    sat = True, 
+                    search = search
+                )
             print(round(time.time() - t1))
             time_spent = time.time() - t0
             ### it is possible to decrease max_makespan at pace > 1 and when unsat try the skipped values

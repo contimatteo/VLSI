@@ -16,6 +16,11 @@ MODELS_CHOICES = [
     "base_decimal_encoding_diffn",
     "rotation"
 ]
+DEFAULT_SEARCH_STRATEGY = 'linear'
+SEARCH_CHOICES = [
+    'linear',
+    'binary'
+]
 
 ###
 
@@ -67,6 +72,14 @@ def parse_args():
     )
     parser.add_argument(
         '--debug', required=False, action="store_true", help='prints development debug infos'
+    )
+    parser.add_argument(
+        '--search', 
+        required=False,
+        type=str,
+        default=DEFAULT_SEARCH_STRATEGY,
+        choices=SEARCH_CHOICES,
+        help='makespan search strategy'
     )
 
     #
