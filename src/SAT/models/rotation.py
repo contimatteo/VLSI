@@ -67,6 +67,18 @@ class Z3Model(Z3BaseModel):
 
         return {var_name: _local_vars[var_name] for var_name in VARS_TO_RETURN}
 
+    def _get_min_dim(self):
+        dims = self.variables['widths_int']+self.variables['heights_int']
+        min_dim = min(dims)
+        idx = dims.index(min_dim) % len(self.variables['widths_int'])
+        return min_dim, idx
+
+    def _get_min_w(self):
+        return self._get_min_dim()
+        
+    def _get_min_h(self):
+        return self._get_min_dim()
+
     def _constraints(self) -> List[T_Z3Clause]:
         var = self.variables
 

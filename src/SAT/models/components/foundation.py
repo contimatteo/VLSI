@@ -11,8 +11,8 @@ from z3 import Or, And, Not, Xor, Implies
 ###
 
 T_NumberAsBoolList = List[Bool]
-T_NumbersAsBoolLists = List[T_NumberAsBoolList]
 T_Number = Union[T_NumberAsBoolList, int]
+T_NumbersAsBoolLists = List[T_Number]
 # T_BoolOrList = Union[T_NumberAsBoolList, Bool]
 T_Z3Clause = BoolRef
 
@@ -128,6 +128,8 @@ def get_bool_lists(*ll):
     for i in range(len(ll)):
         if isinstance(ll[i], int):
             ll[i] = int2boolList(ll[i])
+        #elif isinstance(ll[i], list) and isinstance(ll[i][0], int):
+        #    ll[i] = [int2boolList(x) for x in ll[i]]
         elif not isinstance(ll[i], list):
             assert __is_bool(ll[i])
             ll[i] = [ll[i]]
@@ -399,6 +401,79 @@ def diffn(
         )
     return And(l)
 
+def _disjunctive(x: T_NumbersAsBoolLists, dx: T_NumbersAsBoolLists):
+    CIRCUITS = range(len(x))
+    result = []
+    for c1, c2 in combinations(CIRCUITS, 2):
+        result.append(
+            Or(
+                lte(sum_b(x[c1], dx[c1]), x[c2]),
+                lte(sum_b(x[c2], dx[c2]), x[c1])
+            )
+        )
+    return And(result)
+
+def _fzn_cumulative(x: T_NumbersAsBoolLists, dx: T_NumbersAsBoolLists, r: T_NumbersAsBoolLists, boundary: int):
+    result = []
+    # x, dx, r = get_bool_lists(x, dx, r)
+    
+    CIRCUITS = range(len(x))
+    for xi in range(boundary):
+        ###  initialize sum at 0
+        sum_at_xi = [False] # == int2boolList(0)
+        for c in CIRCUITS:
+            _x, _dx, _r = get_bool_lists(x[c], dx[c], r[c])
+            ###  if condition then res_at_xi=_r else 0
+            res_at_xi = []
+            ###  check if circuit==c is at x==xi
+            condition = And(lte(_x, xi), lt(xi, sum_b(_x,_dx)))
+
+            ###  null the resource of circuit==c if condition not satisfied
+            for i in range(len(_r)):
+                res_at_xi.append(
+                    And(_r[i], condition)
+                )
+            
+            ###  update the sum
+            sum_at_xi = sum_b(sum_at_xi, res_at_xi)
+
+        ###  the sum of resources for all circuits at x==xi must not pass the boundary
+        result.append(lte(sum_at_xi, boundary))
+    
+    return And(result)             
+
+def cumulative(
+    x: T_NumbersAsBoolLists, 
+    dx: T_NumbersAsBoolLists, 
+    r: T_NumbersAsBoolLists, 
+    boundary: int,
+    min_r: int,
+    idx_min_r: int) -> T_Z3Clause:
+
+    assert len(x)==len(dx)==len(r), 'cumulative: the 3 array arguments must have identical length'
+    CIRCUITS = range(len(x))
+
+    ###  check if disjunctive can be used
+    disj_cond = []
+    for c in CIRCUITS:
+        disj_cond.append(
+            Or(
+                gt(sum_b(r[c], min_r), boundary),
+                c == idx_min_r
+            )
+        )
+    result = [
+        ###  disjunctive case
+        Implies(
+            And(disj_cond), _disjunctive(x, dx)
+        ),
+        ###  fzn_cumulative case
+        Implies(
+            Not(And(disj_cond)), _fzn_cumulative(x, dx, r, boundary)
+        )
+    ]
+    return And(result)
+    
 
 ###
 
@@ -421,3 +496,5 @@ def axial_symmetry(x: T_NumbersAsBoolLists, dx: T_Number, start: int, end: int) 
         x_flat += pad(x[i], max_len)
         x_symm_flat += pad(x_symm[i], max_len)
     return lte(x_flat, x_symm_flat)
+
+
