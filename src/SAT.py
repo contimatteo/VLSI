@@ -1,9 +1,17 @@
-from SAT.models.base_decimal_encoding_diffn import baseSAT
-# from SAT.models.base_decimal_encoding import baseSAT
+from importlib import import_module
 
 from SAT.utils.args import parse_args
 from SAT.utils.storage import SAT_data_file_url
 from SAT.utils.plots import plot_solutions_v2
+
+import json
+import os
+
+###
+
+MODELS_MODULE_NAMESPACE = "SAT.models"
+
+###
 
 
 def main(args):
@@ -27,24 +35,34 @@ def main(args):
 
     solutions_dict = {}
 
-    # lancia il python con dentro z3py
-    _model_name = f"{args.model}"
-    if _model_name == "base":
-        solutions_dict = baseSAT(data_dict)
-    elif _model_name == "rotation":
-        pass
-    elif _model_name == "rotation.search":
-        pass
-    elif _model_name == "rotation.search.symmetry":
-        pass
-    elif _model_name == "symmetry":
-        pass
-    else:  # if _model_name == "search.symmetry"
-        pass
+    CURRENT_MODEL_MODULE = import_module(f"{MODELS_MODULE_NAMESPACE}.{args.model}")
+
+    if args.model == "base" or args.model == "rotation":
+        ModelClass = getattr(CURRENT_MODEL_MODULE, "Z3Model")
+        model = ModelClass(timeout=args.time)
+        model.initialize(data_dict)
+        solutions_dict = model.solve(args.data, args.search, args.symmetry)
+    else:
+        fn_model_solve = getattr(CURRENT_MODEL_MODULE, "solve")
+        solutions_dict = fn_model_solve(data_dict)
+
+    assert solutions_dict is not None and isinstance(solutions_dict, dict)
 
     # plot
     if args.plot:
         plot_solutions_v2(solutions_dict)
+
+    
+    filename = os.path.join('SAT', 'out', args.model, args.search)
+    if args.symmetry: filename = os.path.join(filename, 'symmetry')
+    if not os.path.exists(filename):
+        os.makedirs(filename)
+    filename = os.path.join(filename, solutions_dict['file']+'.json')
+    output_string = json.dumps({'file': solutions_dict['file'], 'TOTAL_TIME': solutions_dict['TOTAL_TIME']})
+    #if not os.path.exists(filename):
+    #    os.makedirs(filename)
+    with open(filename, 'w') as file:
+        file.write(output_string)
 
 
 ###

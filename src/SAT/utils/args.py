@@ -11,7 +11,15 @@ DEFAULT_N_SOLUTIONS = 1
 DEFAULT_VERBOSE = 1
 DEFAULT_MODEL_NAME = "base.py"
 MODELS_CHOICES = [
-    "base", "rotation", "rotation.search", "rotation.search.symmetry", "search", "search.symmetry"
+    # "base", "rotation", "rotation.search", "rotation.search.symmetry", "search", "search.symmetry"
+    "base",
+    "base_decimal_encoding_diffn",
+    "rotation"
+]
+DEFAULT_SEARCH_STRATEGY = 'linear'
+SEARCH_CHOICES = [
+    'linear',
+    'binary'
 ]
 
 ###
@@ -64,6 +72,17 @@ def parse_args():
     )
     parser.add_argument(
         '--debug', required=False, action="store_true", help='prints development debug infos'
+    )
+    parser.add_argument(
+        '--search', 
+        required=False,
+        type=str,
+        default=DEFAULT_SEARCH_STRATEGY,
+        choices=SEARCH_CHOICES,
+        help='makespan search strategy'
+    )
+    parser.add_argument(
+        '--symmetry', required=False, action="store_true", help='add symmetry constraints'
     )
 
     #

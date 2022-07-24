@@ -1,23 +1,26 @@
 import numpy as np
 
+###
 
-def compute_max_makespan(heights, widths, width, with_rotation=False) -> int:
-    n_cols = width // max(widths)
-    col_h = [0 for _ in range(n_cols)]
-    for h in heights:
-        col_h[np.argmin(col_h)] += h
-    if with_rotation:
-        max_makespan = min(
-            sum(
-                [
-                    min(widths[c], heights[c]) if heights[c] < width else heights[c]
-                    for c in range(len(heights))
-                ]
-            ), max(col_h)
-        )
-    else:
-        max_makespan = max(col_h)
-    return max_makespan
+# def compute_max_makespan(heights, widths, width, with_rotation=False) -> int:
+#     n_cols = width // max(widths)
+#     col_h = [0 for _ in range(n_cols)]
+#     for h in heights:
+#         col_h[np.argmin(col_h)] += h
+#     if with_rotation:
+#         max_makespan = min(
+#             sum(
+#                 [
+#                     min(widths[c], heights[c]) if heights[c] < width else heights[c]
+#                     for c in range(len(heights))
+#                 ]
+#             ), max(col_h)
+#         )
+#     else:
+#         max_makespan = max(col_h)
+#     return max_makespan
+
+###
 
 
 class Node:
@@ -49,7 +52,7 @@ class Node:
         return f"Node {self.c_index}, w = {self.w}, h = {self.h}, parent = {p_index}, rw = {self.get_remaining_width()}"
 
 
-def compute_max_makespan_tree(heights, widths, width, with_rotation=False):
+def compute_max_makespan(heights, widths, width, with_rotation=False):
     list_of_nodes = [Node(i, widths[i], heights[i], None) for i in range(len(widths))]
     list_of_nodes = sorted(list_of_nodes, key=lambda a: a.w, reverse=True)
 
@@ -69,6 +72,4 @@ def compute_max_makespan_tree(heights, widths, width, with_rotation=False):
     #        print([fringe[k].c_index for k in range(len(fringe))])
     #        print([str(attached[k]) for k in range(len(attached))])
 
-    max_makespan = max([list_of_nodes[k].get_altitude() for k in range(len(list_of_nodes))])
-
-    return max_makespan
+    return max([list_of_nodes[k].get_altitude() for k in range(len(list_of_nodes))])

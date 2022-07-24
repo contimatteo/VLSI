@@ -22,7 +22,7 @@ def plot_solutions_v2(solutions_dict):
     else:
         fig, axs = plt.subplots(nrows=rows, ncols=cols)
 
-    fig.canvas.set_window_title(solutions_dict["data"])
+    fig.canvas.set_window_title(solutions_dict["file"])
 
     def __single_solution_plot(ax, result):
         ax.set_xlim(0, result['width'])
