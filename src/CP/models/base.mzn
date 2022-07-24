@@ -1,5 +1,5 @@
-include "alldifferent.mzn";
 include "cumulative.mzn";
+include "diffn.mzn";
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -21,8 +21,9 @@ array[CIRCUITS] of int: heights = [dims[c,2] | c in CIRCUITS];
 
 %%% define makespan boundaries
 int: sum_area = sum(c in CIRCUITS)(heights[c]*widths[c]);
-int: min_makespan = round(sum_area / width);
-int: max_makespan = sum(heights);
+int: min_makespan = max(ceil(sum_area / width), max(heights));
+%int: max_makespan = sum(heights);
+int: max_makespan;
 
 set of int: Xs = 0..(width - min(widths));
 set of int: Ys = 0..(max_makespan - min(heights));
@@ -30,11 +31,6 @@ array[CIRCUITS] of var Xs: x;
 array[CIRCUITS] of var Ys: y;
 
 var int: makespan = max(c in CIRCUITS)(y[c] + heights[c]);
-
-%%% TODO: ragionare se si possono assegnare gli indici solo ai bordi
-array[int] of var int: grid = [
-    (x[c]+w) + (y[c]+h)*width | c in CIRCUITS, w in 0..widths[c]-1, h in 0..heights[c]-1
-];
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -56,34 +52,22 @@ constraint assert(
 
 
 %%%  base problem constraints (by definition)
-constraint cumulative(y, heights, widths, width);
-constraint cumulative(x, widths, heights, makespan);
+constraint diffn(x, y, widths, heights) :: domain;
+constraint cumulative(y, heights, widths, width) :: domain;
+constraint cumulative(x, widths, heights, makespan) :: domain;
 constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
 
-%%%  exploit the `grid` variable definition
-constraint alldifferent(grid); %%% GECODE
-% constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]); %%% CHUFFED
-
-
-%%% place the circuit with the max height at position (0,0);
-constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
+%%% force the biggest block to be always to the bottom left of the second biggest
+constraint x[1] <= x[2] /\ y[1] <= y[2];
 
 %%% define `makespan` boundaries.
 constraint makespan >= min_makespan /\ makespan <= max_makespan;
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-ann: search_makespan = int_search([ makespan ], input_order, indomain_min);
-% ann: search_makespan = int_search([ makespan ], input_order, indomain_min);
-% ann: search_makespan = int_search([ makespan ], input_order, indomain_split);
-ann: search_y = int_search(y, first_fail, indomain_min);
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-solve :: 
-    % seq_search([ search_makespan, search_y ])
-    seq_search([ search_makespan ])
-    minimize makespan;
 
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+solve minimize makespan;
 
 
 output [
@@ -97,5 +81,5 @@ output [
     "min_makespan = ", show(min_makespan), "\n",
     "max_makespan = ", show(max_makespan), "\n",
     "makespan = ", show(makespan), "\n",
-    "model = search.gecode"
+    "model = base.chuffed"
 ];
