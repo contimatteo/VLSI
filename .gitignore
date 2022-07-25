@@ -155,3 +155,8 @@ cython_debug/
 .vscode/
 
 src/CP/run_all.sh
+
+# added by Davide
+*.json
+*.csv
+*.png
