@@ -140,7 +140,7 @@ class Z3Model():
         self.__validate_variables()
         self.__configure_solver()
 
-    def solve(self, file_name: str, search: str, symmetry: bool) -> dict:
+    def solve(self, file_name: str, search: str, symmetry: bool, use_cumulative: bool) -> dict:
         solutions_dict = { ### each solution in all_solutions is a dict
             "all_solutions": [],
             "solution": {},
@@ -168,7 +168,7 @@ class Z3Model():
 
         #
 
-        for clause in self._constraints():
+        for clause in self._constraints(use_cumulative):
             self.solver.add(clause)
 
         if symmetry:
@@ -189,13 +189,10 @@ class Z3Model():
         while (not done) and (time_spent < 300):
             t1 = time.time()
 
-            print('target makespan:', target_makespan)
-            print('done:', done)
-
             self.solver.push()
             self.solver.set('timeout', int(self.solver_timeout-time_spent) * 1000)
 
-            for clause in self._dynamic_constraints(target_makespan):
+            for clause in self._dynamic_constraints(target_makespan, use_cumulative):
                 self.solver.add(clause)
 
             if symmetry:

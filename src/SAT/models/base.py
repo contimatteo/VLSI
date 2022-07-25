@@ -65,7 +65,7 @@ class Z3Model(Z3DefaultModel):
         idx = self.variables['heights'].index(min_h)
         return min_h, idx
 
-    def _constraints(self) -> List[T_Z3Clause]:
+    def _constraints(self, use_cumulative: bool) -> List[T_Z3Clause]:
         var = self.variables
 
         x = var["x"]
@@ -77,13 +77,16 @@ class Z3Model(Z3DefaultModel):
 
         min_w, idx = self._get_min_w()
 
-        return [
+        r = [
             diffn(x, y, widths, heights),
             ### forall(c in CIRCUITS)(x[c] + widths[c] <= width)
             # And([lte(x[c], width - widths[c]) for c in CIRCUITS]),
-            And([lte(x[c], sub_b(width, widths[c])) for c in CIRCUITS]),
-            # cumulative(y, heights, widths, width, min_w, idx)
+            And([lte(x[c], sub_b(width, widths[c])) for c in CIRCUITS])
         ]
+
+        if use_cumulative: r += [cumulative(y, heights, widths, width, min_w, idx)]
+
+        return r
 
     def _symmetries_breaking(self) -> List[T_Z3Clause]:
         var = self.variables
@@ -99,7 +102,7 @@ class Z3Model(Z3DefaultModel):
 
     #
 
-    def _dynamic_constraints(self, makespan: int) -> List[T_Z3Clause]:
+    def _dynamic_constraints(self, makespan: int, use_cumulative: bool) -> List[T_Z3Clause]:
         var = self.variables
 
         x = var["x"]
@@ -111,12 +114,15 @@ class Z3Model(Z3DefaultModel):
 
         min_h, idx = self._get_min_h()
 
-        return [
+        r = [
             ### forall(c in CIRCUITS)(y[c] + heights[c] <= target_makespan)
             # And([lte(var["y"][c], makespan - var["heights"][c]) for c in var["CIRCUITS"]]),
-            And([lte(y[c], sub_b(makespan, heights[c])) for c in CIRCUITS]),
-            # cumulative(x, widths, heights, makespan, min_h, idx)
+            And([lte(y[c], sub_b(makespan, heights[c])) for c in CIRCUITS])
         ]
+
+        if use_cumulative: r+= [cumulative(x, widths, heights, makespan, min_h, idx)]
+
+        return r
 
     def _dynamic_symmetries_breaking(self, makespan: int) -> List[T_Z3Clause]:
         var = self.variables
