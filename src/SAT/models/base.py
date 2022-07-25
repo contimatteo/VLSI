@@ -82,7 +82,7 @@ class Z3Model(Z3DefaultModel):
             ### forall(c in CIRCUITS)(x[c] + widths[c] <= width)
             # And([lte(x[c], width - widths[c]) for c in CIRCUITS]),
             And([lte(x[c], sub_b(width, widths[c])) for c in CIRCUITS]),
-            cumulative(y, heights, widths, width, min_w, idx)
+            # cumulative(y, heights, widths, width, min_w, idx)
         ]
 
     def _symmetries_breaking(self) -> List[T_Z3Clause]:
@@ -115,7 +115,7 @@ class Z3Model(Z3DefaultModel):
             ### forall(c in CIRCUITS)(y[c] + heights[c] <= target_makespan)
             # And([lte(var["y"][c], makespan - var["heights"][c]) for c in var["CIRCUITS"]]),
             And([lte(y[c], sub_b(makespan, heights[c])) for c in CIRCUITS]),
-            cumulative(x, widths, heights, makespan, min_h, idx)
+            # cumulative(x, widths, heights, makespan, min_h, idx)
         ]
 
     def _dynamic_symmetries_breaking(self, makespan: int) -> List[T_Z3Clause]:
