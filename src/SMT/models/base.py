@@ -5,10 +5,10 @@ import math
 
 from z3 import Bool, And, BoolRef, Solver, IntVector, Int
 
-from SAT.models.__default import Z3Model as Z3DefaultModel
-from SAT.models.components.helper import compute_max_makespan
-from SAT.models.components.foundation import diffn, lte, sub_b, axial_symmetry, cumulative
-# from SAT.models.components.symmetry import axial_symmetry
+from SMT.models.__default import Z3Model as Z3DefaultModel
+from SMT.models.components.helper import compute_max_makespan
+from SMT.models.components.foundation import diffn, axial_symmetry, cumulative
+# from SMT.models.components.symmetry import axial_symmetry
 
 ###
 
