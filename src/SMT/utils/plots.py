@@ -26,7 +26,7 @@ def plot_solutions_v2(solutions_dict):
 
     def __single_solution_plot(ax, result):
         ax.set_xlim(0, result['width'])
-        ax.set_ylim(0, result['makespan'])
+        ax.set_ylim(0, result["makespan"])
         ax.set_xticks(np.arange(0, result['width'] + 1, 1))
         ax.set_yticks(np.arange(0, result["makespan"] + 1, 1))
         ax.grid(visible=True, which='both', axis='both', alpha=0.2)
