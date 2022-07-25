@@ -41,7 +41,7 @@ def main(args):
         ModelClass = getattr(CURRENT_MODEL_MODULE, "Z3Model")
         model = ModelClass(timeout=args.time)
         model.initialize(data_dict)
-        solutions_dict = model.solve(args.data, args.search, args.symmetry, args.cumulative)
+        solutions_dict = model.solve(args.data, args.symmetry, args.cumulative)
     else:
         fn_model_solve = getattr(CURRENT_MODEL_MODULE, "solve")
         solutions_dict = fn_model_solve(data_dict)
@@ -52,7 +52,7 @@ def main(args):
     if args.plot:
         plot_solutions_v2(solutions_dict)
 
-    filename = os.path.join('SMT', 'out', args.model, args.search)
+    filename = os.path.join('SMT', 'out', args.model)
     if args.symmetry:
         filename = os.path.join(filename, 'symmetry')
     if not os.path.exists(filename):
