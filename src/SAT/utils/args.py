@@ -84,7 +84,9 @@ def parse_args():
     parser.add_argument(
         '--symmetry', required=False, action="store_true", help='add symmetry constraints'
     )
-
+    parser.add_argument(
+        '--cumulative', required=False, action="store_true", help='add cumulative constraint on both x and y'
+    )
     #
 
     args = parser.parse_args()

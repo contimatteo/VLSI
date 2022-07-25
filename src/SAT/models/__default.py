@@ -65,7 +65,7 @@ class Z3Model():
         x, y = var["x"], var["y"]
         assert len(x) > 0 and len(y) > 0
 
-        min_makespan, max_makespan = var["min_makespan"], var["max_makespan"]
+        min_makespan, max_makespan = var["min_makespan"]-10, var["max_makespan"]
         assert min_makespan is not None and max_makespan is not None
 
     #
@@ -140,7 +140,7 @@ class Z3Model():
         self.__validate_variables()
         self.__configure_solver()
 
-    def solve(self, file_name: str, search: str, symmetry: bool) -> dict:
+    def solve(self, file_name: str, search: str, symmetry: bool, use_cumulative: bool) -> dict:
         solutions_dict = { ### each solution in all_solutions is a dict
             "all_solutions": [],
             "solution": {},
@@ -168,7 +168,7 @@ class Z3Model():
 
         #
 
-        for clause in self._constraints():
+        for clause in self._constraints(use_cumulative):
             self.solver.add(clause)
 
         if symmetry:
@@ -190,9 +190,9 @@ class Z3Model():
             t1 = time.time()
 
             self.solver.push()
-            self.solver.set('timeout', (self.solver_timeout-time_spent) * 1000)
+            self.solver.set('timeout', int(self.solver_timeout-time_spent) * 1000)
 
-            for clause in self._dynamic_constraints(target_makespan):
+            for clause in self._dynamic_constraints(target_makespan, use_cumulative):
                 self.solver.add(clause)
 
             if symmetry:
@@ -221,7 +221,6 @@ class Z3Model():
                     sat = True, 
                     search = search
                 )
-                self.solver.pop()
             else:
                 print("unsat")
                 done, min_makespan, max_makespan, target_makespan = self._get_target_makespan(
@@ -231,6 +230,7 @@ class Z3Model():
                     sat = False, 
                     search = search
                 )
+            self.solver.pop()
             print(round(time.time() - t1))
             time_spent = time.time() - t0
             ### it is possible to decrease max_makespan at pace > 1 and when unsat try the skipped values
