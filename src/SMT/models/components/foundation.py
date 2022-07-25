@@ -6,7 +6,7 @@ from itertools import combinations
 import uuid
 
 from z3 import Bool, BoolRef, IntVector, Int
-from z3 import Or, And, Not, Xor, Implies
+from z3 import Or, And, Not, Xor, Implies, If
 
 ###
 """
@@ -56,7 +56,7 @@ def _disjunctive(x: IntVector, dx: T_List):
     return And(result)
 
 
-def _fzn_cumulative(x: T_List, dx: T_List, r: T_List, boundary: int):
+def _fzn_cumulative(x: T_List, dx: T_List, r: T_List, boundary: T_Number):
     result = []
     # x, dx, r = get_bool_lists(x, dx, r)
 
@@ -72,7 +72,7 @@ def _fzn_cumulative(x: T_List, dx: T_List, r: T_List, boundary: int):
             condition = And(_x <= xi, xi < _x + _dx)
 
             ###  null the resource of circuit==c if condition not satisfied
-            res_at_xi = _r[c] * condition  #TODO ok?
+            res_at_xi = If(condition, _r, 0)
 
             ###  update the sum
             sum_at_xi = sum_at_xi + res_at_xi
@@ -83,24 +83,21 @@ def _fzn_cumulative(x: T_List, dx: T_List, r: T_List, boundary: int):
     return And(result)
 
 
-def cumulative(
-    x: T_List, dx: T_List, r: T_List, boundary: int, min_r: int, idx_min_r: int
-) -> T_Z3Clause:
+def cumulative(x: T_List, dx: T_List, r: T_List, boundary: T_Number, min_r: int, idx_min_r: int) -> T_Z3Clause:
 
-    assert len(x) == len(dx) == len(
-        r
-    ), 'cumulative: the 3 array arguments must have identical length'
+    assert len(x) == len(dx) == len(r), 'cumulative: the 3 array arguments must have identical length'
     CIRCUITS = range(len(x))
 
     ###  check if disjunctive can be used
     disj_cond = []
     for c in CIRCUITS:
         disj_cond.append(Or(r[c] + min_r > boundary), c == idx_min_r)
+    disj_cond = And(disj_cond)
     result = [
         ###  disjunctive case
-        Implies(And(disj_cond), _disjunctive(x, dx)),
+        Implies(disj_cond, _disjunctive(x, dx)),
         ###  fzn_cumulative case
-        Implies(Not(And(disj_cond)), _fzn_cumulative(x, dx, r, boundary))
+        Implies(Not(disj_cond), _fzn_cumulative(x, dx, r, boundary))
     ]
     return And(result)
 
@@ -115,13 +112,15 @@ def symmetrical(x: T_List, dx: T_Number, start: int, end: int) -> T_Z3Clause:
     x_symm = [end - ((x[i] - start) + dx[i]) for i in range(len(x))]
     return x_symm
 
+def _lex_lesseq(x: T_List, y: T_List):
+    CIRCUITS = range(len(x))
+    if not x:
+        return False
+
+    return And(x[0]<=y[0], Or(x[0]<y[0], _lex_lesseq(x[1:], y[1:])))
+
 
 def axial_symmetry(x: T_List, dx: T_Number, start: int, end: int) -> T_Z3Clause:
     x_symm = symmetrical(x, dx, start, end)
-    x_flat = []
-    x_symm_flat = []
-    ###  maybe padding is useless
-    for i in range(len(x)):
-        x_flat += x[i]
-        x_symm_flat += x_symm[i]
-    return x_flat <= x_symm_flat
+    ###  constraint lexicographical ordering    
+    return _lex_lesseq(x, x_symm)
