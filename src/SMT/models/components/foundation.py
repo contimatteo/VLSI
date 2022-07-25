@@ -119,7 +119,6 @@ def _lex_lesseq(x: T_List, y: T_List):
 
     return And(x[0]<=y[0], Or(x[0]<y[0], _lex_lesseq(x[1:], y[1:])))
 
-
 def axial_symmetry(x: T_List, dx: T_Number, start: int, end: int) -> T_Z3Clause:
     x_symm = symmetrical(x, dx, start, end)
     ###  constraint lexicographical ordering    
