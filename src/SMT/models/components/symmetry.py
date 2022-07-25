@@ -2,8 +2,6 @@ from operator import indexOf
 
 from z3 import BoolRef, And
 
-from SAT.models.components.foundation import all_F
-
 ###
 
 Z3Clause = BoolRef
@@ -20,4 +18,4 @@ def sym_bigger_circuit_origin(x, y, widths, heights) -> Z3Clause:
     _c_areas = [widths[c] * heights[c] for c in CIRCUITS]
     _idx_of_bigger_circuit = indexOf(_c_areas, max(_c_areas))
 
-    return And(all_F(y[_idx_of_bigger_circuit]), all_F(x[_idx_of_bigger_circuit]))
+    return And(y[_idx_of_bigger_circuit] == 0, x[_idx_of_bigger_circuit] == 0)
