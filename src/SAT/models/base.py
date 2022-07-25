@@ -25,7 +25,11 @@ class Z3Model(Z3DefaultModel):
         ### define makespan boundaries
         _c_area_sum = sum([heights[c] * widths[c] for c in CIRCUITS])
         min_makespan = max(math.ceil(_c_area_sum / width), max(heights))
+        print('min makespan:', min_makespan)
+        min_makespan -= 5
+        print('min makespan:', min_makespan)
         max_makespan = compute_max_makespan(heights, widths, width)
+        print('max makespan:', max_makespan)
 
         ### + max(widths) is necessary for summing the width later
         _x_domain_max = width - min(widths) + max(widths)
