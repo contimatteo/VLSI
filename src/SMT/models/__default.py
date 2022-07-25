@@ -35,7 +35,10 @@ class Z3Model():
         # self.solver.set("smt.threads", 3)
         # self.solver.set("smt.lookahead_simplify", True)
         # self.solver.set("smt.lookahead.use_learned", True)
-        self.solver.set('smt.random_seed', self.solver_random_seed)
+
+
+        # FIXME: random seed giving error
+        # self.solver.set('smt.random_seed', self.solver_random_seed)
         self.solver.set('timeout', self.solver_timeout)
 
     def __variables_support(self, raw_data: dict) -> Tuple[int, int, List[int], List[int]]:
@@ -92,11 +95,11 @@ class Z3Model():
             "n_circuits": self.variables["n_circuits"],
             "widths": self.variables['widths'],
             "heights": self.variables['heights'],
-            "x": [model.evaluate(self.variables['x'][c]) for c in self.variables['CIRCUITS']],
-            "y": [model.evaluate(self.variables['y'][c]) for c in self.variables['CIRCUITS']],
+            "x": [model.evaluate(self.variables['x'][c]).as_long() for c in self.variables['CIRCUITS']],
+            "y": [model.evaluate(self.variables['y'][c]).as_long() for c in self.variables['CIRCUITS']],
             "min_makespan": min_makespan,
             "max_makespan": max_makespan,
-            "makespan": model.evaluate(self.variables['target_makespan'])
+            "makespan": model.evaluate(self.variables['target_makespan']).as_long()
         } 
         
         return solution
@@ -110,7 +113,7 @@ class Z3Model():
         self.__validate_variables()
         self.__configure_solver()
 
-    def solve(self, file_name: str, search: str, symmetry: bool, use_cumulative: bool) -> dict:
+    def solve(self, file_name: str, symmetry: bool, use_cumulative: bool) -> dict:
         solutions_dict = { ### each solution in all_solutions is a dict
             "all_solutions": [],
             "solution": {},
@@ -119,19 +122,19 @@ class Z3Model():
             "file": file_name,
             "data": self.variables,
             "solver": "z3 SAT",
-            "totalTime": 0
+            "TOTAL_TIME": 0
         }
 
         min_makespan = self.variables["min_makespan"]
         max_makespan = self.variables["max_makespan"]
-        target_makespan = self.variables["makespan"]
+        target_makespan = self.variables["target_makespan"]
         #
 
-        for clause in self._constraints(use_cumulative, target_makespan):
+        for clause in self._constraints(use_cumulative):
             self.solver.add(clause)
 
         if symmetry:
-            for clause in self._symmetries_breaking(target_makespan):
+            for clause in self._symmetries_breaking():
                 self.solver.add(clause)
 
         #
@@ -141,6 +144,7 @@ class Z3Model():
         check = self.solver.check()
         time_spent = time.time() - t0
         print(f"TOTAL TIME = {round(time_spent, 2)}")
+        solutions_dict["TOTAL_TIME"] = time_spent
 
         solution = self._evaluate_solution(self.solver.model(), min_makespan, max_makespan)
         solutions_dict["all_solutions"].append(solution)
