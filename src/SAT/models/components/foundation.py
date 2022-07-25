@@ -390,8 +390,9 @@ def diffn(
     #         x[j] + dx[j] <= x[i] \/ y[j] + dy[j] <= y[i]
     #     );
 
+    CIRCUITS = range(len(x))
     l = []
-    for i, j in combinations(range(len(x)), 2):
+    for i, j in combinations(CIRCUITS, 2):
         ### if i < j: useless
         l.append(
             Or(
