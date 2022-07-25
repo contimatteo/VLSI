@@ -65,7 +65,7 @@ class Z3Model():
         x, y = var["x"], var["y"]
         assert len(x) > 0 and len(y) > 0
 
-        min_makespan, max_makespan = var["min_makespan"]-10, var["max_makespan"]
+        min_makespan, max_makespan = var["min_makespan"], var["max_makespan"]
         assert min_makespan is not None and max_makespan is not None
 
     #
