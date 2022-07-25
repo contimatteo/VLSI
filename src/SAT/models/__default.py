@@ -149,7 +149,7 @@ class Z3Model():
             "file": file_name,
             "data": self.variables,
             "solver": "z3 SAT",
-            "totalTime": 0
+            "TOTAL_TIME": 0
         }
         # vars_dict = self._variables(raw_data)
         # width = vars_dict["width"]
