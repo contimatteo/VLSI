@@ -65,7 +65,7 @@ class Z3Model():
         x, y = var["x"], var["y"]
         assert len(x) > 0 and len(y) > 0
 
-        min_makespan, max_makespan = var["min_makespan"]-10, var["max_makespan"]
+        min_makespan, max_makespan = var["min_makespan"], var["max_makespan"]
         assert min_makespan is not None and max_makespan is not None
 
     #
@@ -87,46 +87,61 @@ class Z3Model():
 
     def _evaluate_solution(self, model, min_makespan: int, max_makespan: int, target_makespan: int):
         solution = {
-            "width": self.variables['width'],
-            "n_circuits": self.variables["n_circuits"],
-            "widths": self.variables['widths'],
-            "heights": self.variables['heights'],
+            "width":
+            self.variables['width'],
+            "n_circuits":
+            self.variables["n_circuits"],
+            "widths":
+            self.variables['widths'],
+            "heights":
+            self.variables['heights'],
             "x": [
-                bool2int([model.evaluate(self.variables['x'][c][i]) for i in range(self.variables['_x_domain_size'])])
-                for c in self.variables['CIRCUITS']
+                bool2int(
+                    [
+                        model.evaluate(self.variables['x'][c][i])
+                        for i in range(self.variables['_x_domain_size'])
+                    ]
+                ) for c in self.variables['CIRCUITS']
             ],
             "y": [
-                bool2int([model.evaluate(self.variables['y'][c][i]) for i in range(self.variables['_y_domain_size'])])
-                for c in self.variables['CIRCUITS']
+                bool2int(
+                    [
+                        model.evaluate(self.variables['y'][c][i])
+                        for i in range(self.variables['_y_domain_size'])
+                    ]
+                ) for c in self.variables['CIRCUITS']
             ],
-            "min_makespan": min_makespan,
-            "max_makespan": max_makespan,
-            "makespan": target_makespan
-        } 
-        
+            "min_makespan":
+            min_makespan,
+            "max_makespan":
+            max_makespan,
+            "makespan":
+            target_makespan
+        }
+
         return solution
 
     def _get_target_makespan(self, min_m: int, max_m: int, target_m: int, sat: bool, search: str):
-        if search=='linear':
+        if search == 'linear':
             ###  if unsat increase target makespan
             min_makespan = min_m if sat else min_m + 1
             max_makespan = max_m
             target_makespan = min_makespan
             done = sat
-        elif search=='binary':
+        elif search == 'binary':
             ###  ISSUE: optimal solution evaluated twice
             ###  target makespan == mean value between min and max makespan
             ###  if sat -> decrease max makespan, if unsat -> increase min makespan
-            min_makespan = min_m    if sat else target_m +1
+            min_makespan = min_m if sat else target_m + 1
             max_makespan = target_m if sat else max_m
-            target_makespan = (max_makespan+min_makespan) // 2
+            target_makespan = (max_makespan + min_makespan) // 2
             ###  if min makespan is sat, done=True
-            done = True if sat and target_m==min_m else False
+            done = True if sat and target_m == min_m else False
         else:
             raise NotImplementedError('Not implemented {} search strategy'.format(search))
 
         ###  if done, do not update parameters
-        if done: 
+        if done:
             return done, min_m, max_m, target_m
         else:
             return done, min_makespan, max_makespan, target_makespan
@@ -190,7 +205,7 @@ class Z3Model():
             t1 = time.time()
 
             self.solver.push()
-            self.solver.set('timeout', int(self.solver_timeout-time_spent) * 1000)
+            self.solver.set('timeout', int(self.solver_timeout - time_spent) * 1000)
 
             for clause in self._dynamic_constraints(target_makespan, use_cumulative):
                 self.solver.add(clause)
@@ -208,27 +223,29 @@ class Z3Model():
                 print("makespan =", target_makespan)
                 model = self.solver.model()
 
-                solution = self._evaluate_solution(model, min_makespan, max_makespan, target_makespan)
+                solution = self._evaluate_solution(
+                    model, min_makespan, max_makespan, target_makespan
+                )
                 solutions_dict["all_solutions"].append(solution)
                 # print(
                 #     f"target_makespan = {target_makespan}  min_makespan = {min_makespan}  makespan = {makespan}"
                 # )
                 solutions_dict["stats"] = self.solver.statistics()
                 done, min_makespan, max_makespan, target_makespan = self._get_target_makespan(
-                    min_m = min_makespan, 
-                    max_m = max_makespan, 
-                    target_m = target_makespan, 
-                    sat = True, 
-                    search = search
+                    min_m=min_makespan,
+                    max_m=max_makespan,
+                    target_m=target_makespan,
+                    sat=True,
+                    search=search
                 )
             else:
                 print("unsat")
                 done, min_makespan, max_makespan, target_makespan = self._get_target_makespan(
-                    min_m = min_makespan, 
-                    max_m = max_makespan, 
-                    target_m = target_makespan, 
-                    sat = False, 
-                    search = search
+                    min_m=min_makespan,
+                    max_m=max_makespan,
+                    target_m=target_makespan,
+                    sat=False,
+                    search=search
                 )
             self.solver.pop()
             print(round(time.time() - t1))
