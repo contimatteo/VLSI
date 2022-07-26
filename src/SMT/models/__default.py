@@ -39,7 +39,7 @@ class Z3Model():
 
         # FIXME: random seed giving error
         # self.solver.set('smt.random_seed', self.solver_random_seed)
-        self.solver.set('timeout', self.solver_timeout)
+        self.solver.set('timeout', self.solver_timeout*1000)
 
     def __variables_support(self, raw_data: dict) -> Tuple[int, int, List[int], List[int]]:
         width = raw_data["width"]
@@ -101,7 +101,6 @@ class Z3Model():
             "max_makespan": max_makespan,
             "makespan": model.evaluate(self.variables['target_makespan']).as_long()
         } 
-        
         return solution
 
     ###
@@ -142,6 +141,9 @@ class Z3Model():
 
         t0 = time.time()
         check = self.solver.check()
+        if check==z3.unknown:
+            print('reason unknown:', self.solver.reason_unknown())
+
         time_spent = time.time() - t0
         print(f"TOTAL TIME = {round(time_spent, 2)}")
         solutions_dict["TOTAL_TIME"] = time_spent
@@ -149,5 +151,4 @@ class Z3Model():
         solution = self._evaluate_solution(self.solver.model(), min_makespan, max_makespan)
         solutions_dict["all_solutions"].append(solution)
         solutions_dict["solution"] = solution
-
         return solutions_dict

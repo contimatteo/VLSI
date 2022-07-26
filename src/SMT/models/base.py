@@ -68,6 +68,8 @@ class Z3Model(Z3DefaultModel):
         widths = var["widths"]
         heights = var["heights"]
         makespan = var["target_makespan"]
+        min_makespan = var["min_makespan"]
+        max_makespan = var["max_makespan"]
         CIRCUITS = var["CIRCUITS"]
 
         min_w, idx = self._get_min_w()
@@ -77,6 +79,8 @@ class Z3Model(Z3DefaultModel):
             diffn(x, y, widths, heights),
             ### forall(c in CIRCUITS)(x[c] + widths[c] <= width)
             # And([lte(x[c] + widths[c], width) for c in CIRCUITS]),
+            # And(makespan<=max_makespan, makespan>=min_makespan),
+            makespan==min_makespan,
             And([And(x[c] >= 0, y[c] >= 0) for c in CIRCUITS]),
             And([x[c] + widths[c] <= width for c in CIRCUITS]),
             And([y[c] + heights[c] <= makespan for c in CIRCUITS])
