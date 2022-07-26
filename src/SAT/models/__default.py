@@ -121,7 +121,10 @@ class Z3Model():
 
         return solution
 
-    def _get_target_makespan(self, min_m: int, max_m: int, target_m: int, sat: bool, search: str):
+    def _get_target_makespan(
+        self, min_m: int, max_m: int, target_m: int, sat: bool, search: str,
+        previous_solutions: List
+    ):
         if search == 'linear':
             ###  if unsat increase target makespan
             min_makespan = min_m if sat else min_m + 1
@@ -129,16 +132,17 @@ class Z3Model():
             target_makespan = min_makespan
             done = sat
         elif search == 'binary':
-            ###  ISSUE: optimal solution evaluated twice
             ###  target makespan == mean value between min and max makespan
             ###  if sat -> decrease max makespan, if unsat -> increase min makespan
             min_makespan = min_m if sat else target_m + 1
             max_makespan = target_m if sat else max_m
             target_makespan = (max_makespan + min_makespan) // 2
             ###  if min makespan is sat, done=True
-            done = True if sat and target_m == min_m else False
+            done = (sat and target_m == min_m) or [
+                True for s in previous_solutions if s["makespan"] == target_makespan
+            ]
         else:
-            raise NotImplementedError('Not implemented {} search strategy'.format(search))
+            raise NotImplementedError(f'Not implemented {search} search strategy')
 
         ###  if done, do not update parameters
         if done:
@@ -231,27 +235,21 @@ class Z3Model():
                 #     f"target_makespan = {target_makespan}  min_makespan = {min_makespan}  makespan = {makespan}"
                 # )
                 solutions_dict["stats"] = self.solver.statistics()
-                done, min_makespan, max_makespan, target_makespan = self._get_target_makespan(
-                    min_m=min_makespan,
-                    max_m=max_makespan,
-                    target_m=target_makespan,
-                    sat=True,
-                    search=search
-                )
+
             else:
                 print("unsat")
-                done, min_makespan, max_makespan, target_makespan = self._get_target_makespan(
-                    min_m=min_makespan,
-                    max_m=max_makespan,
-                    target_m=target_makespan,
-                    sat=False,
-                    search=search
-                )
+
+            done, min_makespan, max_makespan, target_makespan = self._get_target_makespan(
+                min_m=min_makespan,
+                max_m=max_makespan,
+                target_m=target_makespan,
+                sat=check == z3.sat,
+                search=search,
+                previous_solutions=solutions_dict["all_solutions"]
+            )
             self.solver.pop()
             print(round(time.time() - t1))
             time_spent = time.time() - t0
-            ### it is possible to decrease max_makespan at pace > 1 and when unsat try the skipped values
-            ### or implement binary search...
 
         print(f"TOTAL TIME = {round(time.time() - t0, 2)}")
         print("")
