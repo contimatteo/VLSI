@@ -3,6 +3,7 @@ from importlib import import_module
 from SMT.utils.args import parse_args
 from SMT.utils.storage import SMT_data_file_url
 from SMT.utils.plots import plot_solutions_v2
+from SMT.utils.save_results import save_results
 
 import json
 import os
@@ -45,6 +46,8 @@ def main(args):
     else:
         fn_model_solve = getattr(CURRENT_MODEL_MODULE, "solve")
         solutions_dict = fn_model_solve(data_dict)
+    
+    
 
     assert solutions_dict is not None and isinstance(solutions_dict, dict)
 
@@ -52,23 +55,7 @@ def main(args):
     if args.plot:
         plot_solutions_v2(solutions_dict)
 
-    filename = os.path.join('src','SMT', 'out', args.model)
-    if args.symmetry:
-        filename = os.path.join(filename, 'symmetry')
-    if not os.path.exists(filename):
-        os.makedirs(filename)
-    filename = os.path.join(filename, solutions_dict['file'] + '.json')
-    output_string = json.dumps(
-        {
-            'file': solutions_dict['file'],
-            'TOTAL_TIME': solutions_dict['TOTAL_TIME']
-        }
-    )
-    #if not os.path.exists(filename):
-    #    os.makedirs(filename)
-    with open(filename, 'w', encoding="utf-8") as file:
-        file.write(output_string)
-
+    save_results(args, 'SMT', solutions_dict)
 
 ###
 

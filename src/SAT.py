@@ -3,6 +3,7 @@ from importlib import import_module
 from SAT.utils.args import parse_args
 from SAT.utils.storage import SAT_data_file_url
 from SAT.utils.plots import plot_solutions_v2
+from SAT.utils.save_results import save_results
 
 import json
 import os
@@ -53,16 +54,7 @@ def main(args):
         plot_solutions_v2(solutions_dict)
 
     
-    filename = os.path.join('src','SAT', 'out', args.model, args.search)
-    if args.symmetry: filename = os.path.join(filename, 'symmetry')
-    if not os.path.exists(filename):
-        os.makedirs(filename)
-    filename = os.path.join(filename, solutions_dict['file']+'.json')
-    output_string = json.dumps({'file': solutions_dict['file'], 'TOTAL_TIME': solutions_dict['TOTAL_TIME']})
-    #if not os.path.exists(filename):
-    #    os.makedirs(filename)
-    with open(filename, 'w') as file:
-        file.write(output_string)
+    save_results(args, 'SAT', solutions_dict)
 
 
 ###
