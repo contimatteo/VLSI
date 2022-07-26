@@ -20,6 +20,7 @@ T_Z3Solver = Solver
 
 
 class Z3Model(Z3BaseModel):
+
     def _variables(self, raw_data: dict) -> dict:
         width, n_circuits, CIRCUITS, widths_int, heights_int = self.__variables_support(raw_data)
 
@@ -30,11 +31,11 @@ class Z3Model(Z3BaseModel):
 
         ### + max(widths) is necessary for summing the width later
         _x_domain_max = width - min(widths_int + heights_int) + max(widths_int + heights_int)
-        _x_domain_size = math.ceil(math.log2(_x_domain_max)+1) if _x_domain_max > 0 else 1
+        _x_domain_size = math.ceil(math.log2(_x_domain_max) + 1) if _x_domain_max > 0 else 1
 
         ### + max(heights) is necessary for summing the height later
         _y_domain_max = max_makespan - min(heights_int + widths_int) + max(heights_int + widths_int)
-        _y_domain_size = math.ceil(math.log2(_y_domain_max)+1) if _y_domain_max > 0 else 1
+        _y_domain_size = math.ceil(math.log2(_y_domain_max) + 1) if _y_domain_max > 0 else 1
 
         x = [[Bool(f"x_of_c{c}_{i}") for i in range(_x_domain_size)] for c in CIRCUITS]
         y = [[Bool(f"y_of_c{c}_{i}") for i in range(_y_domain_size)] for c in CIRCUITS]
@@ -45,22 +46,22 @@ class Z3Model(Z3BaseModel):
 
         ###  width and heigth variables for rotation
         _max_dim = max(widths_int + heights_int)
-        _dims_domain_size = math.ceil(math.log2(_max_dim)+1)
+        _dims_domain_size = math.ceil(math.log2(_max_dim) + 1)
         # print(
         #     'widths_int:  ', widths_int,
         #     '\nheights_int: ', heights_int,
         #     '\nmax dim:     ', _max_dim,
         #     '\ndomain size: ', _dims_domain_size
         # )
-        widths  = [[Bool(f"w_of_c{c}_{i}") for i in range(_dims_domain_size)] for c in CIRCUITS]
+        widths = [[Bool(f"w_of_c{c}_{i}") for i in range(_dims_domain_size)] for c in CIRCUITS]
         heights = [[Bool(f"h_of_c{c}_{i}") for i in range(_dims_domain_size)] for c in CIRCUITS]
 
         is_rotated = [Bool(f"r_c{c}") for c in CIRCUITS]
 
         VARS_TO_RETURN = [
-            "width", "n_circuits", "CIRCUITS", "widths_int", "heights_int", "x", "y", "min_makespan",
-            "max_makespan", "widths", "heights", "is_rotated", "_dims_domain_size", "_x_domain_size", 
-            "_y_domain_size"
+            "width", "n_circuits", "CIRCUITS", "widths_int", "heights_int", "x", "y",
+            "min_makespan", "max_makespan", "widths", "heights", "is_rotated", "_dims_domain_size",
+            "_x_domain_size", "_y_domain_size"
         ]
 
         _local_vars = locals()
@@ -68,18 +69,18 @@ class Z3Model(Z3BaseModel):
         return {var_name: _local_vars[var_name] for var_name in VARS_TO_RETURN}
 
     def _get_min_dim(self):
-        dims = self.variables['widths_int']+self.variables['heights_int']
+        dims = self.variables['widths_int'] + self.variables['heights_int']
         min_dim = min(dims)
         idx = dims.index(min_dim) % len(self.variables['widths_int'])
         return min_dim, idx
 
     def _get_min_w(self):
         return self._get_min_dim()
-        
+
     def _get_min_h(self):
         return self._get_min_dim()
 
-    def _constraints(self) -> List[T_Z3Clause]:
+    def _constraints(self, use_cumulative: bool) -> List[T_Z3Clause]:
         var = self.variables
 
         widths = var["widths_int"]
@@ -92,50 +93,67 @@ class Z3Model(Z3BaseModel):
 
         eq_list = []
         for c in CIRCUITS:
-            w = pad(int2boolList(widths[c]),  max_len)
+            w = pad(int2boolList(widths[c]), max_len)
             h = pad(int2boolList(heights[c]), max_len)
             w_rot = []
             h_rot = []
             for i in range(max_len):
-                w_rot.append(
-                    Or(And(r[c], h[i]), And(Not(r[c]), w[i]))
-                )
-                h_rot.append(
-                    Or(And(Not(r[c]), h[i]), And(r[c], w[i]))
-                )
-            eq_list.append(eq(widths_b[c],  w_rot))
+                w_rot.append(Or(And(r[c], h[i]), And(Not(r[c]), w[i])))
+                h_rot.append(Or(And(Not(r[c]), h[i]), And(r[c], w[i])))
+            eq_list.append(eq(widths_b[c], w_rot))
             eq_list.append(eq(heights_b[c], h_rot))
 
-        return super()._constraints() + eq_list
-            
+        return super()._constraints(use_cumulative) + eq_list
+
     def _evaluate_solution(self, model, min_makespan, max_makespan, target_makespan):
         solution = {
-            "width": self.variables['width'],
-            "n_circuits": self.variables["n_circuits"],
+            "width":
+            self.variables['width'],
+            "n_circuits":
+            self.variables["n_circuits"],
             "widths": [
-                bool2int([model.evaluate(self.variables['widths'][c][i]) for i in range(self.variables['_dims_domain_size'])])
-                for c in self.variables['CIRCUITS']
+                bool2int(
+                    [
+                        model.evaluate(self.variables['widths'][c][i])
+                        for i in range(self.variables['_dims_domain_size'])
+                    ]
+                ) for c in self.variables['CIRCUITS']
             ],
             "heights": [
-                bool2int([model.evaluate(self.variables['heights'][c][i]) for i in range(self.variables['_dims_domain_size'])])
-                for c in self.variables['CIRCUITS']
+                bool2int(
+                    [
+                        model.evaluate(self.variables['heights'][c][i])
+                        for i in range(self.variables['_dims_domain_size'])
+                    ]
+                ) for c in self.variables['CIRCUITS']
             ],
             "x": [
-                bool2int([model.evaluate(self.variables['x'][c][i]) for i in range(self.variables['_x_domain_size'])])
-                for c in self.variables['CIRCUITS']
+                bool2int(
+                    [
+                        model.evaluate(self.variables['x'][c][i])
+                        for i in range(self.variables['_x_domain_size'])
+                    ]
+                ) for c in self.variables['CIRCUITS']
             ],
             "y": [
-                bool2int([model.evaluate(self.variables['y'][c][i]) for i in range(self.variables['_y_domain_size'])])
-                for c in self.variables['CIRCUITS']
+                bool2int(
+                    [
+                        model.evaluate(self.variables['y'][c][i])
+                        for i in range(self.variables['_y_domain_size'])
+                    ]
+                ) for c in self.variables['CIRCUITS']
             ],
-            "min_makespan": min_makespan,
-            "max_makespan": max_makespan,
-            "makespan": target_makespan
-        } 
-        
+            "min_makespan":
+            min_makespan,
+            "max_makespan":
+            max_makespan,
+            "makespan":
+            target_makespan
+        }
+
         return solution
 
-    def solve(self, file_name: str, search: str, symmetry: bool) -> dict:
-        solution_dict = super().solve(file_name, search, symmetry)
+    def solve(self, file_name: str, search: str, symmetry: bool, use_cumulative: bool) -> dict:
+        solution_dict = super().solve(file_name, search, symmetry, use_cumulative)
         solution_dict['model'] = 'rotation'
         return solution_dict
