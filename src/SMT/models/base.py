@@ -32,8 +32,6 @@ class Z3Model(Z3DefaultModel):
         x = IntVector('x', n_circuits)
         y = IntVector('y', n_circuits)
 
-        #
-
         ### all circuits must have each dimension greater than zero
         assert min(heights) > 0 and min(widths) > 0
         assert len(heights) == len(widths) == n_circuits
@@ -79,8 +77,7 @@ class Z3Model(Z3DefaultModel):
             diffn(x, y, widths, heights),
             ### forall(c in CIRCUITS)(x[c] + widths[c] <= width)
             # And([lte(x[c] + widths[c], width) for c in CIRCUITS]),
-            # And(makespan<=max_makespan, makespan>=min_makespan),
-            makespan==min_makespan,
+            And(makespan<=max_makespan, makespan>=min_makespan),
             And([And(x[c] >= 0, y[c] >= 0) for c in CIRCUITS]),
             And([x[c] + widths[c] <= width for c in CIRCUITS]),
             And([y[c] + heights[c] <= makespan for c in CIRCUITS])
