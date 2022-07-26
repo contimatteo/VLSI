@@ -61,7 +61,8 @@ def _fzn_cumulative(x: T_List, dx: T_List, r: T_List, boundary: T_Number):
     # x, dx, r = get_bool_lists(x, dx, r)
 
     CIRCUITS = range(len(x))
-    for xi in range(boundary):
+    for c_ref in CIRCUITS:
+        xi = x[c_ref]
         ###  initialize sum at 0
         sum_at_xi = 0
         for c in CIRCUITS:
@@ -91,7 +92,7 @@ def cumulative(x: T_List, dx: T_List, r: T_List, boundary: T_Number, min_r: int,
     ###  check if disjunctive can be used
     disj_cond = []
     for c in CIRCUITS:
-        disj_cond.append(Or(r[c] + min_r > boundary), c == idx_min_r)
+        disj_cond.append(Or(r[c] + min_r > boundary, c == idx_min_r))
     disj_cond = And(disj_cond)
     result = [
         ###  disjunctive case
