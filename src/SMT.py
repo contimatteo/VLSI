@@ -52,7 +52,7 @@ def main(args):
     if args.plot:
         plot_solutions_v2(solutions_dict)
 
-    filename = os.path.join('SMT', 'out', args.model)
+    filename = os.path.join('src','SMT', 'out', args.model)
     if args.symmetry:
         filename = os.path.join(filename, 'symmetry')
     if not os.path.exists(filename):
