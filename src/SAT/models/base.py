@@ -29,11 +29,11 @@ class Z3Model(Z3DefaultModel):
 
         ### + max(widths) is necessary for summing the width later
         _x_domain_max = width - min(widths) + max(widths)
-        _x_domain_size = math.ceil(math.log2(_x_domain_max)+1) if _x_domain_max > 0 else 1
+        _x_domain_size = math.ceil(math.log2(_x_domain_max) + 1) if _x_domain_max > 0 else 1
 
         ### + max(heights) is necessary for summing the height later
         _y_domain_max = max_makespan - min(heights) + max(heights)
-        _y_domain_size = math.ceil(math.log2(_y_domain_max)+1) if _y_domain_max > 0 else 1
+        _y_domain_size = math.ceil(math.log2(_y_domain_max) + 1) if _y_domain_max > 0 else 1
 
         x = [[Bool(f"x_of_c{c}_{i}") for i in range(_x_domain_size)] for c in CIRCUITS]
         y = [[Bool(f"y_of_c{c}_{i}") for i in range(_y_domain_size)] for c in CIRCUITS]
@@ -59,7 +59,7 @@ class Z3Model(Z3DefaultModel):
         min_w = min(self.variables['widths'])
         idx = self.variables['widths'].index(min_w)
         return min_w, idx
-        
+
     def _get_min_h(self):
         min_h = min(self.variables['heights'])
         idx = self.variables['heights'].index(min_h)
@@ -84,7 +84,8 @@ class Z3Model(Z3DefaultModel):
             And([lte(x[c], sub_b(width, widths[c])) for c in CIRCUITS])
         ]
 
-        if use_cumulative: r += [cumulative(y, heights, widths, width, min_w, idx)]
+        if use_cumulative:
+            r += [cumulative(y, heights, widths, width, min_w, idx)]
 
         return r
 
@@ -118,9 +119,11 @@ class Z3Model(Z3DefaultModel):
             ### forall(c in CIRCUITS)(y[c] + heights[c] <= target_makespan)
             # And([lte(var["y"][c], makespan - var["heights"][c]) for c in var["CIRCUITS"]]),
             And([lte(y[c], sub_b(makespan, heights[c])) for c in CIRCUITS])
+            #And([gte(makespan, heights[c]) for c in CIRCUITS]) ### this case is taken care of by how the min_makespan is computed
         ]
 
-        if use_cumulative: r+= [cumulative(x, widths, heights, makespan, min_h, idx)]
+        if use_cumulative:
+            r += [cumulative(x, widths, heights, makespan, min_h, idx)]
 
         return r
 
