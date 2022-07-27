@@ -72,7 +72,7 @@ class Z3Model(Z3BaseModel):
         VARS_TO_RETURN = [
             "width", "n_circuits", "CIRCUITS", "widths_int", "heights_int", "x", "y",
             "min_makespan", "max_makespan", "widths", "heights", "is_rotated", "_dims_domain_size",
-            "_x_domain_size", "_y_domain_size"
+            "_x_domain_size", "_y_domain_size", "default_solution"
         ]
 
         _local_vars = locals()

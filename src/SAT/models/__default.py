@@ -185,7 +185,8 @@ class Z3Model():
         min_makespan = self.variables["min_makespan"]
         max_makespan = self.variables["max_makespan"]
         default_solution = self.variables["default_solution"]
-
+        
+        solutions_dict["all_solutions"].append(default_solution)
 
         #
 
@@ -258,7 +259,5 @@ class Z3Model():
 
         solutions_dict["TOTAL_TIME"] = time_spent
         solutions_dict["all_solutions"] = solutions_dict["all_solutions"][::-1]
-        if not solutions_dict["all_solutions"]:
-            solutions_dict["all_solutions"].append(default_solution)
         solutions_dict["solution"] = solutions_dict["all_solutions"][0]
         return solutions_dict
