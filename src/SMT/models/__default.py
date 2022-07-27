@@ -23,7 +23,7 @@ class Z3Model():
         self.variables = None
 
         self.solver_random_seed = seed
-        self.solver_timeout = min(timeout, 300)
+        self.solver_timeout = min(timeout, 300) *1000
 
     #
 
@@ -39,7 +39,7 @@ class Z3Model():
 
         # FIXME: random seed giving error
         # self.solver.set('smt.random_seed', self.solver_random_seed)
-        self.solver.set('timeout', self.solver_timeout*1000)
+        self.solver.set('timeout', self.solver_timeout)
 
     def __variables_support(self, raw_data: dict) -> Tuple[int, int, List[int], List[int]]:
         width = raw_data["width"]
@@ -127,6 +127,8 @@ class Z3Model():
         min_makespan = self.variables["min_makespan"]
         max_makespan = self.variables["max_makespan"]
         target_makespan = self.variables["target_makespan"]
+        default_solution = self.variables["default_solution"]
+
         #
 
         for clause in self._constraints(use_cumulative):
@@ -141,14 +143,25 @@ class Z3Model():
 
         t0 = time.time()
         check = self.solver.check()
+
+        time_spent = (time.time() - t0)*1000
+        if time_spent >= self.solver_timeout:
+            print('time exceeded, optimal solution not found')
+        
         if check==z3.unknown:
-            print('reason unknown:', self.solver.reason_unknown())
+            print('z3 did not found any solution => check=="unknown"')
+            if time_spent>=self.solver_timeout:
+                print('reason of "unknown": exceeded time limit')
+            else:
+                print('reason of "unknown":', self.solver.reason_unknown())
+            solution = default_solution
+            
+        else:
+            print('z3 found at least one solution')     
+            solution = self._evaluate_solution(self.solver.model(), min_makespan, max_makespan)
+            print(f"TOTAL TIME = {round(time_spent, 2)}")
 
-        time_spent = time.time() - t0
-        print(f"TOTAL TIME = {round(time_spent, 2)}")
         solutions_dict["TOTAL_TIME"] = time_spent
-
-        solution = self._evaluate_solution(self.solver.model(), min_makespan, max_makespan)
         solutions_dict["all_solutions"].append(solution)
         solutions_dict["solution"] = solution
         return solutions_dict
