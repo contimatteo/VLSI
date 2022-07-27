@@ -23,7 +23,7 @@ class Z3Model():
         self.variables = None
 
         self.solver_random_seed = seed
-        self.solver_timeout = min(timeout, 300)
+        self.solver_timeout = min(timeout, 300) *1000
 
     #
 
@@ -184,6 +184,8 @@ class Z3Model():
 
         min_makespan = self.variables["min_makespan"]
         max_makespan = self.variables["max_makespan"]
+        default_solution = self.variables["default_solution"]
+
 
         #
 
@@ -209,7 +211,7 @@ class Z3Model():
             t1 = time.time()
 
             self.solver.push()
-            self.solver.set('timeout', int(self.solver_timeout - time_spent) * 1000)
+            self.solver.set('timeout', int(self.solver_timeout - time_spent * 1000))
 
             for clause in self._dynamic_constraints(target_makespan, use_cumulative):
                 self.solver.add(clause)
@@ -256,6 +258,7 @@ class Z3Model():
 
         solutions_dict["TOTAL_TIME"] = time_spent
         solutions_dict["all_solutions"] = solutions_dict["all_solutions"][::-1]
-        if solutions_dict["all_solutions"]:
-            solutions_dict["solution"] = solutions_dict["all_solutions"][0]
+        if not solutions_dict["all_solutions"]:
+            solutions_dict["all_solutions"].append(default_solution)
+        solutions_dict["solution"] = solutions_dict["all_solutions"][0]
         return solutions_dict

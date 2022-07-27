@@ -1,6 +1,7 @@
 from typing import List
 
 import math
+import time
 
 from z3 import Bool, And, BoolRef, Solver
 
@@ -22,10 +23,20 @@ class Z3Model(Z3DefaultModel):
     def _variables(self, raw_data: dict) -> dict:
         width, n_circuits, CIRCUITS, widths, heights = self.__variables_support(raw_data)
 
-        ### define makespan boundaries
+        ###  define makespan boundaries
         _c_area_sum = sum([heights[c] * widths[c] for c in CIRCUITS])
+        ###  measure time needed for default solution
+        t0 = time.time()
+        default_solution = compute_max_makespan(heights, widths, width)
+        time_default = int((time.time() - t0)*1000)
+        print('time spent for default solution:', time_default)
+        ###  redefine solver timeout
+        self.solver_timeout -= time_default
+
+
         min_makespan = max(math.ceil(_c_area_sum / width), max(heights))
-        max_makespan = compute_max_makespan(heights, widths, width)
+        max_makespan = default_solution["makespan"]
+        default_solution['min_makespan'] = min_makespan
 
         ### + max(widths) is necessary for summing the width later
         _x_domain_max = width - min(widths) + max(widths)
@@ -46,7 +57,7 @@ class Z3Model(Z3DefaultModel):
 
         VARS_TO_RETURN = [
             "width", "n_circuits", "CIRCUITS", "widths", "heights", "x", "y", "min_makespan",
-            "max_makespan", "_x_domain_size", "_y_domain_size"
+            "max_makespan", "_x_domain_size", "_y_domain_size", "default_solution"
         ]
 
         _local_vars = locals()
