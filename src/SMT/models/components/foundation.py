@@ -107,7 +107,8 @@ def cumulative(x: T_List, dx: T_List, r: T_List, boundary: T_Number, min_r: int,
 
 
 def symmetrical(x: T_List, dx: T_Number, start: int, end: int) -> T_Z3Clause:
-    assert start >= 0 and end > start
+    assert start >= 0 
+    if isinstance(end, int): assert end > start
 
     ###  x' = end - (x[i]-start+dx[i])
     x_symm = [end - ((x[i] - start) + dx[i]) for i in range(len(x))]
