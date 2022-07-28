@@ -144,7 +144,7 @@ class Z3Model():
         t0 = time.time()
         check = self.solver.check()
 
-        time_spent = (time.time() - t0)*1000
+        time_spent = time.time() - t0
         if time_spent >= self.solver_timeout:
             print('time exceeded, optimal solution not found')
         
