@@ -44,7 +44,7 @@ class Z3Model(Z3DefaultModel):
         assert len(heights) == len(widths) == n_circuits
 
         ###  or variables for diffn
-        n = n_circuits*(n_circuits-1) # == (n_circuits*(n_circuits-1) // 2) * 2 == n_combinations * 2
+        n = n_circuits*(n_circuits-1) * 2 # == (n_circuits*(n_circuits-1) // 2) * 4 == n_combinations * 4
         diffn_vars = self.solver.binary_var_list(n, name='diffn_vars')
 
         VARS_TO_RETURN = [
@@ -87,7 +87,6 @@ class Z3Model(Z3DefaultModel):
 
         r = []
         r += diffn(x, y, widths, heights, diffn_vars)
-        r += [makespan<=max_makespan, makespan>=min_makespan]
         for c in CIRCUITS:
             r += [
                 x[c] + widths[c] <= width,
