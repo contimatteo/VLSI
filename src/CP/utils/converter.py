@@ -287,6 +287,7 @@ def convert_raw_result_to_solutions_dict(raw_output: str, n_max_solutions: int) 
     stats = {}
     results = []
     current_result = None
+    total_time = -1
 
     #
 
@@ -308,9 +309,8 @@ def convert_raw_result_to_solutions_dict(raw_output: str, n_max_solutions: int) 
 
         if raw_line.startswith("% time elapsed:"):
             stat_name, stat_value = __parse_raw_time_elasped(raw_line)
-            stats[stat_name] = max(
-                stats[stat_name], stat_value
-            ) if stat_name in stats else stat_value
+            # stats[stat_name] = max(stats[stat_name], stat_value) if stat_name in stats else stat_value
+            total_time = max(total_time, stat_value)
             continue
 
         if raw_line.startswith("%%%mzn-stat:"):
@@ -357,4 +357,5 @@ def convert_raw_result_to_solutions_dict(raw_output: str, n_max_solutions: int) 
         "all_solutions": results,
         "solution": results[0],
         "stats": stats,
+        "TOTAL_TIME": total_time,
     }
