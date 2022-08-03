@@ -1,16 +1,16 @@
 from importlib import import_module
 
-from SAT.utils.args import parse_args
-from SAT.utils.storage import SAT_data_file_url
-from SAT.utils.plots import plot_solutions_v2
-from SAT.utils.save_results import save_results
+from SMT.utils.args import parse_args
+from SMT.utils.storage import SMT_data_file_url
+from SMT.utils.plots import plot_solutions_v2
+from SMT.utils.save_results import save_results
 
 import json
 import os
 
 ###
 
-MODELS_MODULE_NAMESPACE = "SAT.models"
+MODELS_MODULE_NAMESPACE = "SMT.models"
 
 ###
 
@@ -19,8 +19,8 @@ def main(args):
     # mi dice quale tra i file .py in models usare (ogni file contine un modello diverso)
 
     # open file
-    sat_file_url = SAT_data_file_url(args.data, "txt")
-    with open(sat_file_url, encoding="utf-8") as f:
+    SMT_file_url = SMT_data_file_url(args.data, "txt")
+    with open(SMT_file_url, encoding="utf-8") as f:
         txt_lines = f.readlines()
         f.close()
 
@@ -42,10 +42,12 @@ def main(args):
         ModelClass = getattr(CURRENT_MODEL_MODULE, "Z3Model")
         model = ModelClass(timeout=args.time)
         model.initialize(data_dict)
-        solutions_dict = model.solve(args.data, args.search, args.symmetry, args.cumulative)
+        solutions_dict = model.solve(args.data, args.symmetry, args.cumulative)
     else:
         fn_model_solve = getattr(CURRENT_MODEL_MODULE, "solve")
         solutions_dict = fn_model_solve(data_dict)
+    
+    
 
     assert solutions_dict is not None and isinstance(solutions_dict, dict)
 
@@ -53,9 +55,7 @@ def main(args):
     if args.plot:
         plot_solutions_v2(solutions_dict)
 
-    
-    save_results(args, 'SAT', solutions_dict)
-
+    save_results(args, 'SMT', solutions_dict)
 
 ###
 
