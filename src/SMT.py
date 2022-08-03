@@ -46,8 +46,6 @@ def main(args):
     else:
         fn_model_solve = getattr(CURRENT_MODEL_MODULE, "solve")
         solutions_dict = fn_model_solve(data_dict)
-    
-    
 
     assert solutions_dict is not None and isinstance(solutions_dict, dict)
 
@@ -56,6 +54,7 @@ def main(args):
         plot_solutions_v2(solutions_dict)
 
     save_results(args, 'SMT', solutions_dict)
+
 
 ###
 

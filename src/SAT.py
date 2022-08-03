@@ -53,7 +53,6 @@ def main(args):
     if args.plot:
         plot_solutions_v2(solutions_dict)
 
-    
     save_results(args, 'SAT', solutions_dict)
 
 

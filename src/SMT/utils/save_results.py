@@ -1,12 +1,13 @@
 import os
 import json
 
+
 def save_results(args, strategy: str, solutions_dict):
 
     ###  define filename
     idx = os.getcwd().find('src')
-    filename = os.getcwd()[:os.getcwd().find('src')] if idx!=-1 else os.getcwd()
-    filename = os.path.join(filename,'src', strategy, 'out', args.model, args.search)
+    filename = os.getcwd()[:os.getcwd().find('src')] if idx != -1 else os.getcwd()
+    filename = os.path.join(filename, 'src', strategy, 'out', args.model, args.search)
     if args.symmetry:
         filename = os.path.join(filename, 'symmetry')
     if args.cumulative:
