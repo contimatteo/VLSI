@@ -1,7 +1,6 @@
 from importlib import import_module
 
-from SAT.utils.args import parse_args
-from SAT.utils.save_results import save_results
+from SAT.utils import parse_args, save_results
 
 from utils import plot_solutions, SATStorage
 
