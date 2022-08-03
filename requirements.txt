@@ -12,3 +12,5 @@ pytest
 python-dotenv
 numpy
 z3-solver
+docplex
+cplex
