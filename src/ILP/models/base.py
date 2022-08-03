@@ -20,6 +20,8 @@ class Z3Model(Z3DefaultModel):
     def _variables(self, raw_data: dict) -> dict:
         width, n_circuits, CIRCUITS, widths, heights = self.__variables_support(raw_data)
 
+        CIRCUITS = range(n_circuits)
+
         ###  define makespan boundaries
         _c_area_sum = sum([heights[c] * widths[c] for c in CIRCUITS])
         ###  measure time needed for default solution
@@ -36,7 +38,11 @@ class Z3Model(Z3DefaultModel):
         default_solution['min_makespan'] = min_makespan
         target_makespan = self.solver.integer_var(lb=min_makespan, ub=max_makespan, name='makespan')
 
-        x = self.solver.integer_var_list(n_circuits, lb=0, ub=width-min(widths), name='x')
+        ###  if no rotation -> both width and widths[c] are int values -> setting lb and ub avoid adding some constraints
+        x = [self.solver.integer_var(name='x_'+str(c), lb=0, ub=width-widths[c]) for c in CIRCUITS]
+        # x = self.solver.integer_var_list(n_circuits, lb=0, ub=width-min(widths), name='x')
+
+        ###  makespan is docplex.mp.LinearExpr -> cannot be used to determine ub -> must be added explicitly as constraint
         y = self.solver.integer_var_list(n_circuits, lb=0, ub=max_makespan-min(heights), name='y')
 
         ###  all circuits must have each dimension greater than zero
@@ -87,9 +93,10 @@ class Z3Model(Z3DefaultModel):
 
         r = []
         r += diffn(x, y, widths, heights, diffn_vars)
+        
         for c in CIRCUITS:
             r += [
-                x[c] + widths[c] <= width,
+        #         x[c] + widths[c] <= width,
                 y[c] + heights[c] <= makespan
             ]
         
