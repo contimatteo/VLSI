@@ -45,7 +45,7 @@ def __convert_raw_results_to_dict(raw_results: dict, args) -> dict:
 def __store_solutions_dict(solutions_dict: dict) -> None:
 
     def __file_url():
-        file_sub_dir = str(solutions_dict["solver"]).lower() + "/" + solutions_dict["model"]
+        file_sub_dir = solutions_dict["model"] + "/" + str(solutions_dict["solver"]).lower()
         return str(CPStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
 
     def __clean_dict(obj):
@@ -64,7 +64,7 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
 
     json_data = copy.deepcopy(solutions_dict)
     json_data = __clean_dict(json_data)
-    json_data = __format_dict(json_data)
+    # json_data = __format_dict(json_data)
 
     with open(__file_url(), 'w', encoding="utf-8") as file:
         json.dump(json_data, file, indent=2)

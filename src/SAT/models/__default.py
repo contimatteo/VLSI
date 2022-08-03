@@ -40,7 +40,7 @@ class Z3Model():
     def __variables_support(self, raw_data: dict) -> Tuple[int, int, List[int], List[int]]:
         width = raw_data["width"]
         n_circuits = raw_data["n_circuits"]
-        CIRCUITS = range(n_circuits)
+        CIRCUITS = list(range(n_circuits))
 
         _dims = raw_data["dims"]
         ###  array of horizontal dimensions of the circuits
@@ -166,7 +166,7 @@ class Z3Model():
             "stats": [],
             "model": "base",
             "data_file": file_name,
-            "data": self.variables,
+            # "data": self.variables,
             "solver": "z3 SAT",
             "TOTAL_TIME": 0
         }
@@ -234,9 +234,7 @@ class Z3Model():
                     model, min_makespan, max_makespan, target_makespan
                 )
                 solutions_dict["all_solutions"].append(solution)
-                # print(
-                #     f"target_makespan = {target_makespan}  min_makespan = {min_makespan}  makespan = {makespan}"
-                # )
+
                 solutions_dict["stats"] = self.solver.statistics()
 
             else:
@@ -260,4 +258,5 @@ class Z3Model():
         solutions_dict["TOTAL_TIME"] = time_spent
         solutions_dict["all_solutions"] = solutions_dict["all_solutions"][::-1]
         solutions_dict["solution"] = solutions_dict["all_solutions"][0]
+
         return solutions_dict
