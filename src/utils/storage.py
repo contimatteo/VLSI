@@ -84,4 +84,4 @@ CPStorage = CPStorageClass()
 
 SATStorage = SATStorageClass()
 
-SMTStorage = SATStorageClass()
+SMTStorage = SMTStorageClass()
