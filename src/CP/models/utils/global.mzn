@@ -21,6 +21,6 @@ predicate c_can_be_swapped_on_y(int: c1, int: c2) = (
 %%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-function var int: makespan(array[CIRCUITS] of var Ys: y) = 
-    max(c in CIRCUITS)(y[c] + heights[c])
+% function var int: makespan(array[CIRCUITS] of var Ys: y) = 
+%     max(c in CIRCUITS)(y[c] + heights[c])
 

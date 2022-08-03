@@ -1,6 +1,7 @@
-include "alldifferent.mzn";
 include "cumulative.mzn";
+include "diffn.mzn";
 
+include "components/rotation.mzn";
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -20,6 +21,7 @@ array[CIRCUITS,1..2] of int: dims;
 
 %%%  width of the silicon plate
 int: width;
+
 %%%  array of horizontal dimension of the ciruits
 % array[CIRCUITS] of var int: widths = [ (not is_rotated[c]) * dims[c,1] + is_rotated[c] * dims[c,2] | c in CIRCUITS ];
 array[CIRCUITS] of int: widths = [dims[i,1] | i in CIRCUITS];
@@ -28,10 +30,10 @@ array[CIRCUITS] of int: widths = [dims[i,1] | i in CIRCUITS];
 array[CIRCUITS] of int: heights = [dims[i,2] | i in CIRCUITS];
 
 %%% define makespan boundaries
-int: sum_area = sum(c in CIRCUITS)(dims[c,1]*dims[c,2]);
-int: min_makespan = round(sum_area / width);
-% int: max_makespan = sum(heights);
-int: max_makespan = sum(c in 1..n_circuits)(if heights[c] < width then min(heights[c], widths[c]) else heights[c] endif);
+int: sum_area = sum(c in CIRCUITS)(heights[c]*widths[c]);
+int: min_makespan = max(ceil(sum_area / width), max(heights));
+%int: max_makespan = sum(c in 1..n_circuits)(if heights[c] < width then min(heights[c], widths[c]) else heights[c] endif);
+int: max_makespan;
 
 set of int: Xs = 0..(width - min(dims));
 set of int: Ys = 0..(max_makespan - min(dims));
@@ -39,14 +41,6 @@ array[CIRCUITS] of var Xs: x;
 array[CIRCUITS] of var Ys: y;
 
 var int: makespan = max(c in CIRCUITS)(y[c] + r_height(c));
-
-%%% TODO: ragionare se si possono assegnare gli indici solo ai bordi
-array[int] of var int: grid = [
-    % (x[c]+k) + (y[c]+h)*width | c in CIRCUITS, k in 0..widths[c]-1, h in 0..heights[c]-1
-    ( x[c] + (w * (not is_rotated[c]) + h * is_rotated[c]) ) + 
-    ( y[c] + (w * is_rotated[c] + h * (not is_rotated[c])) ) * width
-    | c in CIRCUITS, w in 0..widths[c]-1, h in 0..heights[c]-1
-];
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -67,24 +61,16 @@ constraint assert(
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 %%%  base problem constraints (by definition)
-% constraint cumulative(y, heights, widths, width);
-% constraint cumulative(x, widths, heights, makespan);
-% constraint forall(c in CIRCUITS)(x[c] + widths[c] <= width);
-constraint cumulative(y, [r_height(c) | c in CIRCUITS], [r_width(c) | c in CIRCUITS], width);
-constraint cumulative(x, [r_width(c) | c in CIRCUITS], [r_height(c) | c in CIRCUITS], makespan);
+constraint diffn(x, y, [r_width(c) | c in CIRCUITS], [r_height(c) | c in CIRCUITS]) :: domain;
+constraint cumulative(y, [r_height(c) | c in CIRCUITS], [r_width(c) | c in CIRCUITS], width) :: domain;
+constraint cumulative(x, [r_width(c) | c in CIRCUITS], [r_height(c) | c in CIRCUITS], makespan) :: domain;
 constraint forall(c in CIRCUITS)(x[c] + r_width(c) <= width);
 
-%%%  exploit the `grid` variable definition
-constraint alldifferent(grid); %%% GECODE
-% constraint forall(i1, i2 in index_set(grid) where i1 < i2) (grid[i1] != grid[i2]); %%% CHUFFED
-
-
-%%% place the circuit with the max height at position (0,0);
-constraint x[arg_max(heights)] == 0 /\ y[arg_max(heights)] == 0;
+%%% force the biggest block to be always to the bottom left of the second biggest
+constraint x[1] <= x[2] /\ y[1] <= y[2];
 
 %%% define `makespan` boundaries.
 constraint makespan >= min_makespan /\ makespan <= max_makespan;
-% constraint makespan >= max(heights) /\ makespan <= max_makespan;
 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -104,6 +90,5 @@ output [
     "is_rotated = ", show(is_rotated), "\n",
     "min_makespan = ", show(min_makespan), "\n",
     "max_makespan = ", show(max_makespan), "\n",
-    "makespan = ", show(makespan), "\n",
-    "model = rotation.gecode"
+    "makespan = ", show(makespan), "\n"
 ];

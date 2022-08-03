@@ -1,12 +1,141 @@
+import copy
+import itertools
 import numpy as np
-
 from .storage import CP_data_file_url
 
 ###
 
+NUMERIC_VARIABLE_NAMES = ["width", "n_circuits", "makespan", "min_makespan", "max_makespan"]
+LIST_VARIABLE_NAMES = ["widths", "heights", "x", "y"]
+SPECIAL_VARIABLE_NAMES = ["dims", "pos", "is_rotated"]
 
-def convert_txt_file_to_dzn(txt_file_name: str):
+###
+
+
+def __dzn_compute_max_makespan(heights, widths, width, with_rotation):
+    n_cols = width // max(widths)
+    col_h = [0 for _ in range(n_cols)]
+    for h in heights:
+        col_h[np.argmin(col_h)] += h
+    if with_rotation:
+        max_makespan = min(
+            sum(
+                [
+                    min(widths[c], heights[c]) if heights[c] < width else heights[c]
+                    for c in range(len(heights))
+                ]
+            ), max(col_h)
+        )
+    else:
+        max_makespan = max(col_h)
+    return max_makespan
+
+
+class Node:
+
+    def __init__(self, c_index, w, h, parent):
+        self.c_index = c_index
+        self.w = w
+        self.h = h
+        self.parent = parent
+        self.children_list = []
+        self.parent_altitude = 0
+
+    def get_remaining_width(self):
+        return self.w - sum([self.children_list[i].w for i in range(len(self.children_list))])
+
+    def get_altitude(self):
+        return self.h + self.parent_altitude
+
+    def attach_child(self, child):
+        self.children_list.append(child)
+        child.parent = self
+        child.parent_altitude = self.h + self.parent_altitude
+
+    def __str__(self):
+        if self.parent:
+            p_index = self.parent.c_index
+        else:
+            p_index = None
+        return f"Node {self.c_index}, w = {self.w}, h = {self.h}, parent = {p_index}, rw = {self.get_remaining_width()}"
+
+
+def compute_max_makespan_tree(heights, widths, width, with_rotation=False):
+    list_of_nodes = [Node(i, widths[i], heights[i], None) for i in range(len(widths))]
+    list_of_nodes = sorted(list_of_nodes, key=lambda a: a.w, reverse=True)
+
+    root = Node(-1, width, 0, None)
+    attached = [root]
+
+    for i in range(len(list_of_nodes)):
+        fringe = [
+            attached[j] for j in range(len(attached))
+            if attached[j].get_remaining_width() >= list_of_nodes[i].w
+        ]
+        fringe = sorted(fringe, key=lambda b: b.get_altitude())
+
+        fringe[0].attach_child(list_of_nodes[i])
+        attached.append(list_of_nodes[i])
+
+    #        print([fringe[k].c_index for k in range(len(fringe))])
+    #        print([str(attached[k]) for k in range(len(attached))])
+
+    max_makespan = max([list_of_nodes[k].get_altitude() for k in range(len(list_of_nodes))])
+
+    return max_makespan
+
+
+def __dzn_compute_X_var_domain(dims: list, dim_max_value: int):
+    domain = np.array([], dtype=int)
+    domain = np.concatenate((domain, dims), axis=0)
+
+    domain_min_value = 0
+    domain_max_value = dim_max_value - min(dims)
+
+    #
+
+    while True:
+        ### INFO: in order to create a correct set of pairs we cannot
+        ### use the `unique()` method on the `domain` variable.
+        pairs = np.array(list(itertools.combinations(domain, 2)))
+        pairs_sum = np.sum(pairs, axis=1)
+        pairs_sum_unique = np.unique(pairs_sum)
+
+        ### remove out range values
+        candidate_values = pairs_sum_unique[pairs_sum_unique <= domain_max_value]
+        ### compute the new values to add
+        new_values = np.setdiff1d(candidate_values, np.intersect1d(domain, candidate_values))
+
+        ### check if we have to add new values to `domain` list
+        we_have_to_add_at_least_one_new_value = new_values.shape[0] > 0
+
+        if not we_have_to_add_at_least_one_new_value:
+            break
+
+        domain = np.concatenate((domain, new_values), axis=0)
+
+    #
+
+    domain_final = np.unique(domain)
+    domain_final = np.sort(domain_final)
+    domain_final = [domain_min_value] + domain_final.tolist()
+
+    return domain_final
+
+
+def __dzn_compute_X_var_domain_rotated(dims: list, dim_max_value: int):
+    min_dim_value = np.array(dims).flatten().min(axis=-1)
+
+    domain_max_value = dim_max_value - min_dim_value
+
+    return [0] + list(range(min_dim_value, domain_max_value + 1, 1))
+
+
+def convert_txt_file_to_dzn(txt_file_name: str, model_name):
     assert isinstance(txt_file_name, str)
+    assert isinstance(model_name, str)
+
+    with_rotation = 'rotation' in model_name
 
     txt_file_url = CP_data_file_url(txt_file_name, "txt")
     dzn_file_url = CP_data_file_url(txt_file_name, "dzn")
@@ -24,29 +153,55 @@ def convert_txt_file_to_dzn(txt_file_name: str):
 
     #
 
-    # print and save width
-    width = txt_lines[0][:-1]
-    dzn_lines[0] = 'width = ' + width + ';\n'
-    data_dict['width'] = int(width)
+    data_dict['width'] = int(txt_lines[0][:-1])
 
-    # print and save n_plates
-    n_plates = txt_lines[1][:-1]
-    dzn_lines[1] = 'n_circuits = ' + n_plates + ';\n'
-    data_dict['n_circuits'] = int(n_plates)
+    data_dict['n_circuits'] = int(txt_lines[1][:-1])
 
-    # print and save dims
     data_dict['dims'] = []
-    dzn_lines[2] = 'dims = ['
     for line_idx in range(2, len(txt_lines)):
         x, y = txt_lines[line_idx][:-1].split(sep=' ')
-        dzn_lines[line_idx] += '|' + x + ', ' + y + ',\n'
         data_dict['dims'].append((int(x), int(y)))
 
-    # remove last comma
-    dzn_lines[-1] = dzn_lines[-1][:-1]
+    widths = [data_dict['dims'][i][0] for i in range(data_dict['n_circuits'])]
+    heights = [data_dict['dims'][i][1] for i in range(data_dict['n_circuits'])]
+    _dims = np.array(data_dict['dims'])
+    ### sort dims wrt heights
+    _dims = _dims[_dims[:, 1].argsort()[::-1]]
 
-    # close the array
-    dzn_lines[-1] += '|]'
+    # data_dict['max_makespan'] = __dzn_compute_max_makespan(
+    #    _dims[:, 1], _dims[:, 0], data_dict['width'], with_rotation
+    # )
+
+    data_dict['max_makespan'] = compute_max_makespan_tree(
+        _dims[:, 1], _dims[:, 0], data_dict['width'], with_rotation
+    )
+
+    if not with_rotation:
+        data_dict['Xs'] = __dzn_compute_X_var_domain(widths, data_dict['width'])
+        data_dict['Ys'] = __dzn_compute_X_var_domain(heights, data_dict['max_makespan'])
+    else:
+        data_dict['Xs'] = __dzn_compute_X_var_domain_rotated(data_dict['dims'], data_dict['width'])
+        data_dict['Ys'] = __dzn_compute_X_var_domain_rotated(
+            data_dict['dims'], data_dict['max_makespan']
+        )
+
+    #
+
+    dzn_lines[0] = f"width = {str(data_dict['width'])};\n"
+
+    dzn_lines[1] = f"n_circuits = {str(data_dict['n_circuits'])};\n"
+
+    dzn_lines[2] = 'dims = ['
+    for dim in sorted(data_dict['dims'], key=lambda dim: dim[0] * dim[1], reverse=True):
+        # for dim in data_dict['dims']:
+        dzn_lines[line_idx] += f"|{dim[0]},{dim[1]},\n"
+    dzn_lines[-1] = dzn_lines[-1][:-1]  ### remove last comma
+    dzn_lines[-1] += '|];\n'  ### close the array
+
+    dzn_lines[-1] += f"max_makespan = {str(data_dict['max_makespan'])};\n"
+
+    # dzn_lines[-1] += "Xs = {" + ','.join([str(x) for x in data_dict['Xs']]) + "};\n"
+    # dzn_lines[-1] += "Ys = {" + ','.join([str(x) for x in data_dict['Ys']]) + "};\n"
 
     #
 
@@ -54,9 +209,7 @@ def convert_txt_file_to_dzn(txt_file_name: str):
         f.writelines(dzn_lines)
         f.close()
 
-    #
-
-    assert txt_file_url.exists() and txt_file_url.is_file()
+    assert dzn_file_url.exists() and dzn_file_url.is_file()
 
     return data_dict
 
@@ -113,68 +266,94 @@ def __convert_raw_var_to_special_type(raw_var_name: str, raw_var_value: str):
     raise Exception("raw variable format not supported.")
 
 
-def convert_raw_result_to_solutions_dict(raw_results: str, n_max_solutions: int) -> dict:
+###
+
+
+def __parse_raw_stats(raw_stat: str):
+    stat_splits = (raw_stat.replace("%%%mzn-stat: ", "")).split("=")
+    var_name, var_value = stat_splits[0], stat_splits[1]
+    return var_name, float(var_value) if '.' in var_value else int(var_value)
+
+
+def __parse_raw_time_elasped(raw_stat: str):
+    var_value = (raw_stat.replace("% time elapsed: ", "")).replace(" s", "")
+    return "TOTAL_TIME", float(var_value)
+
+
+def convert_raw_result_to_solutions_dict(raw_output: str, n_max_solutions: int) -> dict:
+    raw_output_lines = raw_output.split("\n")
+
+    stats = {}
     results = []
-    best_result_index = None
-    best_makespan_found = None
+    current_result = None
 
     #
 
-    NUMERIC_VARIABLE_NAMES = ["width", "n_circuits", "makespan"]
-    LIST_VARIABLE_NAMES = ["widths", "heights", "x", "y"]
-    SPECIAL_VARIABLE_NAMES = ["dims", "pos", "is_rotated"]
+    for raw_line in raw_output_lines:
+        raw_line = raw_line.strip()
 
-    #
-
-    raw_solutions = raw_results.split("----------")
-
-    for (si, raw_solution) in enumerate(raw_solutions):
-        result = {}
-        raw_variables = raw_solution.split("\n")
-
-        if len(raw_variables) < 1:
+        if len(raw_line) < 1:
+            continue
+        if raw_line.startswith("% Generated FlatZinc statistics:"):
+            continue
+        if raw_line.startswith("%%%mzn-stat-end"):
+            continue
+        if raw_line.startswith("%%%mzn-stat: method="):
+            continue
+        if raw_line.startswith("%%%mzn-stat: profiling="):
+            continue
+        if raw_line.startswith("---") or raw_line.startswith("==="):
             continue
 
-        for (_, raw_variable) in enumerate(raw_variables):
-            raw_variable = raw_variable.strip()
+        if raw_line.startswith("% time elapsed:"):
+            stat_name, stat_value = __parse_raw_time_elasped(raw_line)
+            stats[stat_name] = max(
+                stats[stat_name], stat_value
+            ) if stat_name in stats else stat_value
+            continue
 
-            if len(raw_variable) < 1 or "===" in raw_variable:
-                continue
-            if raw_variable.startswith("%%%mzn-stat") or raw_variable.startswith("% "):
-                continue
-            print()
-            print(raw_variable)
-            print()
-            var_name = raw_variable.split(" = ")[0]
-            var_value = raw_variable.split(" = ")[1]
+        if raw_line.startswith("%%%mzn-stat:"):
+            stat_name, stat_value = __parse_raw_stats(raw_line)
+            stats[stat_name] = stat_value
+            continue
 
-            if var_name in NUMERIC_VARIABLE_NAMES:
-                var_value = __convert_raw_var_to_number(var_value)
-            elif var_name in LIST_VARIABLE_NAMES:
-                var_value = __convert_raw_var_to_list(var_value, True)
-            elif var_name in SPECIAL_VARIABLE_NAMES:
-                var_value = __convert_raw_var_to_special_type(var_name, var_value)
-            else:
-                continue
-                # raise Exception(f"`{var_name}` not recognized.")
+        if " = " not in raw_line:
+            continue
+            # raise Exception(raw_line)
 
-            if var_name == "makespan":
-                if best_makespan_found is None or var_value < best_makespan_found:
-                    best_result_index = si
-                    best_makespan_found = var_value
+        raw_line_splits = raw_line.split(" = ")
+        var_name, var_value = raw_line_splits[0], raw_line_splits[1]
 
-            result[var_name] = var_value
+        if var_name in NUMERIC_VARIABLE_NAMES:
+            var_value = __convert_raw_var_to_number(var_value)
+        elif var_name in LIST_VARIABLE_NAMES:
+            var_value = __convert_raw_var_to_list(var_value, True)
+        elif var_name in SPECIAL_VARIABLE_NAMES:
+            var_value = __convert_raw_var_to_special_type(var_name, var_value)
+        else:
+            continue
+            # raise Exception(f"`{var_name}` not recognized.")
 
-        if len(result.keys()) > 0:
-            results.append(result)
+        if var_name == "width":
+            current_result = {}
+
+        current_result[var_name] = var_value
+
+        if var_name == "makespan":
+            if len(current_result.keys()) > 0:
+                results.append(copy.deepcopy(current_result))
+            current_result = None
 
     #
 
-    results = sorted(results, key=lambda x: x["makespan"], reverse=False)
-    results = results[0:n_max_solutions]
+    assert len(results) > 0
+
+    if len(results) > 1:
+        results = sorted(results, key=lambda sol: sol["makespan"], reverse=False)
+        results = results[0:n_max_solutions]
 
     return {
-        "results": results,
-        "best_result_index": best_result_index,
-        "best_makespan": best_makespan_found
+        "all_solutions": results,
+        "solution": results[0],
+        "stats": stats,
     }
