@@ -16,11 +16,16 @@ def save_results(args, strategy: str, solutions_dict):
     ###  create folder
     if not os.path.exists(filename):
         os.makedirs(filename)
-    filename = os.path.join(filename, solutions_dict['file'] + '.json')
+    filename = os.path.join(filename, solutions_dict['data_file'] + '.json')
 
     ###  create dictionary to be written
     output_dict = solutions_dict['solution']
-    output_dict.update({'file': solutions_dict['file'], 'TOTAL_TIME': solutions_dict['TOTAL_TIME']})
+    output_dict.update(
+        {
+            'file': solutions_dict['data_file'],
+            'TOTAL_TIME': solutions_dict['TOTAL_TIME']
+        }
+    )
     output_string = json.dumps(output_dict)
 
     with open(filename, 'w', encoding="utf-8") as file:

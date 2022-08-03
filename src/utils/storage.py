@@ -71,8 +71,17 @@ class SATStorageClass(_Storage):
         return "SAT"
 
 
+class SMTStorageClass(_Storage):
+
+    @property
+    def _root_dir_name(self) -> str:
+        return "SMT"
+
+
 ###
 
 CPStorage = CPStorageClass()
 
 SATStorage = SATStorageClass()
+
+SMTStorage = SATStorageClass()

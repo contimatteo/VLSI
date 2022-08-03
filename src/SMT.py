@@ -1,12 +1,8 @@
 from importlib import import_module
 
-from SMT.utils.args import parse_args
-from SMT.utils.storage import SMT_data_file_url
-from SMT.utils.plots import plot_solutions_v2
-from SMT.utils.save_results import save_results
+from SMT.utils import parse_args, save_results
 
-import json
-import os
+from utils import SMTStorage, plot_solutions
 
 ###
 
@@ -19,7 +15,7 @@ def main(args):
     # mi dice quale tra i file .py in models usare (ogni file contine un modello diverso)
 
     # open file
-    SMT_file_url = SMT_data_file_url(args.data, "txt")
+    SMT_file_url = SMTStorage.data_file_url(args.data, "txt")
     with open(SMT_file_url, encoding="utf-8") as f:
         txt_lines = f.readlines()
         f.close()
@@ -51,7 +47,7 @@ def main(args):
 
     # plot
     if args.plot:
-        plot_solutions_v2(solutions_dict)
+        plot_solutions(solutions_dict)
 
     save_results(args, 'SMT', solutions_dict)
 
