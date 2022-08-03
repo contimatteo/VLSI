@@ -86,7 +86,7 @@ class Z3Model():
         raise NotImplementedError
 
     def _evaluate_solution(self, min_makespan: int, max_makespan: int):
-        CIRCUITS = range(self.variables['n_circuits'])
+        CIRCUITS = self.variables['CIRCUITS']
         solution = {
             "width": self.variables['width'],
             "n_circuits": self.variables["n_circuits"],
