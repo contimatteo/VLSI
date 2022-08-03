@@ -25,7 +25,7 @@ def plot_solutions(solutions_dict: dict) -> None:
     else:
         fig, axs = plt.subplots(nrows=rows, ncols=cols)
 
-    fig.canvas.set_window_title(solutions_dict["data"])
+    fig.canvas.set_window_title(solutions_dict["data_file"])
 
     def __single_solution_plot(ax, result):
         ax.set_xlim(0, result['width'])

@@ -23,7 +23,7 @@ class Z3Model():
         self.variables = None
 
         self.solver_random_seed = seed
-        self.solver_timeout = min(timeout, 300) *1000
+        self.solver_timeout = min(timeout, 300) * 1000
 
     #
 
@@ -165,7 +165,7 @@ class Z3Model():
             "solution": {},
             "stats": [],
             "model": "base",
-            "file": file_name,
+            "data_file": file_name,
             "data": self.variables,
             "solver": "z3 SAT",
             "TOTAL_TIME": 0
@@ -185,7 +185,7 @@ class Z3Model():
         min_makespan = self.variables["min_makespan"]
         max_makespan = self.variables["max_makespan"]
         default_solution = self.variables["default_solution"]
-        
+
         solutions_dict["all_solutions"].append(default_solution)
 
         #

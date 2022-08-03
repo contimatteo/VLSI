@@ -1,12 +1,9 @@
 from importlib import import_module
 
 from SAT.utils.args import parse_args
-from SAT.utils.storage import SAT_data_file_url
-from SAT.utils.plots import plot_solutions_v2
 from SAT.utils.save_results import save_results
 
-import json
-import os
+from utils import plot_solutions, SATStorage
 
 ###
 
@@ -19,7 +16,7 @@ def main(args):
     # mi dice quale tra i file .py in models usare (ogni file contine un modello diverso)
 
     # open file
-    sat_file_url = SAT_data_file_url(args.data, "txt")
+    sat_file_url = SATStorage.data_file_url(args.data, "txt")
     with open(sat_file_url, encoding="utf-8") as f:
         txt_lines = f.readlines()
         f.close()
@@ -51,7 +48,7 @@ def main(args):
 
     # plot
     if args.plot:
-        plot_solutions_v2(solutions_dict)
+        plot_solutions(solutions_dict)
 
     save_results(args, 'SAT', solutions_dict)
 
