@@ -6,8 +6,11 @@ from matplotlib.patches import Rectangle
 ###
 
 
-def plot_solutions_v2(solutions_dict):
+def plot_solutions(solutions_dict: dict) -> None:
+    assert isinstance(solutions_dict, dict)
+
     solutions = solutions_dict["all_solutions"]
+    assert isinstance(solutions, list)
 
     if len(solutions) < 1:
         return

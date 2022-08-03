@@ -1,7 +1,8 @@
 import copy
 import itertools
 import numpy as np
-from .storage import CP_data_file_url
+
+from utils import CPStorage
 
 ###
 
@@ -137,8 +138,8 @@ def convert_txt_file_to_dzn(txt_file_name: str, model_name):
 
     with_rotation = 'rotation' in model_name
 
-    txt_file_url = CP_data_file_url(txt_file_name, "txt")
-    dzn_file_url = CP_data_file_url(txt_file_name, "dzn")
+    txt_file_url = CPStorage.data_file_url(txt_file_name, "txt")
+    dzn_file_url = CPStorage.data_file_url(txt_file_name, "dzn")
 
     assert txt_file_url.exists() and txt_file_url.is_file()
 
