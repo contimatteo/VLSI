@@ -4,12 +4,9 @@ from copy import deepcopy
 import time
 from docplex.mp.model import Model
 
-
 # from ILP.models.components.foundation import bool2int
 
 ###
-
-
 
 ###
 
@@ -26,7 +23,7 @@ class Z3Model():
     #
 
     def __configure_solver(self) -> None:
-        self.solver = Model(name = 'VLSI model')
+        self.solver = Model(name='VLSI model')
 
         # self.solver.set("smt.local_search", True)
         # self.solver.set("smt.local_search_threads", 1)
@@ -34,13 +31,12 @@ class Z3Model():
         # self.solver.set("smt.lookahead_simplify", True)
         # self.solver.set("smt.lookahead.use_learned", True)
 
-
         # self.solver.set_time_limit(self.solver_timeout)
 
     def __variables_support(self, raw_data: dict) -> Tuple[int, int, List[int], List[int]]:
         width = raw_data["width"]
         n_circuits = raw_data["n_circuits"]
-        CIRCUITS = range(n_circuits)
+        CIRCUITS = list(range(n_circuits))
 
         _dims = raw_data["dims"]
         ###  array of horizontal dimensions of the circuits
@@ -97,7 +93,7 @@ class Z3Model():
             "min_makespan": min_makespan,
             "max_makespan": max_makespan,
             "makespan": self.variables['target_makespan'].solution_value
-        } 
+        }
         return solution
 
     ###
@@ -114,8 +110,8 @@ class Z3Model():
             "solution": {},
             "stats": [],
             "model": "base",
-            "file": file_name,
-            "data": self.variables,
+            "data_file": file_name,
+            #"data": self.variables,
             "solver": "z3 SAT",
             "TOTAL_TIME": 0
         }
@@ -143,9 +139,9 @@ class Z3Model():
         time_spent = time.time() - t0
         if time_spent >= self.solver_timeout:
             print('time exceeded, optimal solution not found')
-            solution = default_solution 
+            solution = default_solution
         else:
-            print('solver found at least one solution')     
+            print('solver found at least one solution')
             solution = self._evaluate_solution(min_makespan, max_makespan)
             print(f"TOTAL TIME = {round(time_spent, 2)}")
 

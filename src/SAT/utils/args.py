@@ -1,6 +1,6 @@
 import argparse
 
-from .storage import SAT_data_file_url
+from utils import SATStorage
 
 ###
 
@@ -17,10 +17,7 @@ MODELS_CHOICES = [
     "rotation"
 ]
 DEFAULT_SEARCH_STRATEGY = 'linear'
-SEARCH_CHOICES = [
-    'linear',
-    'binary'
-]
+SEARCH_CHOICES = ['linear', 'binary']
 
 ###
 
@@ -74,7 +71,7 @@ def parse_args():
         '--debug', required=False, action="store_true", help='prints development debug infos'
     )
     parser.add_argument(
-        '--search', 
+        '--search',
         required=False,
         type=str,
         default=DEFAULT_SEARCH_STRATEGY,
@@ -85,7 +82,10 @@ def parse_args():
         '--symmetry', required=False, action="store_true", help='add symmetry constraints'
     )
     parser.add_argument(
-        '--cumulative', required=False, action="store_true", help='add cumulative constraint on both x and y'
+        '--cumulative',
+        required=False,
+        action="store_true",
+        help='add cumulative constraint on both x and y'
     )
     #
 
@@ -107,7 +107,7 @@ def parse_args():
     # assert time_limit >= 100 and time_limit <= 60000
     assert time_limit >= 1 and time_limit <= 1800
 
-    assert SAT_data_file_url(data_file_name, "txt").is_file()
+    assert SATStorage.data_file_url(data_file_name, "txt").is_file()
 
     #
 

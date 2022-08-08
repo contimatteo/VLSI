@@ -84,9 +84,13 @@ def _fzn_cumulative(x: T_List, dx: T_List, r: T_List, boundary: T_Number):
     return And(result)
 
 
-def cumulative(x: T_List, dx: T_List, r: T_List, boundary: T_Number, min_r: int, idx_min_r: int) -> T_Z3Clause:
+def cumulative(
+    x: T_List, dx: T_List, r: T_List, boundary: T_Number, min_r: int, idx_min_r: int
+) -> T_Z3Clause:
 
-    assert len(x) == len(dx) == len(r), 'cumulative: the 3 array arguments must have identical length'
+    assert len(x) == len(dx) == len(
+        r
+    ), 'cumulative: the 3 array arguments must have identical length'
     CIRCUITS = range(len(x))
 
     ###  check if disjunctive can be used
@@ -107,21 +111,24 @@ def cumulative(x: T_List, dx: T_List, r: T_List, boundary: T_Number, min_r: int,
 
 
 def symmetrical(x: T_List, dx: T_Number, start: int, end: int) -> T_Z3Clause:
-    assert start >= 0 
-    if isinstance(end, int): assert end > start
+    assert start >= 0
+    if isinstance(end, int):
+        assert end > start
 
     ###  x' = end - (x[i]-start+dx[i])
     x_symm = [end - ((x[i] - start) + dx[i]) for i in range(len(x))]
     return x_symm
+
 
 def _lex_lesseq(x: T_List, y: T_List):
     CIRCUITS = range(len(x))
     if not x:
         return False
 
-    return And(x[0]<=y[0], Or(x[0]<y[0], _lex_lesseq(x[1:], y[1:])))
+    return And(x[0] <= y[0], Or(x[0] < y[0], _lex_lesseq(x[1:], y[1:])))
+
 
 def axial_symmetry(x: T_List, dx: T_Number, start: int, end: int) -> T_Z3Clause:
     x_symm = symmetrical(x, dx, start, end)
-    ###  constraint lexicographical ordering    
+    ###  constraint lexicographical ordering
     return _lex_lesseq(x, x_symm)

@@ -1,7 +1,8 @@
 import copy
 import itertools
 import numpy as np
-from .storage import CP_data_file_url
+
+from utils import CPStorage
 
 ###
 
@@ -137,8 +138,8 @@ def convert_txt_file_to_dzn(txt_file_name: str, model_name):
 
     with_rotation = 'rotation' in model_name
 
-    txt_file_url = CP_data_file_url(txt_file_name, "txt")
-    dzn_file_url = CP_data_file_url(txt_file_name, "dzn")
+    txt_file_url = CPStorage.data_file_url(txt_file_name, "txt")
+    dzn_file_url = CPStorage.data_file_url(txt_file_name, "dzn")
 
     assert txt_file_url.exists() and txt_file_url.is_file()
 
@@ -286,6 +287,7 @@ def convert_raw_result_to_solutions_dict(raw_output: str, n_max_solutions: int) 
     stats = {}
     results = []
     current_result = None
+    total_time = -1
 
     #
 
@@ -307,9 +309,8 @@ def convert_raw_result_to_solutions_dict(raw_output: str, n_max_solutions: int) 
 
         if raw_line.startswith("% time elapsed:"):
             stat_name, stat_value = __parse_raw_time_elasped(raw_line)
-            stats[stat_name] = max(
-                stats[stat_name], stat_value
-            ) if stat_name in stats else stat_value
+            # stats[stat_name] = max(stats[stat_name], stat_value) if stat_name in stats else stat_value
+            total_time = max(total_time, stat_value)
             continue
 
         if raw_line.startswith("%%%mzn-stat:"):
@@ -356,4 +357,5 @@ def convert_raw_result_to_solutions_dict(raw_output: str, n_max_solutions: int) 
         "all_solutions": results,
         "solution": results[0],
         "stats": stats,
+        "TOTAL_TIME": total_time,
     }

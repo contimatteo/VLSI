@@ -23,7 +23,7 @@ class Z3Model():
         self.variables = None
 
         self.solver_random_seed = seed
-        self.solver_timeout = min(timeout, 300) *1000
+        self.solver_timeout = min(timeout, 300) * 1000
 
     #
 
@@ -36,7 +36,6 @@ class Z3Model():
         # self.solver.set("smt.lookahead_simplify", True)
         # self.solver.set("smt.lookahead.use_learned", True)
 
-
         # FIXME: random seed giving error
         # self.solver.set('smt.random_seed', self.solver_random_seed)
         self.solver.set('timeout', self.solver_timeout)
@@ -44,7 +43,7 @@ class Z3Model():
     def __variables_support(self, raw_data: dict) -> Tuple[int, int, List[int], List[int]]:
         width = raw_data["width"]
         n_circuits = raw_data["n_circuits"]
-        CIRCUITS = range(n_circuits)
+        CIRCUITS = list(range(n_circuits))
 
         _dims = raw_data["dims"]
         ###  array of horizontal dimensions of the circuits
@@ -95,12 +94,14 @@ class Z3Model():
             "n_circuits": self.variables["n_circuits"],
             "widths": self.variables['widths'],
             "heights": self.variables['heights'],
-            "x": [model.evaluate(self.variables['x'][c]).as_long() for c in self.variables['CIRCUITS']],
-            "y": [model.evaluate(self.variables['y'][c]).as_long() for c in self.variables['CIRCUITS']],
+            "x":
+            [model.evaluate(self.variables['x'][c]).as_long() for c in self.variables['CIRCUITS']],
+            "y":
+            [model.evaluate(self.variables['y'][c]).as_long() for c in self.variables['CIRCUITS']],
             "min_makespan": min_makespan,
             "max_makespan": max_makespan,
             "makespan": model.evaluate(self.variables['target_makespan']).as_long()
-        } 
+        }
         return solution
 
     ###
@@ -118,8 +119,8 @@ class Z3Model():
             "solution": {},
             "stats": [],
             "model": "base",
-            "file": file_name,
-            "data": self.variables,
+            "data_file": file_name,
+            # "data": self.variables,
             "solver": "z3 SAT",
             "TOTAL_TIME": 0
         }
@@ -147,21 +148,22 @@ class Z3Model():
         time_spent = time.time() - t0
         if time_spent >= self.solver_timeout:
             print('time exceeded, optimal solution not found')
-        
-        if check==z3.unknown:
+
+        if check == z3.unknown:
             print('z3 did not found any solution => check=="unknown"')
-            if time_spent>=self.solver_timeout:
+            if time_spent >= self.solver_timeout:
                 print('reason of "unknown": exceeded time limit')
             else:
                 print('reason of "unknown":', self.solver.reason_unknown())
             solution = default_solution
-            
+
         else:
-            print('z3 found at least one solution')     
+            print('z3 found at least one solution')
             solution = self._evaluate_solution(self.solver.model(), min_makespan, max_makespan)
             print(f"TOTAL TIME = {round(time_spent, 2)}")
 
         solutions_dict["TOTAL_TIME"] = time_spent
         solutions_dict["all_solutions"].append(solution)
         solutions_dict["solution"] = solution
+
         return solutions_dict

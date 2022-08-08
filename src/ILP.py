@@ -1,12 +1,11 @@
+import copy
+import json
+
 from importlib import import_module
 
 from ILP.utils.args import parse_args
-from ILP.utils.storage import ILP_data_file_url
-from ILP.utils.plots import plot_solutions_v2
-from ILP.utils.save_results import save_results
 
-import json
-import os
+from utils import ILPStorage, plot_solutions
 
 ###
 
@@ -15,11 +14,32 @@ MODELS_MODULE_NAMESPACE = "ILP.models"
 ###
 
 
-def main(args):
-    # mi dice quale tra i file .py in models usare (ogni file contine un modello diverso)
+def __store_solutions_dict(solutions_dict: dict) -> None:
 
-    # open file
-    sat_file_url = ILP_data_file_url(args.data, "txt")
+    def __file_url():
+        file_sub_dir = solutions_dict["model"]
+        return str(ILPStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+
+    def __clean_dict(obj):
+        obj_copy = copy.deepcopy(obj)
+        del obj_copy["all_solutions"]
+        return obj_copy
+
+    json_data = copy.deepcopy(solutions_dict)
+    json_data = __clean_dict(json_data)
+
+    with open(__file_url(), 'w', encoding="utf-8") as file:
+        json.dump(json_data, file, indent=2)
+
+    return json_data
+
+
+###
+
+
+def main(args):
+    ### open file
+    sat_file_url = ILPStorage.data_file_url(args.data, "txt")
     with open(sat_file_url, encoding="utf-8") as f:
         txt_lines = f.readlines()
         f.close()
@@ -37,24 +57,19 @@ def main(args):
     solutions_dict = {}
 
     CURRENT_MODEL_MODULE = import_module(f"{MODELS_MODULE_NAMESPACE}.{args.model}")
+    ModelClass = getattr(CURRENT_MODEL_MODULE, "Z3Model")
 
-    if args.model == "base" or args.model == "rotation":
-        ModelClass = getattr(CURRENT_MODEL_MODULE, "Z3Model")
-        model = ModelClass(timeout=args.time)
-        model.initialize(data_dict)
-        solutions_dict = model.solve(args.data, args.symmetry, args.cumulative)
-    else:
-        fn_model_solve = getattr(CURRENT_MODEL_MODULE, "solve")
-        solutions_dict = fn_model_solve(data_dict)
+    model = ModelClass(timeout=args.time)
+    model.initialize(data_dict)
+    solutions_dict = model.solve(args.data, args.symmetry, args.cumulative)
 
     assert solutions_dict is not None and isinstance(solutions_dict, dict)
 
-    # plot
+    ### plot
     if args.plot:
-        plot_solutions_v2(solutions_dict)
+        plot_solutions(solutions_dict)
 
-    
-    save_results(args, 'ILP', solutions_dict)
+    __store_solutions_dict(solutions_dict)
 
 
 ###
