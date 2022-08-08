@@ -4,9 +4,7 @@ from copy import deepcopy
 import time
 import z3
 
-from z3 import BoolRef, Solver, Optimize, Int
-
-from SAT.models.components.foundation import bool2int
+from z3 import BoolRef, Solver, Optimize
 
 ###
 
@@ -29,16 +27,12 @@ class Z3Model():
 
     def __configure_solver(self) -> None:
         self.solver = Optimize()
-
         # self.solver.set("smt.local_search", True)
         # self.solver.set("smt.local_search_threads", 1)
         # self.solver.set("smt.threads", 3)
         # self.solver.set("smt.lookahead_simplify", True)
         # self.solver.set("smt.lookahead.use_learned", True)
-
-        # FIXME: random seed giving error
         # self.solver.set('smt.random_seed', self.solver_random_seed)
-        self.solver.set('timeout', self.solver_timeout)
 
     def __variables_support(self, raw_data: dict) -> Tuple[int, int, List[int], List[int]]:
         width = raw_data["width"]
@@ -72,6 +66,10 @@ class Z3Model():
         assert min_makespan is not None and max_makespan is not None
 
     #
+
+    @property
+    def model_name(self) -> str:
+        raise NotImplementedError
 
     def _variables(self, raw_data: dict) -> dict:
         raise NotImplementedError
@@ -114,21 +112,22 @@ class Z3Model():
         self.__configure_solver()
 
     def solve(self, file_name: str, symmetry: bool, use_cumulative: bool) -> dict:
-        solutions_dict = { ### each solution in all_solutions is a dict
-            "all_solutions": [],
-            "solution": {},
-            "stats": [],
-            "model": "base",
+        solutions_dict = {
+            "solver": "SMT",
+            "model": self.model_name,
             "data_file": file_name,
-            # "data": self.variables,
-            "solver": "z3 SAT",
-            "TOTAL_TIME": 0
+            "search": "linear",
+            "symmetry": symmetry,
+            "cumulative": use_cumulative,
+            "TOTAL_TIME": 0,
+            "stats": [],
+            "solution": {},
+            "all_solutions": [],
         }
 
         min_makespan = self.variables["min_makespan"]
         max_makespan = self.variables["max_makespan"]
         target_makespan = self.variables["target_makespan"]
-        default_solution = self.variables["default_solution"]
 
         #
 
@@ -139,31 +138,44 @@ class Z3Model():
             for clause in self._symmetries_breaking():
                 self.solver.add(clause)
 
-        #
+        ### solve
+
+        self.solver.set('timeout', self.solver_timeout)
         self.solver.minimize(target_makespan)
 
-        t0 = time.time()
+        time_before_exec_start = time.time()
+
         check = self.solver.check()
+        time_spent = time.time() - time_before_exec_start
 
-        time_spent = time.time() - t0
-        if time_spent >= self.solver_timeout:
-            print('time exceeded, optimal solution not found')
+        #
 
-        if check == z3.unknown:
-            print('z3 did not found any solution => check=="unknown"')
-            if time_spent >= self.solver_timeout:
-                print('reason of "unknown": exceeded time limit')
-            else:
-                print('reason of "unknown":', self.solver.reason_unknown())
-            solution = default_solution
+        # if time_spent >= self.solver_timeout:
+        #     print('time exceeded, optimal solution not found')
 
-        else:
-            print('z3 found at least one solution')
-            solution = self._evaluate_solution(self.solver.model(), min_makespan, max_makespan)
-            print(f"TOTAL TIME = {round(time_spent, 2)}")
+        # if check == z3.unknown:
+        #     print('z3 did not found any solution => check=="unknown"')
+        #     if time_spent >= self.solver_timeout:
+        #         print('reason of "unknown": exceeded time limit')
+        #     else:
+        #         print('reason of "unknown":', self.solver.reason_unknown())
+        #     solution = default_solution
+
+        solution = None
+
+        if check == z3.sat:
+            solution = self._evaluate_solution(
+                self.solver.model(),
+                min_makespan,
+                max_makespan,
+            )
+
+        #
+
+        assert solution is not None
 
         solutions_dict["TOTAL_TIME"] = time_spent
-        solutions_dict["all_solutions"].append(solution)
+        solutions_dict["all_solutions"] = [solution]
         solutions_dict["solution"] = solution
 
         return solutions_dict

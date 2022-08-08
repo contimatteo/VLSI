@@ -14,7 +14,6 @@ MODELS_MODULE_NAMESPACE = "SAT.models"
 
 
 def __store_solutions_dict(solutions_dict: dict) -> None:
-
     model = solutions_dict["model"]
     search = solutions_dict["search"]
     symmetry = solutions_dict["symmetry"]

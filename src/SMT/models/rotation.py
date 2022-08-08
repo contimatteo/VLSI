@@ -22,6 +22,12 @@ T_Z3Solver = Solver
 
 class Z3Model(Z3BaseModel):
 
+    @property
+    def model_name(self) -> str:
+        return "rotation"
+
+    #
+
     def _variables(self, raw_data: dict) -> dict:
         width, n_circuits, CIRCUITS, widths_int, heights_int = self.__variables_support(raw_data)
 
@@ -119,7 +125,7 @@ class Z3Model(Z3BaseModel):
 
         return solution
 
-    def solve(self, file_name: str, symmetry: bool, use_cumulative: bool) -> dict:
-        solution_dict = super().solve(file_name, symmetry, use_cumulative)
-        solution_dict['model'] = 'rotation'
-        return solution_dict
+    # def solve(self, file_name: str, symmetry: bool, use_cumulative: bool) -> dict:
+    #     solution_dict = super().solve(file_name, symmetry, use_cumulative)
+    #     solution_dict['model'] = 'rotation'
+    #     return solution_dict

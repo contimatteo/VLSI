@@ -20,6 +20,12 @@ T_Z3Solver = Solver
 
 class Z3Model(Z3DefaultModel):
 
+    @property
+    def model_name(self) -> str:
+        return "base"
+
+    #
+
     def _variables(self, raw_data: dict) -> dict:
         width, n_circuits, CIRCUITS, widths, heights = self.__variables_support(raw_data)
 

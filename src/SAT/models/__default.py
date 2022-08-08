@@ -217,9 +217,11 @@ class Z3Model():
             ### check solution
 
             if check == z3.sat:
-                model = self.solver.model()
                 solution = self._evaluate_solution(
-                    model, min_makespan, max_makespan, target_makespan
+                    self.solver.model(),
+                    min_makespan,
+                    max_makespan,
+                    target_makespan,
                 )
                 solutions_dict["all_solutions"].append(solution)
                 solutions_dict["stats"] = self.solver.statistics()
