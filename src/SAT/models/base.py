@@ -35,7 +35,7 @@ class Z3Model(Z3DefaultModel):
         t0 = time.time()
         default_solution = compute_max_makespan(heights, widths, width)
         time_default = int((time.time() - t0) * 1000)
-        print('time spent for default solution:', time_default)
+
         ###  redefine solver timeout
         self.solver_timeout -= time_default
 
