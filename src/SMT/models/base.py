@@ -28,11 +28,10 @@ class Z3Model(Z3DefaultModel):
         ###  measure time needed for default solution
         t0 = time.time()
         default_solution = compute_max_makespan(heights, widths, width)
-        time_default = int((time.time() - t0)*1000)
+        time_default = int((time.time() - t0) * 1000)
         print('time spent for default solution:', time_default)
         ###  redefine solver timeout
         self.solver_timeout -= time_default
-
 
         min_makespan = max(math.ceil(_c_area_sum / width), max(heights))
         max_makespan = default_solution["makespan"]
@@ -61,7 +60,7 @@ class Z3Model(Z3DefaultModel):
         min_w = min(self.variables['widths'])
         idx = self.variables['widths'].index(min_w)
         return min_w, idx
-        
+
     def _get_min_h(self):
         min_h = min(self.variables['heights'])
         idx = self.variables['heights'].index(min_h)
@@ -87,14 +86,14 @@ class Z3Model(Z3DefaultModel):
             diffn(x, y, widths, heights),
             ### forall(c in CIRCUITS)(x[c] + widths[c] <= width)
             # And([lte(x[c] + widths[c], width) for c in CIRCUITS]),
-            And(makespan<=max_makespan, makespan>=min_makespan),
+            And(makespan <= max_makespan, makespan >= min_makespan),
             And([And(x[c] >= 0, y[c] >= 0) for c in CIRCUITS]),
             And([x[c] + widths[c] <= width for c in CIRCUITS]),
             And([y[c] + heights[c] <= makespan for c in CIRCUITS])
         ]
 
-        if use_cumulative: 
-            r += [cumulative(y, heights, widths, width, min_w, idx)] 
+        if use_cumulative:
+            r += [cumulative(y, heights, widths, width, min_w, idx)]
             r += [cumulative(x, widths, heights, makespan, min_h, idx)]
 
         return r
@@ -108,7 +107,6 @@ class Z3Model(Z3DefaultModel):
         widths = var["widths"]
         heights = var["heights"]
         makespan = var["target_makespan"]
-
 
         return [
             # sym_bigger_circuit_origin(x, y, widths, heights),

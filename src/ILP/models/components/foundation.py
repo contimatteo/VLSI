@@ -1,29 +1,16 @@
 from typing import List, Union
 
-import uuid
-
 from itertools import combinations
 import uuid
 
-from z3 import Bool, BoolRef, IntVector, Int
-from z3 import Or, And, Not, Xor, Implies, If
-
 ###
-"""
-T_NumberAsBoolList = List[Bool]
-T_Number = Union[T_NumberAsBoolList, int]
-T_NumbersAsBoolLists = List[T_Number]
-# T_BoolOrList = Union[T_NumberAsBoolList, Bool]
-"""
-
-T_List = Union[IntVector, List[int]]
-T_Number = Union[Int, int]
-T_Z3Clause = BoolRef
 
 ###
 
+M = int(1e10)
 
-def diffn(x: IntVector, y: IntVector, widths: T_List, heigths: T_List) -> T_Z3Clause:
+
+def diffn(x, y, widths, heigths, diffn_vars):
     # predicate fzn_diffn(array[int] of var int: x,
     #                 array[int] of var int: y,
     #                 array[int] of var int: dx,
@@ -35,19 +22,31 @@ def diffn(x: IntVector, y: IntVector, widths: T_List, heigths: T_List) -> T_Z3Cl
 
     CIRCUITS = range(len(x))
     result = []
+    i = 0
     for c1, c2 in combinations(CIRCUITS, 2):
-        result.append(
-            Or(
-                x[c1] + widths[c1] <= x[c2],
-                x[c2] + widths[c2] <= x[c1],
-                y[c1] + heigths[c1] <= y[c2],
-                y[c2] + heigths[c2] <= y[c1],
-            )
-        )
+        result += [
+            ###  if diffn_vars[i+1] == 1 c1 on the right of c2
+            ###  if diffn_vars[i+1] == 0 make true the case x[c1] - x[c2] >= widths[c2]
+            x[c1] - x[c2] >= widths[c2] - M * (1 - diffn_vars[i+1]),
+            ###  if diffn_vars[i] == 1 c1 on the left of c2
+            ###  if diffn_vars[i] == 0 make true the case x[c2] - x[c1] >= widths[c1]
+            x[c2] - x[c1] >= widths[c1] - M * (1 - diffn_vars[i]),
+            ###  if diffn_vars[i+2] == 1 c1 on top of c2
+            ###  if diffn_vars[i+2] == 0 make true the case y[c1] - y[c2] >= heigths[c2]
+            y[c1] - y[c2] >= heigths[c2] - M * (1 - diffn_vars[i+2]),
+            ###  if diffn_vars[i+3] == 1 c1 under c2
+            ###  if diffn_vars[i+3] == 0 make true the case y[c1] - y[c2] >= heigths[c2]
+            y[c2] - y[c1] >= heigths[c1] - M * (1 - diffn_vars[i+3]),
+            ###  at least one of the conditions above must be applied
+            diffn_vars[i] + diffn_vars[i+1] + diffn_vars[i+2] + diffn_vars[i+3] >= 1,
+            ###  if c1 on the right it cannot be on the left, the same for top and bottom
+            diffn_vars[i] + diffn_vars[i+1] + diffn_vars[i+2] + diffn_vars[i+3] <= 2,
+        ]
+        i += 4
 
-    return And(result)
+    return result
 
-
+"""
 def _disjunctive(x: IntVector, dx: T_List):
     CIRCUITS = range(len(x))
     result = []
@@ -84,13 +83,9 @@ def _fzn_cumulative(x: T_List, dx: T_List, r: T_List, boundary: T_Number):
     return And(result)
 
 
-def cumulative(
-    x: T_List, dx: T_List, r: T_List, boundary: T_Number, min_r: int, idx_min_r: int
-) -> T_Z3Clause:
+def cumulative(x: T_List, dx: T_List, r: T_List, boundary: T_Number, min_r: int, idx_min_r: int) -> T_Z3Clause:
 
-    assert len(x) == len(dx) == len(
-        r
-    ), 'cumulative: the 3 array arguments must have identical length'
+    assert len(x) == len(dx) == len(r), 'cumulative: the 3 array arguments must have identical length'
     CIRCUITS = range(len(x))
 
     ###  check if disjunctive can be used
@@ -111,24 +106,22 @@ def cumulative(
 
 
 def symmetrical(x: T_List, dx: T_Number, start: int, end: int) -> T_Z3Clause:
-    assert start >= 0
-    if isinstance(end, int):
-        assert end > start
+    assert start >= 0 
+    if isinstance(end, int): assert end > start
 
     ###  x' = end - (x[i]-start+dx[i])
     x_symm = [end - ((x[i] - start) + dx[i]) for i in range(len(x))]
     return x_symm
-
 
 def _lex_lesseq(x: T_List, y: T_List):
     CIRCUITS = range(len(x))
     if not x:
         return False
 
-    return And(x[0] <= y[0], Or(x[0] < y[0], _lex_lesseq(x[1:], y[1:])))
-
+    return And(x[0]<=y[0], Or(x[0]<y[0], _lex_lesseq(x[1:], y[1:])))
 
 def axial_symmetry(x: T_List, dx: T_Number, start: int, end: int) -> T_Z3Clause:
     x_symm = symmetrical(x, dx, start, end)
-    ###  constraint lexicographical ordering
+    ###  constraint lexicographical ordering    
     return _lex_lesseq(x, x_symm)
+"""
