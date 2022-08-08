@@ -22,23 +22,11 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
 
     def __clean_dict(obj):
         obj_copy = copy.deepcopy(obj)
-        # del obj_copy["stats"]
         del obj_copy["all_solutions"]
         return obj_copy
 
-    """
-    def __format_dict(obj):
-        obj_copy = copy.deepcopy(obj)
-        obj_copy["stats"] = {
-            key: obj_copy["stats"].get_key_value(key)
-            for key in obj_copy["stats"].keys()
-        }
-        return obj_copy
-    """
-
     json_data = copy.deepcopy(solutions_dict)
     json_data = __clean_dict(json_data)
-    # json_data = __format_dict(json_data)
 
     with open(__file_url(), 'w', encoding="utf-8") as file:
         json.dump(json_data, file, indent=2)
@@ -50,9 +38,7 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
 
 
 def main(args):
-    # mi dice quale tra i file .py in models usare (ogni file contine un modello diverso)
-
-    # open file
+    ### open file
     sat_file_url = ILPStorage.data_file_url(args.data, "txt")
     with open(sat_file_url, encoding="utf-8") as f:
         txt_lines = f.readlines()
@@ -79,11 +65,10 @@ def main(args):
 
     assert solutions_dict is not None and isinstance(solutions_dict, dict)
 
-    # plot
+    ### plot
     if args.plot:
         plot_solutions(solutions_dict)
 
-    # save_results(args, 'ILP', solutions_dict)
     __store_solutions_dict(solutions_dict)
 
 
