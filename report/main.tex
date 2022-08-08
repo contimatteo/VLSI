@@ -15,6 +15,8 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 
+% \usepackage{hyperref}
+
 \title{Sample Report}
 \author{Author McWriterson}
 %\date{}
@@ -24,11 +26,11 @@
 \tableofcontents
 
 \section{Introduction}
-\input{sections/01.introduction.tex}
+\input{chapters/01/introduction.tex}
 \pagebreak
 
 \section{Background}
-I did some background reading\autoref{BOOK_Russell} in the following areas \ldots
+I did some background reading\cite{BOOK_Russell} in the following areas \ldots
 \pagebreak
 
 \section{System Design}
@@ -40,8 +42,8 @@ We did some experiments \ldots
 \pagebreak
 
 \section{Conclusions and Future Work}
-
 From our experiments we can conclude that \ldots
+\pagebreak
 
 % \bibliographystyle{plain}
 % \bibliographystyle{IEEEtran}
