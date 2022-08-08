@@ -20,6 +20,12 @@ T_Z3Solver = Solver
 
 class Z3Model(Z3DefaultModel):
 
+    @property
+    def model_name(self) -> str:
+        return "base"
+
+    #
+
     def _variables(self, raw_data: dict) -> dict:
         width, n_circuits, CIRCUITS, widths, heights = self.__variables_support(raw_data)
 
@@ -28,11 +34,10 @@ class Z3Model(Z3DefaultModel):
         ###  measure time needed for default solution
         t0 = time.time()
         default_solution = compute_max_makespan(heights, widths, width)
-        time_default = int((time.time() - t0)*1000)
+        time_default = int((time.time() - t0) * 1000)
         print('time spent for default solution:', time_default)
         ###  redefine solver timeout
         self.solver_timeout -= time_default
-
 
         min_makespan = max(math.ceil(_c_area_sum / width), max(heights))
         max_makespan = default_solution["makespan"]
