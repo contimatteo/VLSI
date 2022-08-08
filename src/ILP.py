@@ -26,6 +26,7 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
         del obj_copy["all_solutions"]
         return obj_copy
 
+    """
     def __format_dict(obj):
         obj_copy = copy.deepcopy(obj)
         obj_copy["stats"] = {
@@ -33,10 +34,11 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
             for key in obj_copy["stats"].keys()
         }
         return obj_copy
+    """
 
     json_data = copy.deepcopy(solutions_dict)
     json_data = __clean_dict(json_data)
-    json_data = __format_dict(json_data)
+    # json_data = __format_dict(json_data)
 
     with open(__file_url(), 'w', encoding="utf-8") as file:
         json.dump(json_data, file, indent=2)

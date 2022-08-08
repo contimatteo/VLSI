@@ -27,7 +27,8 @@ class _Storage:
         return self._root_dir.joinpath("solvers")
 
     def out_dir(self) -> Path:
-        return self.data_dir().joinpath("output/json")
+        # return self.data_dir().joinpath("output/json")
+        return self._root_dir.joinpath("out/json")
 
     #
 
@@ -36,14 +37,16 @@ class _Storage:
         assert isinstance(file_type, str)
         assert file_type == 'txt' or file_type == 'dzn'
 
-        return self.data_dir().joinpath(f"input/{file_type}/{file_name}.{file_type}")
+        return self.data_dir().joinpath(f"{file_type}/{file_name}.{file_type}")
 
     def out_file_url(self, file_name: str, sub_dir: str = None) -> Path:
         assert isinstance(file_name, str)
         assert sub_dir is None or isinstance(sub_dir, str)
 
-        partial_file_url = f"{self._root_dir_name}"
-        partial_file_url += f"/{sub_dir}/" if sub_dir is not None else ""
+        # partial_file_url = f"{self._root_dir_name}"
+        # partial_file_url += f"/{sub_dir}/" if sub_dir is not None else ""
+        
+        partial_file_url = f"{sub_dir}/" if sub_dir is not None else ""
 
         self.out_dir().joinpath(partial_file_url).mkdir(exist_ok=True, parents=True)
 

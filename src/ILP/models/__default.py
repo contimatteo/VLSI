@@ -111,7 +111,7 @@ class Z3Model():
             "stats": [],
             "model": "base",
             "data_file": file_name,
-            "data": self.variables,
+            #"data": self.variables,
             "solver": "z3 SAT",
             "TOTAL_TIME": 0
         }
