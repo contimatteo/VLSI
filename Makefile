@@ -13,11 +13,11 @@ PIP = ${PYTHON} -m pip
 
 # The @ makes sure that the command itself isn't echoed in the terminal
 help:
-	@echo "+------------------------------------------------------+"
-	@echo "|         OS         |  Hardware  |    Setup Command   |"
-	@echo "+------------------------------------------------------+"
-	@echo "|   Windows/Linux    |   - GPU    |  'make setup.CPU'  |"
-	@echo "+------------------------------------------------------+"
+	@echo "+-------------------------------------------------+"
+	@echo "|    OS    |    Hardware    |    Setup Command    |"
+	@echo "+-------------------------------------------------+"
+	@echo "|    //    |       //       |    'make setup'     |"
+	@echo "+-------------------------------------------------+"
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
@@ -26,9 +26,6 @@ setup:
 
 test:
 	python -m pytest -rP tests
-
-# CP:
-# 	${PYTHON} src/train.py
 
 clean:
 	rm -rf __pycache__

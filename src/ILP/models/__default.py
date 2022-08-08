@@ -2,16 +2,11 @@ from typing import List, Tuple
 from copy import deepcopy
 
 import time
-import z3
+from docplex.mp.model import Model
 
-from z3 import BoolRef, Solver, Optimize, Int
-
-from SAT.models.components.foundation import bool2int
+# from ILP.models.components.foundation import bool2int
 
 ###
-
-T_Z3Clause = BoolRef
-T_Z3Solver = Solver
 
 ###
 
@@ -23,12 +18,12 @@ class Z3Model():
         self.variables = None
 
         self.solver_random_seed = seed
-        self.solver_timeout = min(timeout, 300) * 1000
+        self.solver_timeout = min(timeout, 300)
 
     #
 
     def __configure_solver(self) -> None:
-        self.solver = Optimize()
+        self.solver = Model(name='VLSI model')
 
         # self.solver.set("smt.local_search", True)
         # self.solver.set("smt.local_search_threads", 1)
@@ -36,9 +31,7 @@ class Z3Model():
         # self.solver.set("smt.lookahead_simplify", True)
         # self.solver.set("smt.lookahead.use_learned", True)
 
-        # FIXME: random seed giving error
-        # self.solver.set('smt.random_seed', self.solver_random_seed)
-        self.solver.set('timeout', self.solver_timeout)
+        # self.solver.set_time_limit(self.solver_timeout)
 
     def __variables_support(self, raw_data: dict) -> Tuple[int, int, List[int], List[int]]:
         width = raw_data["width"]
@@ -76,31 +69,30 @@ class Z3Model():
     def _variables(self, raw_data: dict) -> dict:
         raise NotImplementedError
 
-    def _constraints(self) -> List[T_Z3Clause]:
+    def _constraints(self):
         raise NotImplementedError
 
-    def _symmetries_breaking(self) -> List[T_Z3Clause]:
+    def _symmetries_breaking(self):
         raise NotImplementedError
 
-    def _dynamic_constraints(self, makespan: int) -> List[T_Z3Clause]:
+    def _dynamic_constraints(self, makespan: int):
         raise NotImplementedError
 
-    def _dynamic_symmetries_breaking(self, makespan: int) -> List[T_Z3Clause]:
+    def _dynamic_symmetries_breaking(self, makespan: int):
         raise NotImplementedError
 
-    def _evaluate_solution(self, model, min_makespan: int, max_makespan: int):
+    def _evaluate_solution(self, min_makespan: int, max_makespan: int):
+        CIRCUITS = self.variables['CIRCUITS']
         solution = {
             "width": self.variables['width'],
             "n_circuits": self.variables["n_circuits"],
             "widths": self.variables['widths'],
             "heights": self.variables['heights'],
-            "x":
-            [model.evaluate(self.variables['x'][c]).as_long() for c in self.variables['CIRCUITS']],
-            "y":
-            [model.evaluate(self.variables['y'][c]).as_long() for c in self.variables['CIRCUITS']],
+            "x": [self.variables['x'][c].solution_value for c in CIRCUITS],
+            "y": [self.variables['y'][c].solution_value for c in CIRCUITS],
             "min_makespan": min_makespan,
             "max_makespan": max_makespan,
-            "makespan": model.evaluate(self.variables['target_makespan']).as_long()
+            "makespan": self.variables['target_makespan'].solution_value
         }
         return solution
 
@@ -108,10 +100,9 @@ class Z3Model():
 
     def initialize(self, raw_data: dict) -> None:
         assert raw_data is not None
-        self.variables = self._variables(deepcopy(raw_data))
-
-        self.__validate_variables()
         self.__configure_solver()
+        self.variables = self._variables(deepcopy(raw_data))
+        self.__validate_variables()
 
     def solve(self, file_name: str, symmetry: bool, use_cumulative: bool) -> dict:
         solutions_dict = { ### each solution in all_solutions is a dict
@@ -120,7 +111,7 @@ class Z3Model():
             "stats": [],
             "model": "base",
             "data_file": file_name,
-            # "data": self.variables,
+            #"data": self.variables,
             "solver": "z3 SAT",
             "TOTAL_TIME": 0
         }
@@ -133,37 +124,28 @@ class Z3Model():
         #
 
         for clause in self._constraints(use_cumulative):
-            self.solver.add(clause)
+            self.solver.add_constraint(clause)
 
         if symmetry:
             for clause in self._symmetries_breaking():
-                self.solver.add(clause)
+                self.solver.add_constraint(clause)
 
         #
         self.solver.minimize(target_makespan)
 
         t0 = time.time()
-        check = self.solver.check()
+        check = self.solver.solve()
 
         time_spent = time.time() - t0
         if time_spent >= self.solver_timeout:
             print('time exceeded, optimal solution not found')
-
-        if check == z3.unknown:
-            print('z3 did not found any solution => check=="unknown"')
-            if time_spent >= self.solver_timeout:
-                print('reason of "unknown": exceeded time limit')
-            else:
-                print('reason of "unknown":', self.solver.reason_unknown())
             solution = default_solution
-
         else:
-            print('z3 found at least one solution')
-            solution = self._evaluate_solution(self.solver.model(), min_makespan, max_makespan)
+            print('solver found at least one solution')
+            solution = self._evaluate_solution(min_makespan, max_makespan)
             print(f"TOTAL TIME = {round(time_spent, 2)}")
 
         solutions_dict["TOTAL_TIME"] = time_spent
         solutions_dict["all_solutions"].append(solution)
         solutions_dict["solution"] = solution
-
         return solutions_dict

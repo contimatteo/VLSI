@@ -1,6 +1,6 @@
 import argparse
 
-from .storage import SMT_data_file_url
+from utils import SMTStorage
 
 ###
 
@@ -107,7 +107,7 @@ def parse_args():
     # assert time_limit >= 100 and time_limit <= 60000
     assert time_limit >= 1 and time_limit <= 1800
 
-    assert SMT_data_file_url(data_file_name, "txt").is_file()
+    assert SMTStorage.data_file_url(data_file_name, "txt").is_file()
 
     #
 

@@ -81,15 +81,16 @@ def compute_max_makespan(heights, widths, width, with_rotation=False):
     list_of_nodes = sorted(list_of_nodes, key=lambda n: n.c_index)
 
     default_solution = {
-        "width": width,
-        "n_circuits": len(widths),
-        "widths": widths,
-        "heights": heights,
-        "x": [node.x for node in list_of_nodes],
-        "y": [node.y for node in list_of_nodes],
-        "min_makespan": 0,
-        "max_makespan": makespan,
-        "makespan": makespan
-    }
+            "width": width,
+            "n_circuits": len(widths),
+            "widths": widths,
+            "heights": heights,
+            "x": [node.x for node in list_of_nodes],
+            "y": [node.y for node in list_of_nodes],
+            "min_makespan": 0,
+            "max_makespan": makespan,
+            "makespan": makespan
+        } 
+
 
     return default_solution

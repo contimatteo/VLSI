@@ -1,6 +1,6 @@
 import argparse
 
-from utils import SATStorage
+from utils import ILPStorage
 
 ###
 
@@ -23,7 +23,7 @@ SEARCH_CHOICES = ['linear', 'binary']
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='SAT solver of VLSI problem.')
+    parser = argparse.ArgumentParser(description='SMT solver of VLSI problem.')
 
     parser.add_argument('--data', required=True, type=str, help='name of txt data file')
     parser.add_argument(
@@ -107,7 +107,7 @@ def parse_args():
     # assert time_limit >= 100 and time_limit <= 60000
     assert time_limit >= 1 and time_limit <= 1800
 
-    assert SATStorage.data_file_url(data_file_name, "txt").is_file()
+    assert ILPStorage.data_file_url(data_file_name, "txt").is_file()
 
     #
 

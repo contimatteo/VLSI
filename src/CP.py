@@ -7,8 +7,10 @@ from dotenv import load_dotenv
 
 from CP.utils import parse_args
 from CP.utils import convert_txt_file_to_dzn, convert_raw_result_to_solutions_dict
-from CP.utils import plot_solutions_v2
-from CP.utils import CP_model_file_url, CP_data_file_url, CP_out_file_url
+# from CP.utils import plot_solutions_v2
+# from CP.utils import CP_model_file_url, CP_data_file_url, CP_out_file_url
+
+from utils import CPStorage, plot_solutions
 
 ###
 
@@ -35,7 +37,7 @@ def __convert_raw_results_to_dict(raw_results: dict, args) -> dict:
 
     solutions_dict["solver"] = args.solver
     solutions_dict["model"] = args.model
-    solutions_dict["data"] = args.data
+    solutions_dict["data_file"] = args.data
 
     return solutions_dict
 
@@ -43,8 +45,8 @@ def __convert_raw_results_to_dict(raw_results: dict, args) -> dict:
 def __store_solutions_dict(solutions_dict: dict) -> None:
 
     def __file_url():
-        file_sub_dir = str(solutions_dict["solver"]).lower() + "/" + solutions_dict["model"]
-        return str(CP_out_file_url(solutions_dict["data"], file_sub_dir).resolve())
+        file_sub_dir = solutions_dict["model"] + "/" + str(solutions_dict["solver"]).lower()
+        return str(CPStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
 
     def __clean_dict(obj):
         obj_copy = copy.deepcopy(obj)
@@ -62,7 +64,7 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
 
     json_data = copy.deepcopy(solutions_dict)
     json_data = __clean_dict(json_data)
-    json_data = __format_dict(json_data)
+    # json_data = __format_dict(json_data)
 
     with open(__file_url(), 'w', encoding="utf-8") as file:
         json.dump(json_data, file, indent=2)
@@ -71,7 +73,7 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
 
 
 def __plot(solutions_dict):
-    plot_solutions_v2(solutions_dict)
+    plot_solutions(solutions_dict)
 
 
 ###
@@ -82,10 +84,10 @@ def main(args):
 
     # _model_name = f"{args.model}.{str(args.solver).lower()}"
     _model_name = f"{args.model}"
-    model = CP_model_file_url(_model_name).resolve()
+    model = CPStorage.model_file_url(_model_name).resolve()
 
     convert_txt_file_to_dzn(args.data, args.model)
-    data = CP_data_file_url(args.data, 'dzn').resolve()
+    data = CPStorage.data_file_url(args.data, 'dzn').resolve()
 
     #
 
