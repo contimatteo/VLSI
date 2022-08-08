@@ -68,15 +68,11 @@ def main(args):
     solutions_dict = {}
 
     CURRENT_MODEL_MODULE = import_module(f"{MODELS_MODULE_NAMESPACE}.{args.model}")
+    ModelClass = getattr(CURRENT_MODEL_MODULE, "Z3Model")
 
-    if args.model == "base" or args.model == "rotation":
-        ModelClass = getattr(CURRENT_MODEL_MODULE, "Z3Model")
-        model = ModelClass(timeout=args.time)
-        model.initialize(data_dict)
-        solutions_dict = model.solve(args.data, args.search, args.symmetry, args.cumulative)
-    else:
-        fn_model_solve = getattr(CURRENT_MODEL_MODULE, "solve")
-        solutions_dict = fn_model_solve(data_dict)
+    model = ModelClass(timeout=args.time)
+    model.initialize(data_dict)
+    solutions_dict = model.solve(args.data, args.search, args.symmetry, args.cumulative)
 
     assert solutions_dict is not None and isinstance(solutions_dict, dict)
 

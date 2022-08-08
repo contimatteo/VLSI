@@ -78,6 +78,13 @@ class SMTStorageClass(_Storage):
         return "SMT"
 
 
+class ILPStorageClass(_Storage):
+
+    @property
+    def _root_dir_name(self) -> str:
+        return "ILP"
+
+
 ###
 
 CPStorage = CPStorageClass()
@@ -85,3 +92,5 @@ CPStorage = CPStorageClass()
 SATStorage = SATStorageClass()
 
 SMTStorage = SMTStorageClass()
+
+ILPStorage = ILPStorageClass()
