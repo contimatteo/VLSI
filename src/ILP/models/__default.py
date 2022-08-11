@@ -99,7 +99,7 @@ class cplexModel():
             "model": "base",
             "data_file": file_name,
             #"data": self.variables,
-            "solver": "z3 SAT",
+            "solver": "cplex",
             "TOTAL_TIME": 0
         }
 
