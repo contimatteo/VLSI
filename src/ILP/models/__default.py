@@ -4,14 +4,9 @@ from copy import deepcopy
 import time
 from docplex.mp.model import Model
 
-# from ILP.models.components.foundation import bool2int
-
 ###
 
-###
-
-# TODO: rename model
-class Z3Model():
+class cplexModel():
 
     def __init__(self, timeout: int = 300, seed: int = 666) -> None:
         self.solver = None

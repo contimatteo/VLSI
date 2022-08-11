@@ -7,7 +7,7 @@ import time
 ### TODO: remove z3 line
 from z3 import Bool, And, Or, Not, BoolRef, Solver, Int, IntVector, BoolVector, If
 
-from ILP.models.base import Z3Model as Z3BaseModel
+from ILP.models.base import cplexModel as cplexBaseModel
 from ILP.models.components.helper import compute_max_makespan
 from ILP.models.components.foundation import diffn #, axial_symmetry
 # from SAT.models.components.symmetry import axial_symmetry
@@ -22,8 +22,7 @@ T_Z3Solver = Solver
 
 ###
 
-# TODO: rename model
-class Z3Model(Z3BaseModel):
+class cplexModel(cplexBaseModel):
     def _variables(self, raw_data: dict) -> dict:
         width, n_circuits, CIRCUITS, widths_int, heights_int = self.__variables_support(raw_data)
 

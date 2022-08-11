@@ -57,8 +57,7 @@ def main(args):
     solutions_dict = {}
 
     CURRENT_MODEL_MODULE = import_module(f"{MODELS_MODULE_NAMESPACE}.{args.model}")
-    # TODO: rename model
-    ModelClass = getattr(CURRENT_MODEL_MODULE, "Z3Model")
+    ModelClass = getattr(CURRENT_MODEL_MODULE, "cplexModel")
 
     model = ModelClass(timeout=args.time)
     model.initialize(data_dict)

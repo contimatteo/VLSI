@@ -3,19 +3,14 @@ from typing import List
 
 import math
 
-from ILP.models.__default import Z3Model as Z3DefaultModel
+from ILP.models.__default import cplexModel as cplexDefaultModel
 from ILP.models.components.helper import compute_max_makespan
 from ILP.models.components.foundation import diffn #, axial_symmetry, cumulative
 # from ILP.models.components.symmetry import axial_symmetry
 
 ###
 
-
-
-###
-
-# TODO: rename model
-class Z3Model(Z3DefaultModel):
+class cplexModel(cplexDefaultModel):
 
     def _variables(self, raw_data: dict) -> dict:
         width, n_circuits, CIRCUITS, widths, heights = self.__variables_support(raw_data)
