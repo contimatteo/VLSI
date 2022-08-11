@@ -4,21 +4,9 @@ from typing import List
 import math
 import time
 
-### TODO: remove z3 line
-from z3 import Bool, And, Or, Not, BoolRef, Solver, Int, IntVector, BoolVector, If
-
 from ILP.models.base import cplexModel as cplexBaseModel
 from ILP.models.components.helper import compute_max_makespan
 from ILP.models.components.foundation import diffn #, axial_symmetry
-# from SAT.models.components.symmetry import axial_symmetry
-
-###  FIXME: AssertionError "assert solutions_dict is not None and isinstance(solutions_dict, dict)"
-
-###
-
-### TODO: remove these line
-T_Z3Clause = BoolRef
-T_Z3Solver = Solver
 
 ###
 
@@ -82,7 +70,7 @@ class cplexModel(cplexBaseModel):
     def _get_min_h(self):
         return self._get_min_dim()
 
-    def _constraints(self, use_cumulative: bool) -> List[T_Z3Clause]:
+    def _constraints(self, use_cumulative: bool):
         var = self.variables
 
         widths = var["widths_int"]
