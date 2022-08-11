@@ -4,6 +4,7 @@ from typing import List
 import math
 import time
 
+### TODO: remove z3 line
 from z3 import Bool, And, Or, Not, BoolRef, Solver, Int, IntVector, BoolVector, If
 
 from ILP.models.base import Z3Model as Z3BaseModel
@@ -15,6 +16,7 @@ from ILP.models.components.foundation import diffn #, axial_symmetry
 
 ###
 
+### TODO: remove these line
 T_Z3Clause = BoolRef
 T_Z3Solver = Solver
 

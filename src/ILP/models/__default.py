@@ -132,10 +132,15 @@ class Z3Model():
 
         #
         self.solver.minimize(target_makespan)
+        
+        ### set timeout to the model
+        self.solver.parameters.timelimit=self.solver_timeout
 
+        ### start solver
         t0 = time.time()
-        check = self.solver.solve()
+        sol = self.solver.solve()
 
+        ### print time spent
         time_spent = time.time() - t0
         if time_spent >= self.solver_timeout:
             print('time exceeded, optimal solution not found')
