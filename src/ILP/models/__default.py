@@ -10,7 +10,7 @@ from docplex.mp.model import Model
 
 ###
 
-
+# TODO: rename model
 class Z3Model():
 
     def __init__(self, timeout: int = 300, seed: int = 666) -> None:

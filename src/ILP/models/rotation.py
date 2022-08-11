@@ -22,7 +22,7 @@ T_Z3Solver = Solver
 
 ###
 
-
+# TODO: rename model
 class Z3Model(Z3BaseModel):
     def _variables(self, raw_data: dict) -> dict:
         width, n_circuits, CIRCUITS, widths_int, heights_int = self.__variables_support(raw_data)

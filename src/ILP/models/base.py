@@ -14,7 +14,7 @@ from ILP.models.components.foundation import diffn #, axial_symmetry, cumulative
 
 ###
 
-
+# TODO: rename model
 class Z3Model(Z3DefaultModel):
 
     def _variables(self, raw_data: dict) -> dict:
