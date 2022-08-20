@@ -3,6 +3,7 @@ from pathlib import Path
 ###
 
 ROOT_SRC = Path(__file__).parent.parent
+ROOT = Path(__file__).parent.parent.parent
 
 
 class _Storage:
@@ -28,11 +29,11 @@ class _Storage:
 
     def out_dir(self) -> Path:
         # return self._root_dir.joinpath("out/json")
-        return ROOT_SRC.joinpath("results/out")
+        return ROOT.joinpath("results/out")
 
     def json_dir(self) -> Path:
         # return self._root_dir.joinpath("out/json")
-        return ROOT_SRC.joinpath("results/json")
+        return ROOT.joinpath("results/json")
 
     #
 
@@ -51,7 +52,7 @@ class _Storage:
 
         self.json_dir().joinpath(partial_file_url).mkdir(exist_ok=True, parents=True)
 
-        return self.out_dir().joinpath(f"{partial_file_url}{file_name}.json")
+        return self.json_dir().joinpath(f"{partial_file_url}{file_name}.json")
 
     def out_file_url(self, file_name: str, sub_dir: str = None) -> Path:
         assert isinstance(file_name, str)
