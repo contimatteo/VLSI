@@ -15,9 +15,13 @@ MODELS_MODULE_NAMESPACE = "SMT.models"
 
 def __store_solutions_dict(solutions_dict: dict, search_strategy: str) -> None:
 
-    def __file_url():
-        file_sub_dir = solutions_dict["model"] + "/" + search_strategy.lower()
-        return str(SMTStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+    def __file_url(F_json = True):
+        if F_json:
+            file_sub_dir = solutions_dict["model"] + "/" + search_strategy.lower()
+            return str(SMTStorage.json_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+        else:
+            file_sub_dir = solutions_dict["model"] + "/" + search_strategy.lower()
+            return str(SMTStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
 
     def __clean_dict(obj):
         obj_copy = copy.deepcopy(obj)
@@ -38,6 +42,16 @@ def __store_solutions_dict(solutions_dict: dict, search_strategy: str) -> None:
 
     with open(__file_url(), 'w', encoding="utf-8") as file:
         json.dump(json_data, file, indent=2)
+
+    jsol = json_data['solution']
+    lines = str(jsol['width']) + ' ' + str(jsol['makespan']) + '\n'
+    lines += str(jsol['n_circuits']) + '\n'
+    for i in range(jsol['n_circuits']):
+        lines += str(jsol['widths'])[i] + ' ' + str(jsol['heights'])[i] + ' ' +\
+                str(jsol['x'])[i] + ' ' + str(jsol['y'])[i] + '\n'
+    with open(__file_url(F_json=False), 'w') as file:
+        file.write(lines)
+        file.close()
 
     return json_data
 

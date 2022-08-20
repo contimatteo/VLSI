@@ -29,11 +29,12 @@ class _Storage:
 
     def out_dir(self) -> Path:
         # return self._root_dir.joinpath("out/json")
-        return ROOT.joinpath("results/out")
+        return ROOT.joinpath("out").joinpath(self._root_dir_name)
 
     def json_dir(self) -> Path:
+        # TODO: verificare se out contiene json
         # return self._root_dir.joinpath("out/json")
-        return ROOT.joinpath("results/json")
+        return self._root_dir.joinpath("json")
 
     #
 

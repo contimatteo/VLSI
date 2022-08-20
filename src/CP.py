@@ -44,10 +44,13 @@ def __convert_raw_results_to_dict(raw_results: dict, args) -> dict:
 
 def __store_solutions_dict(solutions_dict: dict) -> None:
 
-    def __file_url():
-        file_sub_dir = solutions_dict["model"] + "/" + str(solutions_dict["solver"]).lower()
-        return str(CPStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
-
+    def __file_url(F_json=True):
+        if F_json:
+            file_sub_dir = solutions_dict["model"] + "/" + str(solutions_dict["solver"]).lower()
+            return str(CPStorage.json_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+        else:
+            file_sub_dir = solutions_dict["model"] + "/" + str(solutions_dict["solver"]).lower()
+            return str(CPStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
     def __clean_dict(obj):
         obj_copy = copy.deepcopy(obj)
         del obj_copy["all_solutions"]
@@ -66,8 +69,21 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
     json_data = __clean_dict(json_data)
     # json_data = __format_dict(json_data)
 
-    with open(__file_url(), 'w', encoding="utf-8") as file:
+    # with open(__file_url(), 'w', encoding="utf-8") as file:
+    #     json.dump(json_data, file, indent=2)
+    with open(__file_url(F_json=True), 'w', encoding="utf-8") as file:
         json.dump(json_data, file, indent=2)
+
+    jsol = json_data['solution']
+    lines = str(jsol['width']) + ' ' + str(jsol['makespan']) + '\n'
+    lines += str(jsol['n_circuits']) + '\n'
+    for i in range(jsol['n_circuits']):
+        lines += str(jsol['widths'])[i] + ' ' + str(jsol['heights'])[i] + ' ' +\
+                str(jsol['x'])[i] + ' ' + str(jsol['y'])[i] + '\n'
+    with open(__file_url(F_json=False), 'w') as file:
+        file.write(lines)
+        file.close()
+
 
     return json_data
 
