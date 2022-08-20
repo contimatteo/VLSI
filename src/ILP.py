@@ -16,10 +16,13 @@ MODELS_MODULE_NAMESPACE = "ILP.models"
 
 def __store_solutions_dict(solutions_dict: dict) -> None:
 
-    def __file_url():
-        file_sub_dir = solutions_dict["model"]
-        return str(ILPStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
-
+    def __file_url(F_json=True):
+        if F_json:
+            file_sub_dir = solutions_dict["model"]
+            return str(ILPStorage.json_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+        else:
+            file_sub_dir = solutions_dict["model"]
+            return str(ILPStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
     def __clean_dict(obj):
         obj_copy = copy.deepcopy(obj)
         del obj_copy["all_solutions"]
@@ -31,6 +34,14 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
     with open(__file_url(), 'w', encoding="utf-8") as file:
         json.dump(json_data, file, indent=2)
 
+    lines = str(json_data['width']) + ' ' + str(json_data['makespan']) + '\n'
+    lines += str(json_data['n_circuits']) + '\n'
+    for i in range(json_data['n_circuits']):
+        lines += json_data['widths'][i] + ' ' + json_data['heights'][i] + ' ' +\
+                json_data['x'][i] + ' ' + json_data['y'][i] + '\n'
+    with open(__file_url(F_json=False), 'w', encoding="utf-8") as file:
+        file.write(lines)
+    
     return json_data
 
 
