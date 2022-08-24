@@ -13,28 +13,26 @@ MODELS_MODULE_NAMESPACE = "SMT.models"
 ###
 
 
-def __store_solutions_dict(solutions_dict: dict, search_strategy: str) -> None:
+def __store_solutions_dict(solutions_dict: dict) -> None:
+    model = solutions_dict["model"]
+    search = solutions_dict["search"]
+    symmetry = solutions_dict["symmetry"]
+    data_file = solutions_dict["data_file"]
+    cumulative = solutions_dict["cumulative"]
 
     def __file_url():
-        file_sub_dir = solutions_dict["model"] + "/" + search_strategy.lower()
-        return str(SMTStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+        file_sub_dir = model + "/" + search.lower()
+        file_sub_dir += ".symmetry" if symmetry is True else ""
+        file_sub_dir += ".cumulative" if cumulative is True else ""
+        return str(SMTStorage.out_file_url(data_file, file_sub_dir).resolve())
 
     def __clean_dict(obj):
         obj_copy = copy.deepcopy(obj)
         del obj_copy["all_solutions"]
         return obj_copy
 
-    def __format_dict(obj):
-        obj_copy = copy.deepcopy(obj)
-        obj_copy["stats"] = {
-            key: obj_copy["stats"].get_key_value(key)
-            for key in obj_copy["stats"].keys()
-        }
-        return obj_copy
-
     json_data = copy.deepcopy(solutions_dict)
     json_data = __clean_dict(json_data)
-    # json_data = __format_dict(json_data)
 
     with open(__file_url(), 'w', encoding="utf-8") as file:
         json.dump(json_data, file, indent=2)
@@ -46,9 +44,7 @@ def __store_solutions_dict(solutions_dict: dict, search_strategy: str) -> None:
 
 
 def main(args):
-    # mi dice quale tra i file .py in models usare (ogni file contine un modello diverso)
-
-    # open file
+    ### open file
     SMT_file_url = SMTStorage.data_file_url(args.data, "txt")
     with open(SMT_file_url, encoding="utf-8") as f:
         txt_lines = f.readlines()
@@ -64,27 +60,25 @@ def main(args):
         x, y = txt_lines[line_idx][:-1].split(sep=' ')
         data_dict['dims'].append((int(x), int(y)))
 
+    ### solve
+
     solutions_dict = {}
 
     CURRENT_MODEL_MODULE = import_module(f"{MODELS_MODULE_NAMESPACE}.{args.model}")
+    ModelClass = getattr(CURRENT_MODEL_MODULE, "Z3Model")
 
-    if args.model == "base" or args.model == "rotation":
-        ModelClass = getattr(CURRENT_MODEL_MODULE, "Z3Model")
-        model = ModelClass(timeout=args.time)
-        model.initialize(data_dict)
-        solutions_dict = model.solve(args.data, args.symmetry, args.cumulative)
-    else:
-        fn_model_solve = getattr(CURRENT_MODEL_MODULE, "solve")
-        solutions_dict = fn_model_solve(data_dict)
+    model = ModelClass(timeout=args.time)
+    model.initialize(data_dict)
+    solutions_dict = model.solve(args.data, args.symmetry, args.cumulative)
 
     assert solutions_dict is not None and isinstance(solutions_dict, dict)
 
-    # plot
+    ### plot
+
     if args.plot:
         plot_solutions(solutions_dict)
 
-    # save_results(args, 'SMT', solutions_dict)
-    __store_solutions_dict(solutions_dict, args.search)
+    __store_solutions_dict(solutions_dict)
 
 
 ###
