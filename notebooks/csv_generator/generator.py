@@ -36,7 +36,7 @@ def __load_json_file(file_url: Path) -> dict:
 
 
 def csv_load_and_inject_json_recursively(csv: CsvGenerator, technology: str) -> None:
-    base_dir_url = StorageUtils.src_out_dir(technology)
+    base_dir_url = StorageUtils.json_out_dir(technology)
 
     __valid_dir_guard(base_dir_url)
 
@@ -77,9 +77,10 @@ def csv_load_and_inject_json_recursively(csv: CsvGenerator, technology: str) -> 
 def main():
     csv = CsvGenerator()
 
-    csv_load_and_inject_json_recursively(csv, "CP")
-    csv_load_and_inject_json_recursively(csv, "SAT")
+    # csv_load_and_inject_json_recursively(csv, "CP")
+    # csv_load_and_inject_json_recursively(csv, "SAT")
     csv_load_and_inject_json_recursively(csv, "SMT")
+    # csv_load_and_inject_json_recursively(csv, "ILP")
 
     df = csv.to_dataframe()
 
@@ -90,7 +91,7 @@ def main():
     DEBUG and print(df.dtypes)
     DEBUG and print("\n\n")
 
-    df.to_csv(StorageUtils.notebooks_csv_result_file, index=False)
+    df.to_csv(StorageUtils.csv_result_file, index=False)
 
 
 ###
