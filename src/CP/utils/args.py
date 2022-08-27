@@ -5,8 +5,8 @@ from utils import CPStorage
 ###
 
 MODELS_CHOICES = [
-    "base", "rotation", "rotation.search", "rotation.search.symmetry", "search", "search.symmetry",
-    "symmetry", "rotation.symmetry"
+    "base", "rotation", "rotation.search", "rotation.symmetry", "rotation.search.symmetry", "search", "search.symmetry",
+    "symmetry"
 ]
 SOLVERS_CHOICES = [
     "Chuffed",
