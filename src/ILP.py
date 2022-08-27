@@ -17,7 +17,7 @@ MODELS_MODULE_NAMESPACE = "ILP.models"
 def __store_solutions_dict(solutions_dict: dict) -> None:
 
     def __file_url():
-        file_sub_dir = solutions_dict["model"] + "/" + "linear"
+        file_sub_dir = solutions_dict["model"] + "/" + "simplex"
         return str(ILPStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
 
     def __clean_dict(obj):
