@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#trap break INT
+trap break INT
 
 #
 
