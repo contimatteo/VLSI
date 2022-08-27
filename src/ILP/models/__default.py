@@ -20,6 +20,10 @@ class Z3Model():
         self.solver_random_seed = seed
         self.solver_timeout = min(timeout, 300)
 
+    @property
+    def model_name(self) -> str:
+        raise NotImplementedError
+
     #
 
     def __configure_solver(self) -> None:
@@ -109,7 +113,7 @@ class Z3Model():
             "all_solutions": [],
             "solution": {},
             "stats": [],
-            "model": "base",
+            "model": self.model_name,
             "data_file": file_name,
             #"data": self.variables,
             "solver": "z3 SAT",

@@ -20,6 +20,7 @@ T_Z3Solver = Solver
 
 ###
 
+
 class Z3Model(Z3BaseModel):
 
     @property

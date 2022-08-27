@@ -14,7 +14,7 @@ from ILP.models.components.foundation import diffn  #, axial_symmetry, cumulativ
 
 
 class Z3Model(Z3DefaultModel):
-    
+
     @property
     def model_name(self) -> str:
         return "base"
