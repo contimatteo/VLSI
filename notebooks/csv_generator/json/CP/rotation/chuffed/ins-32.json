@@ -1,0 +1,316 @@
+{
+  "solution": {
+    "width": 39,
+    "n_circuits": 29,
+    "dims": [
+      [
+        15,
+        39
+      ],
+      [
+        5,
+        18
+      ],
+      [
+        5,
+        13
+      ],
+      [
+        4,
+        16
+      ],
+      [
+        4,
+        15
+      ],
+      [
+        5,
+        11
+      ],
+      [
+        5,
+        10
+      ],
+      [
+        4,
+        12
+      ],
+      [
+        3,
+        15
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        3,
+        11
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        3,
+        10
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        5,
+        5
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        4,
+        6
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        5,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      15,
+      5,
+      5,
+      4,
+      4,
+      5,
+      5,
+      4,
+      3,
+      5,
+      4,
+      3,
+      4,
+      3,
+      5,
+      3,
+      5,
+      3,
+      4,
+      3,
+      4,
+      5,
+      3,
+      4,
+      3,
+      5,
+      3,
+      4,
+      3
+    ],
+    "heights": [
+      39,
+      18,
+      13,
+      16,
+      15,
+      11,
+      10,
+      12,
+      15,
+      8,
+      9,
+      11,
+      8,
+      10,
+      6,
+      9,
+      5,
+      8,
+      6,
+      7,
+      5,
+      4,
+      6,
+      4,
+      5,
+      3,
+      4,
+      3,
+      3
+    ],
+    "x": [
+      0,
+      15,
+      22,
+      23,
+      27,
+      28,
+      15,
+      15,
+      25,
+      31,
+      15,
+      28,
+      35,
+      20,
+      19,
+      36,
+      20,
+      28,
+      30,
+      36,
+      31,
+      35,
+      20,
+      31,
+      15,
+      34,
+      27,
+      31,
+      31
+    ],
+    "y": [
+      1,
+      22,
+      35,
+      19,
+      20,
+      11,
+      10,
+      15,
+      0,
+      24,
+      1,
+      0,
+      32,
+      19,
+      0,
+      23,
+      5,
+      3,
+      16,
+      16,
+      20,
+      6,
+      29,
+      7,
+      19,
+      3,
+      16,
+      32,
+      4
+    ],
+    "is_rotated": [
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      true,
+      false,
+      true,
+      true,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      true
+    ],
+    "min_makespan": 39,
+    "max_makespan": 46,
+    "makespan": 40
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 1682,
+    "flatIntVars": 228,
+    "flatBoolConstraints": 435,
+    "flatIntConstraints": 1882,
+    "evaluatedReifiedConstraints": 1624,
+    "flatTime": 0.0904502,
+    "nodes": 1894243,
+    "failures": 1634198,
+    "restarts": 7,
+    "variables": 17796,
+    "intVars": 229,
+    "boolVariables": 17565,
+    "propagators": 3533,
+    "propagations": 1526816799,
+    "peakDepth": 190,
+    "nogoods": 1634198,
+    "backjumps": 259027,
+    "peakMem": 0.0,
+    "time": 299.939,
+    "initTime": 0.033,
+    "solveTime": 299.906,
+    "objective": 40,
+    "optTime": 18.471,
+    "baseMem": 0.0,
+    "trailMem": 0.02,
+    "randomSeed": 666,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 300.07,
+  "solver": "Chuffed",
+  "model": "rotation",
+  "data_file": "ins-32"
+}
