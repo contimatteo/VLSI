@@ -241,6 +241,7 @@ class Z3Model():
 
         #
 
+        assert done is True
         assert len(solutions_dict["all_solutions"]) > 0
 
         solutions_dict["TOTAL_TIME"] = tot_time_spent

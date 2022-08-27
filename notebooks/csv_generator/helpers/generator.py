@@ -31,7 +31,7 @@ class CsvGenerator():
                         "model": data["model"],
                         "symmetry": "symmetry" in data["model"],
                         "cumulative": None,
-                        "search": None,
+                        "search": "search" in data["model"],
                     }
                 )
             )
