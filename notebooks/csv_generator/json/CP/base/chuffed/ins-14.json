@@ -1,0 +1,173 @@
+{
+  "solution": {
+    "width": 21,
+    "n_circuits": 15,
+    "dims": [
+      [
+        5,
+        15
+      ],
+      [
+        3,
+        18
+      ],
+      [
+        4,
+        11
+      ],
+      [
+        3,
+        14
+      ],
+      [
+        3,
+        10
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        4,
+        6
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      5,
+      3,
+      4,
+      3,
+      3,
+      5,
+      3,
+      3,
+      4,
+      3,
+      3,
+      4,
+      3,
+      3,
+      3
+    ],
+    "heights": [
+      15,
+      18,
+      11,
+      14,
+      10,
+      6,
+      9,
+      8,
+      6,
+      7,
+      6,
+      4,
+      5,
+      4,
+      3
+    ],
+    "x": [
+      7,
+      18,
+      0,
+      4,
+      15,
+      7,
+      12,
+      12,
+      0,
+      4,
+      15,
+      0,
+      15,
+      12,
+      18
+    ],
+    "y": [
+      0,
+      3,
+      10,
+      7,
+      5,
+      15,
+      4,
+      13,
+      4,
+      0,
+      15,
+      0,
+      0,
+      0,
+      0
+    ],
+    "min_makespan": 21,
+    "max_makespan": 26,
+    "makespan": 21
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 420,
+    "flatIntVars": 59,
+    "flatBoolConstraints": 105,
+    "flatIntConstraints": 453,
+    "evaluatedReifiedConstraints": 420,
+    "flatTime": 0.0521746,
+    "nodes": 921,
+    "failures": 283,
+    "restarts": 6,
+    "variables": 3449,
+    "intVars": 102,
+    "boolVariables": 3345,
+    "propagators": 889,
+    "propagations": 130839,
+    "peakDepth": 101,
+    "nogoods": 283,
+    "backjumps": 308,
+    "peakMem": 0.0,
+    "time": 0.017,
+    "initTime": 0.006,
+    "solveTime": 0.011,
+    "objective": 21,
+    "optTime": 0.011,
+    "baseMem": 0.0,
+    "trailMem": 0.02,
+    "randomSeed": 666,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 0.08,
+  "solver": "Chuffed",
+  "model": "base",
+  "data_file": "ins-14"
+}

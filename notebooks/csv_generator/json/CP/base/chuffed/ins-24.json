@@ -1,0 +1,205 @@
+{
+  "solution": {
+    "width": 31,
+    "n_circuits": 19,
+    "dims": [
+      [
+        12,
+        31
+      ],
+      [
+        3,
+        31
+      ],
+      [
+        3,
+        22
+      ],
+      [
+        4,
+        13
+      ],
+      [
+        3,
+        14
+      ],
+      [
+        3,
+        13
+      ],
+      [
+        3,
+        12
+      ],
+      [
+        3,
+        11
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        3,
+        10
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      12,
+      3,
+      3,
+      4,
+      3,
+      3,
+      3,
+      3,
+      4,
+      3,
+      4,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      3
+    ],
+    "heights": [
+      31,
+      31,
+      22,
+      13,
+      14,
+      13,
+      12,
+      11,
+      8,
+      10,
+      7,
+      9,
+      8,
+      7,
+      6,
+      5,
+      4,
+      3,
+      3
+    ],
+    "x": [
+      3,
+      19,
+      25,
+      15,
+      22,
+      28,
+      0,
+      22,
+      15,
+      28,
+      15,
+      25,
+      28,
+      0,
+      22,
+      0,
+      0,
+      15,
+      0
+    ],
+    "y": [
+      0,
+      0,
+      9,
+      0,
+      17,
+      18,
+      12,
+      0,
+      23,
+      0,
+      13,
+      0,
+      10,
+      24,
+      11,
+      7,
+      0,
+      20,
+      4
+    ],
+    "min_makespan": 31,
+    "max_makespan": 38,
+    "makespan": 31
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 684,
+    "flatIntVars": 75,
+    "flatBoolConstraints": 171,
+    "flatIntConstraints": 725,
+    "evaluatedReifiedConstraints": 684,
+    "flatTime": 0.0575875,
+    "nodes": 155007,
+    "failures": 134981,
+    "restarts": 8,
+    "variables": 6271,
+    "intVars": 128,
+    "boolVariables": 6141,
+    "propagators": 1429,
+    "propagations": 39030635,
+    "peakDepth": 87,
+    "nogoods": 134981,
+    "backjumps": 19570,
+    "peakMem": 0.0,
+    "time": 7.823,
+    "initTime": 0.01,
+    "solveTime": 7.813,
+    "objective": 31,
+    "optTime": 7.803,
+    "baseMem": 0.0,
+    "trailMem": 0.02,
+    "randomSeed": 666,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 7.9,
+  "solver": "Chuffed",
+  "model": "base",
+  "data_file": "ins-24"
+}
