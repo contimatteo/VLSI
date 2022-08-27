@@ -77,8 +77,8 @@ def csv_load_and_inject_json_recursively(csv: CsvGenerator, technology: str) -> 
 def main():
     csv = CsvGenerator()
 
-    # csv_load_and_inject_json_recursively(csv, "CP")
-    # csv_load_and_inject_json_recursively(csv, "SAT")
+    csv_load_and_inject_json_recursively(csv, "CP")
+    csv_load_and_inject_json_recursively(csv, "SAT")
     csv_load_and_inject_json_recursively(csv, "SMT")
     # csv_load_and_inject_json_recursively(csv, "ILP")
 
