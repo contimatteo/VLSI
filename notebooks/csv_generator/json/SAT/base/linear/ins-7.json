@@ -1,0 +1,81 @@
+{
+  "solver": "SAT",
+  "model": "base",
+  "data_file": "ins-7",
+  "search": "linear",
+  "symmetry": false,
+  "cumulative": false,
+  "TOTAL_TIME": 0.07606935501098633,
+  "stats": {
+    "conflicts": 651,
+    "decisions": 31245,
+    "propagations": 236145,
+    "binary propagations": 107852,
+    "restarts": 6,
+    "final checks": 1,
+    "mk clause": 7470,
+    "mk clause binary": 4763,
+    "del clause": 49,
+    "minimized lits": 646,
+    "num checks": 1,
+    "mk bool var": 3590,
+    "arith-make-feasible": 2,
+    "arith-max-columns": 4,
+    "num allocs": 807724,
+    "rlimit count": 595999,
+    "max memory": 22.28,
+    "memory": 22.28,
+    "time": 0.047
+  },
+  "solution": {
+    "width": 14,
+    "n_circuits": 9,
+    "widths": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      5,
+      5
+    ],
+    "heights": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      4,
+      10
+    ],
+    "x": [
+      11,
+      6,
+      0,
+      3,
+      11,
+      3,
+      0,
+      9,
+      6
+    ],
+    "y": [
+      7,
+      10,
+      0,
+      0,
+      0,
+      6,
+      5,
+      10,
+      0
+    ],
+    "min_makespan": 14,
+    "max_makespan": 22,
+    "makespan": 14
+  }
+}

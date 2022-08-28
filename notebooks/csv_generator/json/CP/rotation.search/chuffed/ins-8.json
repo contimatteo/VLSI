@@ -1,0 +1,145 @@
+{
+  "solution": {
+    "width": 15,
+    "n_circuits": 10,
+    "dims": [
+      [
+        3,
+        15
+      ],
+      [
+        3,
+        12
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        6,
+        3
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      6,
+      3,
+      3,
+      3
+    ],
+    "heights": [
+      15,
+      12,
+      9,
+      8,
+      7,
+      6,
+      3,
+      5,
+      4,
+      3
+    ],
+    "x": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      9,
+      12,
+      7,
+      8,
+      12
+    ],
+    "y": [
+      0,
+      3,
+      6,
+      9,
+      12,
+      6,
+      9,
+      12,
+      9,
+      3
+    ],
+    "is_rotated": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false
+    ],
+    "min_makespan": 15,
+    "max_makespan": 15,
+    "makespan": 15
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 200,
+    "flatIntVars": 78,
+    "flatBoolConstraints": 55,
+    "flatIntConstraints": 271,
+    "evaluatedReifiedConstraints": 180,
+    "flatTime": 0.048387,
+    "nodes": 21027,
+    "failures": 17092,
+    "restarts": 7,
+    "variables": 2421,
+    "intVars": 79,
+    "boolVariables": 2340,
+    "propagators": 461,
+    "propagations": 4548149,
+    "peakDepth": 21,
+    "nogoods": 17092,
+    "backjumps": 3859,
+    "peakMem": 0.0,
+    "time": 0.599,
+    "initTime": 0.004,
+    "solveTime": 0.595,
+    "objective": 15,
+    "optTime": 0.593,
+    "baseMem": 0.0,
+    "trailMem": 0.01,
+    "randomSeed": 666,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 0.66,
+  "solver": "Chuffed",
+  "model": "rotation.search",
+  "data_file": "ins-8"
+}

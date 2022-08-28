@@ -1,0 +1,146 @@
+{
+  "solution": {
+    "width": 16,
+    "n_circuits": 10,
+    "dims": [
+      [
+        7,
+        9
+      ],
+      [
+        3,
+        12
+      ],
+      [
+        3,
+        10
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      7,
+      3,
+      3,
+      4,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "heights": [
+      9,
+      12,
+      10,
+      7,
+      8,
+      7,
+      6,
+      5,
+      4,
+      3
+    ],
+    "x": [
+      3,
+      10,
+      13,
+      3,
+      0,
+      7,
+      13,
+      0,
+      10,
+      0
+    ],
+    "y": [
+      0,
+      0,
+      0,
+      9,
+      0,
+      9,
+      10,
+      8,
+      12,
+      13
+    ],
+    "is_rotated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "min_makespan": 16,
+    "max_makespan": 21,
+    "makespan": 16
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 403,
+    "flatIntVars": 78,
+    "flatBoolConstraints": 151,
+    "flatIntConstraints": 426,
+    "evaluatedReifiedConstraints": 334,
+    "eliminatedImplications": 36,
+    "flatTime": 0.0664779,
+    "nodes": 749,
+    "failures": 234,
+    "restarts": 6,
+    "variables": 2948,
+    "intVars": 79,
+    "boolVariables": 2867,
+    "propagators": 857,
+    "propagations": 105934,
+    "peakDepth": 47,
+    "nogoods": 234,
+    "backjumps": 281,
+    "peakMem": 0.0,
+    "time": 0.019,
+    "initTime": 0.006,
+    "solveTime": 0.013,
+    "objective": 16,
+    "optTime": 0.013,
+    "baseMem": 0.0,
+    "trailMem": 0.01,
+    "randomSeed": 666,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 0.1,
+  "solver": "Chuffed",
+  "model": "rotation.symmetry",
+  "data_file": "ins-9"
+}

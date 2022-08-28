@@ -5,12 +5,16 @@ yapf
 
 #
 
+ipykernel
+jupyterlab
 python-dotenv
 # minizinc==0.5.0
 matplotlib
+pandas
 pytest
 python-dotenv
 numpy
+seaborn
 z3-solver
 docplex
 cplex
