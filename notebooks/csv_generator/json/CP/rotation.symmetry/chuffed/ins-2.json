@@ -71,7 +71,7 @@
     "flatIntConstraints": 142,
     "evaluatedReifiedConstraints": 97,
     "eliminatedImplications": 16,
-    "flatTime": 0.0583479,
+    "flatTime": 0.0514511,
     "nodes": 36,
     "failures": 14,
     "restarts": 1,
@@ -94,7 +94,7 @@
     "randomSeed": 666,
     "nSolutions": 1
   },
-  "TOTAL_TIME": 0.07,
+  "TOTAL_TIME": 0.06,
   "solver": "Chuffed",
   "model": "rotation.symmetry",
   "data_file": "ins-2"

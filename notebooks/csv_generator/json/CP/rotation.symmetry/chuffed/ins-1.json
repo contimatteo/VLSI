@@ -62,7 +62,7 @@
     "flatIntConstraints": 89,
     "evaluatedReifiedConstraints": 54,
     "eliminatedImplications": 12,
-    "flatTime": 0.0810476,
+    "flatTime": 0.0508668,
     "nodes": 26,
     "failures": 7,
     "restarts": 1,
@@ -75,8 +75,8 @@
     "nogoods": 7,
     "backjumps": 11,
     "peakMem": 0.0,
-    "time": 0.002,
-    "initTime": 0.002,
+    "time": 0.001,
+    "initTime": 0.001,
     "solveTime": 0.0,
     "objective": 8,
     "optTime": 0.0,
@@ -85,7 +85,7 @@
     "randomSeed": 666,
     "nSolutions": 1
   },
-  "TOTAL_TIME": 0.1,
+  "TOTAL_TIME": 0.06,
   "solver": "Chuffed",
   "model": "rotation.symmetry",
   "data_file": "ins-1"
