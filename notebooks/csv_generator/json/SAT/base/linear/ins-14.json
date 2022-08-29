@@ -5,7 +5,7 @@
   "search": "linear",
   "symmetry": false,
   "cumulative": false,
-  "TOTAL_TIME": 1.829664707183838,
+  "TOTAL_TIME": 1.8146045207977295,
   "stats": {
     "conflicts": 26001,
     "decisions": 399204,
@@ -21,11 +21,11 @@
     "mk bool var": 12299,
     "arith-make-feasible": 2,
     "arith-max-columns": 4,
-    "num allocs": 4778729,
+    "num allocs": 4778680,
     "rlimit count": 16523696,
     "max memory": 31.26,
-    "memory": 31.15,
-    "time": 1.757
+    "memory": 31.16,
+    "time": 1.743
   },
   "solution": {
     "width": 21,

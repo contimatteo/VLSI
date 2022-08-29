@@ -5,7 +5,7 @@
   "search": "binary",
   "symmetry": false,
   "cumulative": false,
-  "TOTAL_TIME": 0.03102707862854004,
+  "TOTAL_TIME": 0.031027555465698242,
   "stats": {
     "conflicts": 347,
     "decisions": 6269,
@@ -21,7 +21,7 @@
     "mk bool var": 1659,
     "arith-make-feasible": 2,
     "arith-max-columns": 4,
-    "num allocs": 490149,
+    "num allocs": 527389,
     "rlimit count": 157787,
     "max memory": 20.84,
     "memory": 20.84,

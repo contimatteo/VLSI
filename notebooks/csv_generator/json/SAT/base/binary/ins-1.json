@@ -20,10 +20,10 @@
     "mk bool var": 576,
     "arith-make-feasible": 2,
     "arith-max-columns": 4,
-    "num allocs": 310300,
+    "num allocs": 330894,
     "rlimit count": 26000,
-    "max memory": 19.87,
-    "memory": 19.87,
+    "max memory": 19.95,
+    "memory": 19.95,
     "time": 0.001
   },
   "solution": {
