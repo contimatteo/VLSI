@@ -14,31 +14,34 @@
 
     Constanti
     \begin{align*}
-        nc\       &\ =\ \text{total number of circuits  } \\
-        width\    &\ =\ \text{width of the plate  }       \\
-        c_i\      &\ =\ \text{index of circuit  } i       \\
-        w_i\      &\ =\ \text{width of circuit  } i       \\
-        h_i\      &\ =\ \text{height of circuit  } i      \\
-        C\        &\ =\ \bigcup_{i=1}^{nc} c_i
+        nc\       &\ =\ \text{total number of circuits}    \\
+        width\    &\ =\ \text{width of the plate}          \\
+        c_i\      &\ =\ \text{index of circuit  } i        \\
+        w_i\      &\ =\ \text{width of circuit  } i        \\
+        h_i\      &\ =\ \text{height of circuit  } i       \\
+        C\        &\ =\ \bigcup_{i=1}^{nc} c_i             \\
+        CC\       &\ =\ \{(i, j) \in C \times C\ |\ i<j \}
     \end{align*}
 
     Variabili
     \begin{align*}
         x_i\      &\ =\ \text{x coordinate of the bottom-left corner of circuit  } i \\
         y_i\      &\ =\ \text{y coordinate of the bottom-left corner of circuit  } i \\
+        X\        &\ =\ \bigcup_{c=1}^{nc} X_c \\
         makespan\ &\ =\ \max_{c \in C}\ y_c + h_c
     \end{align*}
 
     \subsubsection{Rotation}
+        \colorbox{BurntOrange}{TODO missing ...}
 
-        \paragraph{CP}
-            \begin{align}
-                S\
-            \end{align}
-            \begin{align*}
-                S\ &\ =\ \text{a set of states}                 \\
-                A\ &\ =\ \text{a set of actions}                \\
-                P_i : S \times A \times S  \rightarrow \mathbb{R}_+ &\ =\ \text{transition probability function} \\
-                R_i : S \times A \rightarrow \mathbb{R}\ &\ =\ \text{reward function}
-            \end{align*}
 
+
+\subsection{Shared Constraints Declaration}
+    \colorbox{BurntOrange}{TODO missing ...}
+
+    \begin{align*}
+           w_c > 0\ \ \land\ &\ w_c \leq width\    &\ \hspace{0.2cm} \forall c \in C \\
+           h_c > 0\ \ \land\ &\ h_c \leq makespan\ &\ \hspace{0.2cm} \forall c \in C \\
+        x_c \geq 0\ \ \land\ &\ x_c < width\    &\ \hspace{0.2cm} \forall c \in C \\
+        y_c \geq 0\ \ \land\ &\ y_c < makespan\ &\ \hspace{0.2cm} \forall c \in C
+    \end{align*}

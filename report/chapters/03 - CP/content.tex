@@ -8,8 +8,8 @@
     \colorbox{BurntOrange}{TODO missing ...}
 
     \begin{align*}
-        area^*\       &\ =\ \sum_{c \in C} h_c * w_c \\
-        min\_makespan\ &\ =\ \max\ (\lceil \frac{area^*}{width} \rceil,\ \max_{c \in C} h_c)
+                  a^*\ &\ =\ \sum_{c \in C} h_c * w_c \\
+        min\_makespan\ &\ =\ \max\ (\lceil \frac{a^*}{width} \rceil,\ \max_{c \in C} h_c)
     \end{align*}
 
     % TODO: 
@@ -19,8 +19,29 @@
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
+\subsection{Predicates \& Functions}
+    \colorbox{BurntOrange}{TODO missing ...}
+
+    % \begin{align*}
+    %     index\_set(X)\ &\ =\ \{i \in \mathbb{N}\ |\ 1 \leq i \leq |X|\}
+    % \end{align*}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
 \subsection{Constraints}
     \colorbox{BurntOrange}{TODO missing ...}
+
+    \begin{align*}
+        Xcross(x)\ &\ =\ \{ c \in C\ |\ (x_c \leq x) \land (x_c + w_c > x) \} \\
+        Ycross(y)\ &\ =\ \{ c \in C\ |\ (y_c \leq y) \land (y_c + h_c > y) \} 
+    \end{align*}
+
+    \begin{align}
+        (x_i + w_i \leq x_j) \lor (y_i + h_i \leq y_j) &\ \ &\ \nonumber \\
+        \lor\ (x_j + w_j \leq x_i) \lor (y_j + h_j \leq y_i)\ &\                \hspace{0.2cm} \forall (i,j) \in CC &\ \text{;diffn} \\
+                                                                        \sum_{c \in C_x} y_c \leq makespan\ &\ \hspace{0.2cm} \forall x \in X, \forall c \in Xcross(x)\ &\ \text{;x axis} \\
+                                                                           \sum_{c \in C_y} x_c \leq width\ &\ \hspace{0.2cm} \forall y \in Y, \forall c \in Ycross(y)\ &\ \text{;y axis}
+    \end{align}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
