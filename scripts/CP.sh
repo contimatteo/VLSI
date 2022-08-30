@@ -21,12 +21,13 @@ CP(){
 
 for data in "${instances[@]}"
 do
-    #CP "base" $data
-    #CP "rotation" $data
-    #CP "rotation.search" $data
-    #CP "rotation.search.symmetry" $data
-    #CP "search" $data
+    CP "base" $data
+    CP "rotation" $data
+    CP "rotation.search" $data
+    CP "rotation.search.symmetry" $data
     CP "rotation.symmetry" $data
-    #CP "symmetry" $data
+    CP "search" $data
+    CP "symmetry" $data
+    CP "search.symmetry" $data
     echo "$data"
 done
