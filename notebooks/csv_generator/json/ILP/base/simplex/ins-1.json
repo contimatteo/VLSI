@@ -34,5 +34,5 @@
   "model": "base",
   "data_file": "ins-1",
   "solver": "z3 SAT",
-  "TOTAL_TIME": 0.0050051212310791016
+  "TOTAL_TIME": 0.06030750274658203
 }
