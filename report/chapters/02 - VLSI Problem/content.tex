@@ -6,3 +6,39 @@
 
 \subsection{Format of the Instances}
     \colorbox{BurntOrange}{TODO missing ...}
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+\subsection{Shared Variables Declaration}
+    \colorbox{BurntOrange}{TODO missing ...}
+
+    Constanti
+    \begin{align*}
+        nc\       &\ =\ \text{total number of circuits  } \\
+        width\    &\ =\ \text{width of the plate  }       \\
+        c_i\      &\ =\ \text{index of circuit  } i       \\
+        w_i\      &\ =\ \text{width of circuit  } i       \\
+        h_i\      &\ =\ \text{height of circuit  } i      \\
+        C\        &\ =\ \bigcup_{i=1}^{nc} c_i
+    \end{align*}
+
+    Variabili
+    \begin{align*}
+        x_i\      &\ =\ \text{x coordinate of the bottom-left corner of circuit  } i \\
+        y_i\      &\ =\ \text{y coordinate of the bottom-left corner of circuit  } i \\
+        makespan\ &\ =\ \max_{c \in C}\ y_c + h_c
+    \end{align*}
+
+    \subsubsection{Rotation}
+
+        \paragraph{CP}
+            \begin{align}
+                S\
+            \end{align}
+            \begin{align*}
+                S\ &\ =\ \text{a set of states}                 \\
+                A\ &\ =\ \text{a set of actions}                \\
+                P_i : S \times A \times S  \rightarrow \mathbb{R}_+ &\ =\ \text{transition probability function} \\
+                R_i : S \times A \rightarrow \mathbb{R}\ &\ =\ \text{reward function}
+            \end{align*}
+
