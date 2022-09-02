@@ -2,10 +2,10 @@
     The purpose of this project is to model and solve the \textit{VLSI} problem: given a fixed-width plate and a list of 
     rectangular circuits, place them on the plate so that the length of the final device is minimized. 
     
-    We faced first the easier case in which the circuits cannot be rotated and the other case on a distinct model.
+    We faced first the easier case in which the circuits cannot be rotated and then the other case on a distinct model.
 
     The solution of the problem gives the position of each circuit (the coordinates of the bottom left corner) and,
-    in case .
+    in case a circuit has been rotated, its width and height are coherently modified.
     \colorbox{BurntOrange}{TODO improve ...}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -15,13 +15,13 @@
         An instance of \textit{VLSI} is a text file consisting of lines of integer values. The first line gives \textit{width}, 
         which is the width of the silicon plate. The following line gives \textit{nc}, which is the number of necessary circuits 
         to place inside the plate. Then \textit{nc} lines follow, each with $w_i$ and $h_i$, representing the horizontal and 
-        vertical dimensions of the \textit{i-th} circuit.
+        vertical dimension of the \textit{i-th} circuit.
 
     \paragraph*{Solution Format}
         A solution of \textit{VLSI} is a text file built starting from the input file. To the first line is added the \textit{makespan},
         which is the length of the final device. The second line is kept the same while to the following \textit{nc} lines are added
         $x_i$ and $y_i$, which are the coordinates of the bottom left corner of the \textit{i-th} circuit. In case a solution is obtained 
-        through the rotation of a circuit $c$, then, in the output file, the horizontal and vertical dimensions ($w_c$ and $h_c$) 
+        through the rotation of a circuit $i$, then, in the output file, the horizontal and vertical dimensions ($w_i$ and $h_i$) 
         will be swapped w.r.t. the input text file.
 
     \colorbox{BurntOrange}{TODO improve ...}
@@ -41,7 +41,8 @@
         h_i\            &\ =\ \text{height of circuit  } i                      \\
         min\_makesapan  &\ =\ \text{lower bound of \textit{makespan} variable}  \\
         max\_makesapan  &\ =\ \text{upper bound of \textit{makespan} variable}  \\
-        C\              &\ =\ \bigcup_{i=1}^{nc} c_i                            \\
+        % C\              &\ =\ \bigcup_{i=1}^{nc} c_i                            \\
+        C\              &\ =\ \{ c_i\ |\ i \in [1, nc]\}                         \\        
         CC\             &\ =\ \{(i, j) \in C \times C\ |\ i<j \}
     \end{align*}
 
@@ -50,12 +51,76 @@
         x_i\        &\ =\ \text{x coordinate of the bottom-left corner of circuit  } i        \\
         y_i\        &\ =\ \text{y coordinate of the bottom-left corner of circuit  } i        \\
         r_i\        &\ =\ \text{boolean variable indicating if circuit \textit{i} is rotated} \\
-        X\          &\ =\ \bigcup_{c=1}^{nc} x_c                                              \\
-        Y\          &\ =\ \bigcup_{c=1}^{nc} y_c                                              \\
-        Xcross(x)\  &\ =\ \{ c \in C\ |\ (x_c \leq x) \land (x_c + w_c > x) \}               \\
-        Ycross(y)\  &\ =\ \{ c \in C\ |\ (y_c \leq y) \land (y_c + h_c > y) \}               \\
+        % X\          &\ =\ \bigcup_{c=1}^{nc} x_c                                              \\
+        % Y\          &\ =\ \bigcup_{c=1}^{nc} y_c                                              \\
+        X\          &\ =\ \{ x_i\ |\ i \in [1, nc]\}                                          \\
+        Y\          &\ =\ \{ y_i\ |\ i \in [1, nc]\}                                          \\
+        Xcross(x)\  &\ =\ \{ c \in C\ |\ (x_c \leq x) \land (x_c + w_c > x) \}                \\
+        Ycross(y)\  &\ =\ \{ c \in C\ |\ (y_c \leq y) \land (y_c + h_c > y) \}                \\
         makespan\   &\ =\ \max_{c \in C}\ y_c + h_c
     \end{align*}
+    \colorbox{BurntOrange}{TODO: uniformare pedici}
+
+    \subsubsection{Makespan lower bound}
+        In order to limit the search domain of the \textit{makespan} variable, we defined an algorithm to find 
+        its lower (\textit{min\_makespan}) and upper (\textit{max\_makespan}) bound.
+
+        The lower bound is determined starting from the area that the circuits occupy: 
+        \begin{equation}
+            a = \sum_{c \in C} w_c \cdot h_c
+        \end{equation}
+        The best situation is the one in which all circuits fit in the plate 
+        without leaving any empty space, so that the \textit{makespan} would be $makespan = \lceil a / width \rceil$. 
+        We could set accordingly $min\_makespan = \lceil a / width \rceil$, but there is a case in which,
+        even if there are no empty spaces left, the \textit{makespan} is not the one defined before. 
+        Indeed, we may have a very "high" circuit (let's name it $c_{high}$) such that:
+        \begin{equation}
+            h_{c_{high}} >= \lceil \frac{\sum_{c \in C - \{c_{high}\}} w_c \cdot h_c}{width - w_{c_{high}}} \rceil
+            \label{eq:h_high}
+        \end{equation}
+        where the numerator is the sum of the areas of all circuits $c_i \neq c_{high}$, obtaining on the right of
+        the inequality the $min\_makespan'$ without $c_{high}$ and with $width' = width - w_{c_{high}}$.
+
+        Let's call $m$ the right side of the inequality, it's almost intuitive that the $min\_makespan$ computed
+        as before is lower than $h_{c_{high}}$:
+        \begin{equation}
+            m\ =\ \frac{\sum_{c \in C - \{c_{high}\}} w_c \cdot h_c}{width - w_{c_{high}}}
+            \label{eq:m}
+        \end{equation}
+        then
+        \begin{align*}
+            min\_makespan\  &\ =\ m + \frac{(h_{c_{high}} - m) \cdot w_{c_{high}}}{width}                                               \\
+                            &\ =\ h_{c_{high}} \cdot \frac{w_{c_{high}}}{width} + m \cdot \left(1 - \frac{w_{c_{high}}}{width}\right)   \\
+            h_{c_{high}}\   &\ =\ \frac{width}{w_{c_{high}}} \cdot min\_makespan - \left( \frac{width}{w_{c_{high}}} - 1\right) \cdot m
+        \end{align*}
+
+        From the first one we have $min\_makespan \geq m$ since $h_{c_{high}} \geq m$ for definition.
+        From the second we can easily proof $h_{c_{high}} \geq min\_makespan$:
+        \begin{align*}
+            h_{c_{high}}\ =\ \frac{width}{w_{c_{high}}} \cdot min\_makespan - \left( \frac{width}{w_{c_{high}}} - 1\right) \cdot m\ &\ \geq\ min\_makespan       \\
+            \left( \frac{width}{w_{c_{high}}} - 1\right) \cdot min\_makespan - \left( \frac{width}{w_{c_{high}}} - 1\right) \cdot m\ &\ \geq\ 0 \\
+            \left( \frac{width}{w_{c_{high}}} - 1\right) \cdot \left(min\_makespan - m\right) \ &\ \geq\ 0
+        \end{align*}
+        that is true since $width \geq w_{c_{high}} \rightarrow \frac{width}{w_{c_{high}}} \geq 1$ and $min\_makespan \geq m$ as shown before;
+        the situation we are describing is also shown in Fig.\ref{fig:min_makespan}. 
+
+        \begin{figure}[H]
+            \centering
+            \includegraphics[width=0.6\textwidth]{min_makespan_exc.jpg}
+            \caption{
+                On the left a possible solution with circuit $c_n=c_{high}$ satisfying condition \ref{eq:h_high}, 
+                with $m$ defined in \ref{eq:m} and $h = h_{c_{high}}$. On the right, how $min\_makespan$ was taken before
+                improving it. In this situations we always have $m \leq min\_makespan \leq h_{c_{high}}$.
+            }
+            \label{fig:min_makespan}
+        \end{figure}
+        
+        The improvement for the lower bound of $makespan$ is easy and immediate:
+        \begin{equation}
+            min\_makespan\ =\ max\left(\max_{c \in C} h_c, \lceil a / width \rceil\right)
+        \end{equation}
+
+    \subsubsection{Makespan upper bound}
 
     \subsubsection{Rotation}
         \colorbox{BurntOrange}{TODO missing ... se dobbiamo metterci solo $r_i$ forse questa sezione non serve ...}
@@ -91,7 +156,7 @@
         \textit{virtual} circuits [Fig.\ref{fig:virtual circuit}], we can generalize what mentioned before and find all solutions with 
         the same \textit{makespan} [Fig.\ref{fig:symmetry_vc}].
         In particular we can find a symmetric solution swapping any couple of circuits or \textit{virtual} circuits 
-        with same dimensions. Another possibility is to substitute any \textit{virtual} circuit with the set of regualar circuits within it, 
+        with same dimensions. Another possibility is to substitute any \textit{virtual} circuit with the set of regular circuits within it, 
         but with specular positions. Obviously, any combination of the previous cases will create other symmetric 
         solutions [Fig.\ref{fig:vc_specular_out}].
 
@@ -180,7 +245,7 @@
             \caption{
                 Other possible solutions with same makespan as the one plotted in \ref{fig:ins_15_mod},
                 now including also \textit{virtual} circuits in the reasoning.
-                In the left one \ref{fig:vc_swap}, the \textit{virtual} circuit introduced in \ref{fig:virtual circuit}
+                In the left one \ref{fig:vc_swap}, the \textit{virtual} circuit introduced in Fig.\ref{fig:virtual circuit}
                 at original position (3,0) is swapped with the regular circuit 7 at original position (9,11).
                 In the middle one \ref{fig:vc_specular_in} the same \textit{virtual} circuit is substituted with 
                 its specular w.r.t. the horizontal axis.
