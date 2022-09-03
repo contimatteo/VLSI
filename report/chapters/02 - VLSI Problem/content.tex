@@ -147,20 +147,22 @@
         \begin{equation}
             w_i \geq w_j \Longleftrightarrow i \leq j\   \ \forall (i,j) \in CC
         \end{equation}
+        \colorbox{BurntOrange}{abbiamo già $i < j$ per definizione di CC, secondo me basta $w_i \geq w_j \ \forall (i,j) \in CC$}
+
         In this way the nodes are added to the tree from the widest to the least wide.
-        The nodes are then inserted into the tree using the following strategy. A list of possible parent nodes $fringe$is kept. 
+        The nodes are then inserted into the tree using the following strategy. A list of possible parent nodes $fringe$ is kept. 
         A node to be a parent of another must have enough free space on top. Let $x$ be the circuit that 
         is being inserted. $fringe$ is the list of all the nodes $c$ already in the tree that satisfy: 
         \begin{equation}
             w_x \leq w_c - \sum_{i \in children\_list_c} w_i
         \end{equation}
-
+        
         Each new node is appended to the node in the fringe whose altitude is the lowest.
         \begin{equation}
             altitude_{father} = \min_{c \in fringe}\ {altitude_c} 
         \end{equation}
 
-        Once all the nodes are in the tree we can calculate the maximum altitude $altitude_max$ reached by the nodes.
+        Once all the nodes are in the tree we can calculate the maximum altitude $altitude_{max}$ reached by the nodes.
         \begin{equation}
             altitude_{max} = \max_{c \in C}\  altitude_c
         \end{equation}
