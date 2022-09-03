@@ -45,34 +45,40 @@
                             0 & \text{otherwise}
                         \end{cases}
     \end{align*}
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-% \subsection{Variables}
-%     % \colorbox{BurntOrange}{TODO missing ...}
 
+    Moreover for what concern the rotation model, we decide to implement a similar procedure to the
+    other previously seen approaches. We implemented a couple of function which have the scope of 
+    manage the rotation and the real dimension of each circuit $i$ according to the value of its 
+    specific variable rotation $u_i$:
+    \begin{align*}
+        f_h(u_i) &\ = w_i \ u_i + h_i \ (1 - u_i)\\
+        f_w(u_i) &\ = h_i \ u_i + w_i \ (1 - u_i)
+    \end{align*}
+    Please notice that the use of such function will not remove the linearity of each constraints,
+    but it is just a name we gave to increase the readability of the report. 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \subsection{Model Formalisation}
-% \subsection{Constraints}
     In the following we are going to present the, model formalisation for the VLSI problem as a 
     MILP, by considering the notation previously cited. Let's start with the base model without
     the rotations.
 \begin{subequations}
-\begin{align}
-\label{ilp:base_obj} \text{minimize}\ makespan                                   &\  &\                       \\
-\label{ilp:base_ycons}  y_c + h_c            &\ \leq\ makespan                       &\ \forall c \in C       \\
-\label{ilp:base_diffn1} x_{c_1} - x_{c_2}    &\ \geq\ w_{c_2} - M\ (1 - l_{c_1c_2})  &\ \forall c_1, c_2 \in C\\ 
-\label{ilp:base_diffn2} x_{c_1} - x_{c_2}    &\ \geq\ w_{c_2} - M\ (1 - r_{c_1c_2})  &\ \forall c_1, c_2 \in C\\
-\label{ilp:base_diffn3} y_{c_1} - y_{c_2}    &\ \geq\ h_{c_2} - M\ (1 - a_{c_1c_2})  &\ \forall c_1, c_2 \in C\\ 
-\label{ilp:base_diffn4} y_{c_1} - y_{c_2}    &\ \geq\ h_{c_2} - M\ (1 - b_{c_1c_2})  &\ \forall c_1, c_2 \in C\\
-\label{ilp:base_diffn5} l_{c_1c_2} + r_{c_1c_2} + a_{c_1c_2} + b_{c_1c_2}  &\ \geq 1 &\ \forall c_1, c_2 \in C\\
-\label{ilp:base_diffn6} l_{c_1c_2} + r_{c_1c_2} + a_{c_1c_2} + b_{c_1c_2}  &\ \leq 2 &\ \forall c_1, c_2 \in C\\
-\label{ilp:base_b_x} 0                       &\ \leq\ x_c \leq\ width - w_c          &\ \forall c \in C       \\
-\label{ilp:base_b_y} 0                       &\ \leq\ y_c \leq\ max\_makespan-h_c    &\ \forall c \in C       \\
-\label{ilp:base_b_makspan} min\_makespan     &\ \leq\ makespan \leq\ max\_makespan   &\ \forall c \in C       \\
-\label{ilp:base_b_a} 0\                      &\ \leq\ a_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C \\
-\label{ilp:base_b_b} 0\                      &\ \leq\ b_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C \\
-\label{ilp:base_b_r} 0\                      &\ \leq\ r_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C \\
-\label{ilp:base_b_l} 0\                      &\ \leq\ l_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C
-\end{align}    
+    \begin{align}
+        \label{ilp:base_obj} \text{minimize}\ makespan                                   &\  &\                       \\
+        \label{ilp:base_ycons}  y_c + h_c            &\ \leq\ makespan                       &\ \forall c \in C       \\
+        \label{ilp:base_diffn1} x_{c_1} - x_{c_2}    &\ \geq\ w_{c_2} - M\ (1 - l_{c_1c_2})  &\ \forall c_1, c_2 \in C\\ 
+        \label{ilp:base_diffn2} x_{c_1} - x_{c_2}    &\ \geq\ w_{c_2} - M\ (1 - r_{c_1c_2})  &\ \forall c_1, c_2 \in C\\
+        \label{ilp:base_diffn3} y_{c_1} - y_{c_2}    &\ \geq\ h_{c_2} - M\ (1 - a_{c_1c_2})  &\ \forall c_1, c_2 \in C\\ 
+        \label{ilp:base_diffn4} y_{c_1} - y_{c_2}    &\ \geq\ h_{c_2} - M\ (1 - b_{c_1c_2})  &\ \forall c_1, c_2 \in C\\
+        \label{ilp:base_diffn5} l_{c_1c_2} + r_{c_1c_2} + a_{c_1c_2} + b_{c_1c_2}  &\ \geq 1 &\ \forall c_1, c_2 \in C\\
+        \label{ilp:base_diffn6} l_{c_1c_2} + r_{c_1c_2} + a_{c_1c_2} + b_{c_1c_2}  &\ \leq 2 &\ \forall c_1, c_2 \in C\\
+        \label{ilp:base_b_x} 0                       &\ \leq\ x_c \leq\ width - w_c          &\ \forall c \in C       \\
+        \label{ilp:base_b_y} 0                       &\ \leq\ y_c \leq\ max\_makespan-h_c    &\ \forall c \in C       \\
+        \label{ilp:base_b_makspan} min\_makespan     &\ \leq\ makespan \leq\ max\_makespan   &\ \forall c \in C       \\
+        \label{ilp:base_b_a} 0\                      &\ \leq\ a_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C \\
+        \label{ilp:base_b_b} 0\                      &\ \leq\ b_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C \\
+        \label{ilp:base_b_r} 0\                      &\ \leq\ r_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C \\
+        \label{ilp:base_b_l} 0\                      &\ \leq\ l_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C
+    \end{align}    
 \end{subequations}
     
     Also for what concern ILP, the VLSI problem had been defined with the objective of minimizing 
@@ -109,7 +115,31 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Rotation}
-    \colorbox{BurntOrange}{TODO missing ...}
+    \colorbox{BurntOrange}{TODO }
+    Next is step consist to extend the model in order take into account also the box rotation.
+    For this scope we introduced, as we did also in the previous sections, a new set of bianary 
+    variables $u_c$. 
+
+    \begin{subequations}
+        \begin{align}
+        \label{ilp:rot_obj} \text{minimize}\ makespan                                   &\  &\                       \\
+        \label{ilp:rot_ycons}  y_c + f_h(u_c)       &\ \leq\ makespan                       &\ \forall c \in C       \\
+        \label{ilp:rot_diffn1} x_{c_1} - x_{c_2} &\ \geq\ f_w(u_{c_2}) - M\ (1-l_{c_1c_2})  &\ \forall c_1, c_2 \in C\\ 
+        \label{ilp:rot_diffn2} x_{c_1} - x_{c_2} &\ \geq\ f_w(u_{c_2}) - M\ (1-r_{c_1c_2})  &\ \forall c_1, c_2 \in C\\ 
+        \label{ilp:rot_diffn3} y_{c_1} - y_{c_2} &\ \geq\ f_h(u_{c_2}) - M\ (1-a_{c_1c_2})  &\ \forall c_1, c_2 \in C\\ 
+        \label{ilp:rot_diffn4} y_{c_1} - y_{c_2} &\ \geq\ f_h(u_{c_2}) - M\ (1-b_{c_1c_2})  &\ \forall c_1, c_2 \in C\\ 
+        \label{ilp:rot_diffn5} l_{c_1c_2} + r_{c_1c_2} + a_{c_1c_2} + b_{c_1c_2}  &\ \geq 1 &\ \forall c_1, c_2 \in C\\
+        \label{ilp:rot_diffn6} l_{c_1c_2} + r_{c_1c_2} + a_{c_1c_2} + b_{c_1c_2}  &\ \leq 2 &\ \forall c_1, c_2 \in C\\
+        \label{ilp:rot_b_x} 0                       &\ \leq\ x_c \leq\ width - w_c          &\ \forall c \in C       \\
+        \label{ilp:rot_b_y} 0                       &\ \leq\ y_c \leq\ max\_makespan-h_c    &\ \forall c \in C       \\
+        \label{ilp:rot_b_makspan} min\_makespan     &\ \leq\ makespan \leq\ max\_makespan   &\ \forall c \in C       \\
+        \label{ilp:rot_b_a} 0\                      &\ \leq\ a_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C \\
+        \label{ilp:rot_b_b} 0\                      &\ \leq\ b_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C \\
+        \label{ilp:rot_b_r} 0\                      &\ \leq\ r_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C \\
+        \label{ilp:rot_b_l} 0\                      &\ \leq\ l_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C \\
+        \label{ilp:rot_b_u} 0\                      &\ \leq\ u_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C
+        \end{align}    
+    \end{subequations}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
