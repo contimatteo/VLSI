@@ -1,16 +1,105 @@
 
 \subsection{Background}
-    \colorbox{BurntOrange}{TODO missing ...}
+    % \colorbox{BurntOrange}{TODO missing ...}
+    This section focuses on the floorplan design problem of VLSI circuits by using a Mixed Linear
+    Programming approach (MILP). To implement our model we used the IBM library of 
+    \textit{ILOG cplex}. More precisly we choosed to implement the model by using the extension of
+    \textit{DOcplex} python modeling API, \textit{Decision and Optization cplex}, which is a 
+    library composed of two modules:
+    \begin{itemize}
+        \item Mathematical Programming Modeling for Python using \textit{docplex.mp}
+              (\textit{DOcplex.MP}), which is the module we used.
+        \item Constraint Programming Modeling for Python using \textit{docplex.cp} (\textit{DOcplex.CP})
+    \end{itemize}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+\subsection{Notation}
+    A new parameter will be considered in the following solution in order to correct define our model:
+    \begin{align*}
+        M\        &\ =\ \text{A very large positive number}
+    \end{align*}
 
-\subsection{Variables}
-    \colorbox{BurntOrange}{TODO missing ...}
+    Next, we can explicit the model's variables:
+    \begin{align*}
+        makespan\   &\ =\ \text{height of the plate  } i                     \\
+        x_i\    &\ =\ \text{horizontal coordinate of bottom left corner of circuit  } i            \\
+        y_i\    &\ =\ \text{vertical coordinate of bottom left corner of of circuit  } i              \\
+        u_i\    &\ =\ \begin{cases}
+                              1 & \text{if circuit } i \text{ is rotated} \\
+                              0 & \text{otherwise}
+                          \end{cases}                                        \\
+        l_{i,j} &\ =\ \begin{cases}
+                              1 & \text{if circuit } i \text{ is on the left side of the circuit} j \\
+                              0 & \text{otherwise}
+                          \end{cases}                                       \\
+        r_{i,j} &\ =\ \begin{cases}
+                            1 & \text{if circuit } i \text{ is on the right side of the circuit} j \\
+                            0 & \text{otherwise}
+                        \end{cases}                                       \\
+        a_{i,j} &\ =\ \begin{cases}
+                            1 & \text{if circuit } i \text{ is above the circuit} j \\
+                            0 & \text{otherwise}
+                        \end{cases}                                       \\
+        b_{i,j} &\ =\ \begin{cases}
+                            1 & \text{if circuit } i \text{ is below the circuit} j \\
+                            0 & \text{otherwise}
+                        \end{cases}
+    \end{align*}
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+% \subsection{Variables}
+%     % \colorbox{BurntOrange}{TODO missing ...}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+\subsection{Model Formalisation}
+% \subsection{Constraints}
+    In the following we are going to present the, model formalisation for the VLSI problem as a 
+    MILP, by considering the notation previously cited. Let's start with the base model without
+    the rotations.
+\begin{subequations}
+\begin{align}
+\label{ilp:base_obj} \text{minimize}\ makespan                                   &\  &\                       \\
+\label{ilp:base_ycons}  y_c + h_c            &\ \leq\ makespan                       &\ \forall c \in C       \\
+\label{ilp:base_diffn1} x_{c_1} - x_{c_2}    &\ \geq\ w_{c_2} - M\ (1 - l_{c_1c_2})  &\ \forall c_1, c_2 \in C\\ 
+\label{ilp:base_diffn2} x_{c_1} - x_{c_2}    &\ \geq\ w_{c_2} - M\ (1 - r_{c_1c_2})  &\ \forall c_1, c_2 \in C\\
+\label{ilp:base_diffn3} y_{c_1} - y_{c_2}    &\ \geq\ h_{c_2} - M\ (1 - a_{c_1c_2})  &\ \forall c_1, c_2 \in C\\ 
+\label{ilp:base_diffn4} y_{c_1} - y_{c_2}    &\ \geq\ h_{c_2} - M\ (1 - b_{c_1c_2})  &\ \forall c_1, c_2 \in C\\
+\label{ilp:base_diffn5} l_{c_1c_2} + r_{c_1c_2} + a_{c_1c_2} + b_{c_1c_2}  &\ \geq 1 &\ \forall c_1, c_2 \in C\\
+\label{ilp:base_diffn6} l_{c_1c_2} + r_{c_1c_2} + a_{c_1c_2} + b_{c_1c_2}  &\ \leq 2 &\ \forall c_1, c_2 \in C\\
+\label{ilp:base_b_x} 0                       &\ \leq\ x_c \leq\ width - w_c          &\ \forall c \in C       \\
+\label{ilp:base_b_y} 0                       &\ \leq\ y_c \leq\ max\_makespan-h_c    &\ \forall c \in C       \\
+\label{ilp:base_b_makspan} min\_makespan     &\ \leq\ makespan \leq\ max\_makespan   &\ \forall c \in C       \\
+\label{ilp:base_b_a} 0\                      &\ \leq\ a_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C \\
+\label{ilp:base_b_b} 0\                      &\ \leq\ b_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C \\
+\label{ilp:base_b_r} 0\                      &\ \leq\ r_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C \\
+\label{ilp:base_b_l} 0\                      &\ \leq\ l_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C
+\end{align}    
+\end{subequations}
+    
+    Also for what concern ILP, the VLSI problem had been defined with the objective of minimizing 
+    the chip height. This can be seen in the model in the equation \ref{ilp:base_obj} where it is
+    shown the problem direction, namely the minimization of the integer variable $makespan$.
+    In order to complete the project task it is necessary to minimize the variable $makespan$ which
+    is an integer variable with lower bound $min\_makespan$ and with upper bound $max\_makespan$.
+    Please notice also that the  boundaries $min\_makespan$ and $max\_makespan$ had been computed
+    in the same way as for the previous approaches (i.e. SAT, CP and SMT).
 
-\subsection{Constraints}
-    \colorbox{BurntOrange}{TODO missing ...}
+    For what concern the constraints, the first one to analise is the one that constraints \\
+    (equation \ref{ilp:base_ycons}) the variable $y$ to place blocks for which vertical dimension\\
+    doesn't exceed the value associated to the variable $makespan$.
+
+    Now the foucs should be posed on the constraints \ref{ilp:base_diffn1}-\ref{ilp:base_diffn6}.
+    These constraints achieve the same task as the \textit{diffn} constraint in CP. More in
+    details, we implemented this constraint in ILP by imposing a set of disequations. As we know
+    it is defined in CP as \ref{eq:diffn}. So, in order to have the same result of the disjoint
+    clause conditions, we need to control the variable's results. The constraints 
+    \ref{ilp:base_diffn1}-\ref{ilp:base_diffn4} states the position of a circuit $c_1$ respect to
+    another circuit $c_2$. The auxiliary parameter $M$ has the scope to validate the disequation
+    when the  
+    
+    % in a way that the sum of the binary
+    % variables (namely $r_{c_1c_2}$, $l_{c_1c_2}$, $a_{c_1c_2}$ and $b_{c_1c_2}$) should belong 
+    % in the range between $1$ and $2$. 
+    
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -19,8 +108,8 @@
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Search}
-    \colorbox{BurntOrange}{TODO missing ...}
+% \subsection{Search}
+%     \colorbox{BurntOrange}{TODO missing ...}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
