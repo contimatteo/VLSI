@@ -28,7 +28,7 @@
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Shared Variables Declaration}
+\subsection{Shared Variables Declaration} \label{sec:shared_variables}
     In this section we list the constants and the variables that are shared in the mathematical formalization of 
     models and constraints from now on.
 
@@ -47,10 +47,11 @@
     \end{align*}
 
     Variables:
-    \begin{align*}
+    \begin{align}
         x_i\        &\ =\ \text{x coordinate of the bottom-left corner of circuit  } i        \\
         y_i\        &\ =\ \text{y coordinate of the bottom-left corner of circuit  } i        \\
-        r_i\        &\ =\ \text{boolean variable indicating if circuit \textit{i} is rotated} \\
+        r_i\        &\ =\ \text{boolean variable indicating if circuit \textit{i} is rotated} 
+        \label{eq:rotation_vars}    \\
         % X\          &\ =\ \bigcup_{c=1}^{nc} x_c                                              \\
         % Y\          &\ =\ \bigcup_{c=1}^{nc} y_c                                              \\
         X\          &\ =\ \{ x_i\ |\ i \in [1, nc]\}                                          \\
@@ -58,7 +59,7 @@
         Xcross(x)\  &\ =\ \{ c \in C\ |\ (x_c \leq x) \land (x_c + w_c > x) \}                \\
         Ycross(y)\  &\ =\ \{ c \in C\ |\ (y_c \leq y) \land (y_c + h_c > y) \}                \\
         makespan\   &\ =\ \max_{c \in C}\ y_c + h_c
-    \end{align*}
+    \end{align}
     \colorbox{BurntOrange}{TODO: uniformare pedici}
 
     \subsubsection{Makespan lower bound}
@@ -178,15 +179,15 @@
 
 
 
-\subsection{Shared Constraints Declaration}
+\subsection{Shared Constraints Declaration} \label{sec:shared_constraints}
     The following formalization will be the one followed for the CP solution and then adapted for SAT and SMT. 
     The LP model will be described later.
 
     \begin{align*}
-           w_c > 0\ \ \land\ &\ w_c \leq width\    &\ \hspace{0.2cm} \forall c \in C \\
-           h_c > 0\ \ \land\ &\ h_c \leq makespan\ &\ \hspace{0.2cm} \forall c \in C \\
-        x_c \geq 0\ \ \land\ &\ x_c < width\    &\ \hspace{0.2cm} \forall c \in C \\
-        y_c \geq 0\ \ \land\ &\ y_c < makespan\ &\ \hspace{0.2cm} \forall c \in C
+           w_c > 0\ \ \land\ &\ w_c \leq width\    & \hspace{0.2cm} \forall c \in C \\
+           h_c > 0\ \ \land\ &\ h_c \leq makespan\ & \hspace{0.2cm} \forall c \in C \\
+        x_c \geq 0\ \ \land\ &\ x_c \leq width - w_c\    & \hspace{0.2cm} \forall c \in C \\
+        y_c \geq 0\ \ \land\ &\ y_c \leq makespan - h_c\ & \hspace{0.2cm} \forall c \in C
     \end{align*}
 
     \begin{align}
@@ -198,8 +199,9 @@
         \sum_{c \in C_y} x_c \leq width\ &\ \hspace{0.2cm} \forall y \in Y, \forall c \in Ycross(y)\ &\ \text{;y axis}
         \label{eq:cumulative_y}     
     \end{align}
+    \colorbox{BurntOrange}{TODO: check formalization ($C_x$ and $X_{CROSS}$)}
 
-    \subsubsection{Symmetries}
+    \subsubsection{Symmetries} \label{sec:symmetries}
     \colorbox{BurntOrange}{TODO controllare assolutamente formulazione delle frasi ...}
 
 
@@ -328,6 +330,12 @@
         The symmetry breaking constraints proposed for CP, SAT and SMT are the lexicographic orderings
         between $y\_v$ and $y\_v'$ and between $x\_v$ and $x\_v'$; in this way we break the 
         symmetries shown respectively in Fig.\ref{fig:ins_15_specular_v} and Fig.\ref{fig:ins_15_specular_h}.
+
+        % \begin{align*}
+        %     lex\_lesseq(x_v, x_v') \\
+        %     lex\_lesseq(y_v, y_v')
+        %     \label{eq:lex_lesseq}
+        % \end{align*}
 
         Anyway, later we will specify better the adopted constraints and compare the performances of the 
         CP, SAT and SMT models with and without the symmetry breaking constraints.
