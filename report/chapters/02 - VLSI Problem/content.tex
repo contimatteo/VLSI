@@ -101,7 +101,7 @@
             \left( \frac{width}{w_{c_{high}}} - 1\right) \cdot min\_makespan - \left( \frac{width}{w_{c_{high}}} - 1\right) \cdot m\ &\ \geq\ 0 \\
             \left( \frac{width}{w_{c_{high}}} - 1\right) \cdot \left(min\_makespan - m\right) \ &\ \geq\ 0
         \end{align*}
-        that is true since $width \geq w_{c_{high}} \rightarrow \frac{width}{w_{c_{high}}} \geq 1$ and $min\_makespan \geq m$ as shown before;
+        that is true since $width \geq w_{c_{high}} \rightarrow \frac{width}{w_{c_{high}}} \geq 1$ for model constraints and $min\_makespan \geq m$ as shown before;
         the situation we are describing is also shown in Fig.\ref{fig:min_makespan}. 
 
         \begin{figure}[H]
@@ -109,7 +109,7 @@
             \includegraphics[width=0.6\textwidth]{min_makespan_exc.jpg}
             \caption{
                 On the left a possible solution with circuit $c_n=c_{high}$ satisfying condition \ref{eq:h_high}, 
-                with $m$ defined in \ref{eq:m} and $h = h_{c_{high}}$. On the right, how $min\_makespan$ was taken before
+                with $m$ defined in \ref{eq:m}, $h = h_{c_{high}}$ and $w = w_{c_{high}}$. On the right, how $min\_makespan$ was taken before
                 improving it. In this situations we always have $m \leq min\_makespan \leq h_{c_{high}}$.
             }
             \label{fig:min_makespan}
@@ -191,9 +191,12 @@
 
     \begin{align}
         (x_i + w_i \leq x_j) \lor (y_i + h_i \leq y_j) &\ \ &\ \nonumber \\
-        \lor\ (x_j + w_j \leq x_i) \lor (y_j + h_j \leq y_i)\ &\                \hspace{0.2cm} \forall (i,j) \in CC &\ \text{;diffn} \\
-        \sum_{c \in C_x} y_c \leq makespan\ &\ \hspace{0.2cm} \forall x \in X, \forall c \in Xcross(x)\ &\ \text{;x axis} \\
+        \lor\ (x_j + w_j \leq x_i) \lor (y_j + h_j \leq y_i)\ &\                \hspace{0.2cm} \forall (i,j) \in CC &\ \text{;diffn} 
+        \label{eq:diffn}            \\
+        \sum_{c \in C_x} y_c \leq makespan\ &\ \hspace{0.2cm} \forall x \in X, \forall c \in Xcross(x)\ &\ \text{;x axis} 
+        \label{eq:cumulative_x}     \\
         \sum_{c \in C_y} x_c \leq width\ &\ \hspace{0.2cm} \forall y \in Y, \forall c \in Ycross(y)\ &\ \text{;y axis}
+        \label{eq:cumulative_y}     
     \end{align}
 
     \subsubsection{Symmetries}
