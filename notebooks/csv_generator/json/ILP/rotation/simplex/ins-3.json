@@ -1,0 +1,46 @@
+{
+  "solution": {
+    "width": 10,
+    "n_circuits": 6,
+    "widths": [
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      4.0,
+      4.0
+    ],
+    "heights": [
+      3.0,
+      4.0,
+      6.0,
+      7.0,
+      4.0,
+      6.0
+    ],
+    "x": [
+      3.0,
+      0,
+      0,
+      3.0,
+      6.0,
+      6.0
+    ],
+    "y": [
+      7.0,
+      0,
+      4.0,
+      0,
+      0,
+      4.0
+    ],
+    "min_makespan": 10,
+    "max_makespan": 17,
+    "makespan": 10.0
+  },
+  "stats": [],
+  "model": "rotation",
+  "data_file": "ins-3",
+  "solver": "z3 SAT",
+  "TOTAL_TIME": 0.034974098205566406
+}
