@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#trap break INT
+trap break INT
 
 #
 
@@ -25,8 +25,9 @@ do
     CP "rotation" $data
     CP "rotation.search" $data
     CP "rotation.search.symmetry" $data
+    CP "rotation.symmetry" $data
     CP "search" $data
-    CP "search.symmetry" $data
     CP "symmetry" $data
+    CP "search.symmetry" $data
     echo "$data"
 done

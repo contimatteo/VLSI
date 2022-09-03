@@ -1,0 +1,145 @@
+{
+  "solution": {
+    "width": 15,
+    "n_circuits": 10,
+    "dims": [
+      [
+        3,
+        15
+      ],
+      [
+        3,
+        12
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        6,
+        3
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      6,
+      3,
+      3,
+      3
+    ],
+    "heights": [
+      15,
+      12,
+      9,
+      8,
+      7,
+      6,
+      3,
+      5,
+      4,
+      3
+    ],
+    "x": [
+      0,
+      12,
+      6,
+      3,
+      8,
+      9,
+      6,
+      3,
+      3,
+      9
+    ],
+    "y": [
+      0,
+      0,
+      3,
+      4,
+      12,
+      6,
+      0,
+      12,
+      0,
+      3
+    ],
+    "is_rotated": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      true
+    ],
+    "min_makespan": 15,
+    "max_makespan": 15,
+    "makespan": 15
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 200,
+    "flatIntVars": 78,
+    "flatBoolConstraints": 55,
+    "flatIntConstraints": 271,
+    "evaluatedReifiedConstraints": 180,
+    "flatTime": 0.0489587,
+    "nodes": 2918,
+    "failures": 2377,
+    "restarts": 1,
+    "variables": 2421,
+    "intVars": 79,
+    "boolVariables": 2340,
+    "propagators": 461,
+    "propagations": 449943,
+    "peakDepth": 32,
+    "nogoods": 2377,
+    "backjumps": 519,
+    "peakMem": 0.0,
+    "time": 0.076,
+    "initTime": 0.004,
+    "solveTime": 0.072,
+    "objective": 15,
+    "optTime": 0.072,
+    "baseMem": 0.0,
+    "trailMem": 0.0,
+    "randomSeed": 666,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 0.14,
+  "solver": "Chuffed",
+  "model": "rotation",
+  "data_file": "ins-8"
+}
