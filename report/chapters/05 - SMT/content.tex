@@ -1,28 +1,63 @@
 
 \subsection{Background}
-    \colorbox{BurntOrange}{TODO missing ...}
+    \colorbox{BurntOrange}{TODO missing ...}\\
+
+    \textit{Satisfiability Modulo Theories (SMT)} is the problem of determining whether a
+    mathematical formula is satisfiable. It generalizes the Boolean satisfiability problem (SAT) to
+    more complex formulas involving real numbers, integers, and/or various data structures such as 
+    lists, arrays, bit vectors, and strings.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Variables}
-    \colorbox{BurntOrange}{TODO missing ...}
+\subsection{Variables \& Constants}
+    \colorbox{BurntOrange}{TODO missing ...} \\
+    Let's define four more support constants:
+    \begin{align*}
+      w_{min} &\ =\ \min_{c \in C} w_c \\
+      h_{min} &\ =\ \min_{c \in C} h_c \\
+      w\_index_{min} &\ =\ \argmin_{c \in C} w_c \\
+      h\_index_{min} &\ =\ \argmin_{c \in C} h_c
+    \end{align*}
+
+  
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+\subsection{Predicates \& Functions}
+    % Firt of all, we have defined a custom function:
+    % \[
+    %   fzn_\cumulative(ax, dim, r, bound)\ =\ 
+    %   \bigwedge_{c\_ref \in C} (
+    %     \sum_{c \in C} if(condition, r_c)
+    %   ) \leq bound
+    % \]
+
+    We have defined our \textit{cumulative} predicates as following:
+
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Constraints}
-    \colorbox{BurntOrange}{TODO missing ...}
+    \colorbox{BurntOrange}{TODO missing ...} \\
+    The reference model is the one with the constraints described in Section \ref{sec:shared_constraints}. \\
+
+    Moreover, in the \textit{cumulative} version of the model we have two additional constraints:
+    \[
+      cumulative\_y\ \land\ cumulative\_x
+    \]
+
+
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Rotation}
-    \colorbox{BurntOrange}{TODO missing ...}
+    \colorbox{BurntOrange}{TODO missing ...} \\
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Search}
-    \colorbox{BurntOrange}{TODO missing ...}
+    \colorbox{BurntOrange}{TODO missing ...} \\
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Results}
-    \colorbox{BurntOrange}{TODO missing ...}
+    \colorbox{BurntOrange}{TODO missing ...} \\

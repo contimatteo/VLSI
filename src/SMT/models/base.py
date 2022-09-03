@@ -85,8 +85,8 @@ class Z3Model(Z3DefaultModel):
         max_makespan = var["max_makespan"]
         CIRCUITS = var["CIRCUITS"]
 
-        min_w, idx = self._get_min_w()
-        min_h, idx = self._get_min_h()
+        min_w, min_w_idx = self._get_min_w()
+        min_h, min_h_idx = self._get_min_h()
 
         r = [
             diffn(x, y, widths, heights),
@@ -99,8 +99,8 @@ class Z3Model(Z3DefaultModel):
         ]
 
         if use_cumulative:
-            r += [cumulative(y, heights, widths, width, min_w, idx)]
-            r += [cumulative(x, widths, heights, makespan, min_h, idx)]
+            r += [cumulative(y, heights, widths, width, min_w, min_w_idx)]
+            r += [cumulative(x, widths, heights, makespan, min_h, min_h_idx)]
 
         return r
 

@@ -61,25 +61,14 @@
 
 \subsection{Constraints}
     \subsubsection{Base}
-        The reference model is the one with the constraints described in section \ref{sec:symmetries}
+        The reference model is the one with the constraints described in section \ref{sec:shared_constraints}
         with the following simple symmetry breaking constraint:
         \begin{equation}
             x_1 <= x_2 \land y_1 <= y_2
         \end{equation}
+        
+        \colorbox{BurntOrange}{TODO missing ...} \\
         This constraint becomes meaningful since the circuits are first sorted according to their area.
-    \colorbox{BurntOrange}{TODO missing ...}
-
-    \begin{align*}
-        Xcross(x)\ &\ =\ \{ c \in C\ |\ (x_c \leq x) \land (x_c + w_c > x) \} \\
-        Ycross(y)\ &\ =\ \{ c \in C\ |\ (y_c \leq y) \land (y_c + h_c > y) \} 
-    \end{align*}
-
-    \begin{align}
-        (x_i + w_i \leq x_j) \lor (y_i + h_i \leq y_j) &\ \ &\ \nonumber \\
-        \lor\ (x_j + w_j \leq x_i) \lor (y_j + h_j \leq y_i)\ &\                \hspace{0.2cm} \forall (i,j) \in CC &\ \text{;diffn} \\
-                                                                        \sum_{c \in C_x} y_c \leq makespan\ &\ \hspace{0.2cm} \forall x \in X, \forall c \in Xcross(x)\ &\ \text{;x axis} \\
-                                                                           \sum_{c \in C_y} x_c \leq width\ &\ \hspace{0.2cm} \forall y \in Y, \forall c \in Ycross(y)\ &\ \text{;y axis}
-    \end{align}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
