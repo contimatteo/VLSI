@@ -87,20 +87,25 @@
     (equation \ref{ilp:base_ycons}) the variable $y$ to place blocks for which vertical dimension\\
     doesn't exceed the value associated to the variable $makespan$.
 
-    Now the foucs should be posed on the constraints \ref{ilp:base_diffn1}-\ref{ilp:base_diffn6}.
+    Now the foucus should be posed on the constraints \ref{ilp:base_diffn1}-\ref{ilp:base_diffn6}.
     These constraints achieve the same task as the \textit{diffn} constraint in CP. More in
     details, we implemented this constraint in ILP by imposing a set of disequations. As we know
     it is defined in CP as \ref{eq:diffn}. So, in order to have the same result of the disjoint
     clause conditions, we need to control the variable's results. The constraints 
     \ref{ilp:base_diffn1}-\ref{ilp:base_diffn4} states the position of a circuit $c_1$ respect to
-    another circuit $c_2$. The auxiliary parameter $M$ has the scope to validate the disequation
-    when the  
+    another circuit $c_2$. The auxiliary parameter $M$ has the scope to falsify the disequation
+    when the corrispondent variable is set to 0. Then the subsequent constraints 
+    \ref{ilp:base_diffn5}-\ref{ilp:base_diffn6} are needed to allow the sum of the binary variables 
+    (namely $r_{c_1c_2}$, $l_{c_1c_2}$, $a_{c_1c_2}$ and $b_{c_1c_2}$) belonging in in the range
+    between $1$ and $2$. 
     
-    % in a way that the sum of the binary
-    % variables (namely $r_{c_1c_2}$, $l_{c_1c_2}$, $a_{c_1c_2}$ and $b_{c_1c_2}$) should belong 
-    % in the range between $1$ and $2$. 
-    
-
+    Finally the last ones are just bounding constraints, which describe the upper and lower bounds
+    of the variables. More in details, while the integer variables $x_c$ can be in the range 
+    between $0$ and $width-widths_c$ (see constraint \ref{ilp:base_b_x}), the variables $y_c$ can have
+    values in the range between $0$ and $makespan-heights_c$ (see constraint \ref{ilp:base_b_y}). 
+    This is due to the fact that we cannot place boxes in a position such that the chip's dimension 
+    exceed the circuit plate both in high and in width. Then, since the all the variables of the 
+    constraints \textit{diffn} are binary, their value should fall in the range $0$ and $1$.
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Rotation}
