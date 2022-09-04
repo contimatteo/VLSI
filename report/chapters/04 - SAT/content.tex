@@ -1,42 +1,59 @@
-\subsection{Background}\label{subsec:background}
-  SAT problems are based only on boolean variables. We have to represent positive integer numbers. 
-  One-hot encoding is a possible solution for representing integers using only boolean variables.\\
-  How does one-hot encoding works:\\
-  For every integer variable we declare one boolean variable for every item of the domain of 
-  the numeric variable. Only one boolean per integer variable is set to \texttt{True}. The only \texttt{True} 
-  variable corresponds to the value of the domain that is being represented.\\
-  This solution leads to a simple implementation of the operations but is not very efficient 
-  because it requires the SAT solver to manage a very big quantity of variables and clauses.
+\subsection{Background}\label{subsec:SAT_background}
 
-  We decided to use decimal encoding. Let $domain\_max$ be the maximum value of the domain of 
-  a positive integer variable. The number of boolean variables allocated to represent it is:
-  \begin{equation}
-      var\_size = \lceil \log_2 (domain\_max + 1)\rceil
-  \end{equation}
-  We have a list of boolean variables that take the value of the corresponding bit of the binary encoding
-  of the positive integer. We implemented specific functions for handling mathematical operations.
-  They are discussed in Section \ref{subsec:predicates}. \\
+  \paragraph*{Representing integers with list of booleans}
+    SAT problems are based only on boolean variables. We have to represent positive integer numbers. 
+    One-hot encoding is a possible solution for representing integers using only boolean variables.\\
+    How does one-hot encoding works:
+    For every integer variable we declare one boolean variable for every item of the domain of 
+    the numeric variable. Only one boolean per integer variable is set to \texttt{True}. The only \texttt{True} 
+    variable corresponds to the value of the domain that is being represented.\\
+
+    This solution leads to a simple implementation of the operations but is not very efficient 
+    because it requires the SAT solver to manage a very big quantity of variables and clauses.
+
+    We decided to use decimal encoding. Let \(domain\_max\)  be the maximum value of the domain of 
+    a positive integer variable. The number of boolean variables allocated to represent it is:
+    \begin{equation}
+        var\_size = \lceil \log_2 (domain\_max + 1)\rceil
+    \end{equation}
+    We have a list of boolean variables that take the value of the corresponding bit of the binary encoding
+    of the positive integer. We implemented specific functions for handling mathematical operations.
+    They are discussed in Section \ref{subsec:SAT_predicates}. \\
 
   \paragraph*{Implementation of the Models}
-  we decided to create a default abstract model that has the common parts that will be needed by
-  every concrete model. The abstract model is extended by the Base model and the Rotation model. 
-  The rotation model is discussed in its Section \ref{subsec:rotation}
+    We decided to create a default abstract model that has the common parts that will be needed by
+    every concrete model. The abstract model is extended by the Base model and the Rotation model. 
+    The rotation model is discussed in Section \ref{subsec:SAT_rotation}\\
+
+    The solver of choice is z3.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Variables}\label{subsec:variables}
+\subsection{Variables}\label{subsec:SAT_variables}
   The variables for the SAT solver are lists of boolean variables but their meaning does not differ from the 
   definitions in \ref{sec:shared_variables}.\\
-  Several variables are used only locally in functions and they are defined there.\\
-  Being numbers represented with lists of boolean the notation for the $i$-th element of list 
-  $list$ is $list_i$.
+
+  The notation for the \(i\) -th element of list 
+  \(list\)  is \(list_i\) .\\
+
+  The size of the lists is calculated to be minimal but safe against overflows of the possible operations.
+  \begin{equation}
+    x\_domain\_size = \lceil \log_2 (width - \min_{0 \leq i < nc} (w_i) + \max_{0 \leq i < nc}(w_i) + 1) \rceil
+  \end{equation}
+  \( x\_domain\_size \) is the length of each \(x_i\) list of booleans.
+  \begin{equation}
+    y\_domain\_size = \lceil \log_2 (max\_makespan - \min_{0 \leq i < nc} (h_i) + \max_{0 \leq i < nc}(h_i) + 1) \rceil
+  \end{equation}
+  \(y\_domain\_size\) is the length of each \(y_i\) list of booleans.
+
+  Several variables are used only locally in functions: they are defined there.\\
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Predicates and Functions}\label{subsec:predicates}
+\subsection{Predicates and Functions}\label{subsec:SAT_predicates}
   We created several support functions for dealing with the conversion from integers to lists of
   boolean variables and back.\\
-  If an integer value is provided then it is converted to a list of python \texttt{bool} variables
+  If an integer value is provided than it is converted to a list of python \texttt{bool} variables
   that are consistent with 
   \texttt{z3 Bool} variables and can be used to do calculations.\\
   In this way we achieve the transparency of the mathematical functions for the type of operand 
@@ -45,164 +62,171 @@
   variable. Padding of the shortest list is performed if necessary in case of operations between
   two values of different domain sizes. \\
 
-  Unary logic operation functions:\\
-  \texttt{\textbf{all\_F(list):}} 
-  \begin{equation}
-      \bigwedge\limits_{b \in list}\neg b
-  \end{equation}
+  \paragraph*{All the bits of a list set to False} \hfill \\
+    \begin{equation}
+      all\_F(list) = \bigwedge_{b \in list}\neg \ b
+    \end{equation}
+  
+    \paragraph*{At least one bit of a list must be set to True} \hfill \\
+    \begin{equation}
+      at\_least\_one(list) = \bigvee_{b \in list} b
+    \end{equation}
 
-  \texttt{\textbf{at\_least\_one(list):}}
-  \begin{equation}
-          \bigvee\limits_{b \in list} b
-  \end{equation}
+  \paragraph*{At most one} \hfill \\
+  %\texttt{\textbf{at\_most\_one(list):}}\\
+    We implemented the Heule encoding making this a recursive function.\\
+    The base case of the recursion is if the list has less than four elements. In this case the 
+    pair-wise encoding is used to calculate the result.\\
+    Let n be the length of \(list\) 
+    \begin{equation}
+            result\_base = \bigwedge_{0 < i < n} \ \ \bigwedge_{i+1 \leq j \leq n}\neg \ (b_i \land b_j)
+    \end{equation}
+    In the recursive case we split \(list\)  into two parts: \(list_A\)  has length two, \(list_B\)  is
+    the remainder. We introduce a new variable \(y\) . We append \(y\)  to \(list_A\)  and ¬\( y\)  to 
+    \(list_B\) . We than calculate the result through recursion:
+    \begin{equation}
+        result\_recursive = at\_most\_one(list_A) \land at\_most\_one(list_B)
+    \end{equation}
 
-  \texttt{\textbf{at\_most\_one(list):}}\\
-  We implemented the Heule encoding making this a recursive function.\\
-  The base case of the recursion is if the list has less then four elements. In this case the 
-  pair-wise encoding is used to calculate the result.\\
-  Let n be the length of $list$
-  \begin{equation}
-          result\_base = \bigwedge\limits_{0 < i < n} \ \ \bigwedge\limits_{i+1 \leq j \leq n}\neg (b_i \wedge b_j)
-  \end{equation}
-  In the recursive case we split $list$ into two parts: $list_A$ has length two, $list_B$ is
-  the remainder. We introduce a new variable $y$. We append $y$ to $list_A$ and ¬$y$ to 
-  $list_B$. We then calculate the result through recursion:
-  \begin{equation}
-      result\_recursive = at\_most\_one(list_A) \wedge at\_most\_one(list_B)
-  \end{equation}
+    We chose this encoding because it achieves a number of clauses of \(3n - 6\)  using \((n-3)/2\) new variables. \\
 
-  This encoding achieves a number of clauses of $3n - 6$ using $(n-3)/2$ new variables. \\
+  \paragraph*{Exactly one} \hfill \\
+    \begin{equation}
+      exactly\_one(list) = at\_most\_one(list) \land at\_least\_one(list)
+    \end{equation}
 
-  \texttt{\textbf{exactly\_one(list):}}
-  \begin{equation}
-      at\_most\_one(list) \wedge at\_least\_one(list)
-  \end{equation}
-
-
-  \texttt{\textbf{ne(l1, l2):}} Not equal\\
+  \paragraph*{Not equal} \hfill \\
   We must consider the cases where the two lists have different lengths.
-  Let $min\_len$ be the minimum between the length of the lists, $exc_1$ be the part of $l1$
-  exceeding $min\_len$ and $exc_2$ be the part of $l2$ exceeding $min_len$. At least one 
-  among $exc_1$ and $exc_2$ will be an empty list and will provide no clauses.\\
-  The result is computed as follows:
+  Let \(min\_len\)  be the minimum between the length of the lists, \(exc_1\)  be the part of \(l1\) 
+  exceeding \(min\_len\)  and \(exc_2\)  be the part of \(l2\)  exceeding \(min\_len\) . At least one 
+  among \(exc_1\)  and \(exc_2\)  will be an empty list and will provide no clauses.\\
   \begin{equation}
-      at\_least\_one(exc_1) \lor at\_least\_one(exc_2)\ \lor \bigoplus_{i \leq min\_len}(l1_i, l2_i)
+    ne(l1, l2) = at\_least\_one(exc_1) \lor at\_least\_one(exc_2)\ \lor \bigoplus_{i \leq min\_len}(l1_i, l2_i)
   \end{equation}
 
   \paragraph*{Equal} \hfill \\
-    one of the lists is eventually padded with bits set to \texttt{False} then we can
+    One of the lists is eventually padded with bits set to \texttt{False} than we can
     calculate the result:
     \begin{equation}
-      eq(l1, l2)\ =\ \bigwedge\limits_{0 \leq i < n} \neg\ (l1[i] \oplus l2[i])
+      eq(l1, l2)\ =\ \bigwedge_{0 \leq i < n} \neg\ (l1[i] \oplus l2[i])
     \end{equation}
 
+  \paragraph*{Greater than or equal} \hfill \\
+    We must consider the cases where the two lists have different lengths.
+    Let \(min\_len\)  be the minimum between the length of the lists, \(exc_1\)  be the part of \(l1\)  
+    exceeding \(min\_len\)  and \(exc_2\)  be the part of \(l2\)  exceeding \(min\_len\) . At least one among
+    \(exc_1\)  and \(exc_2\)  will be an empty list and will provide no clauses.\\
+    \begin{equation}
+          gte(l1, l2) = at\_least\_one(exc_1) \lor ( all\_F(exc_2) \land gte\_same\_len(l1\_cut, l2\_cut))
+    \end{equation}
+    Where \(l1\_cut\)  and \(l2\_cut\)  are the result of pruning \(l1\)  and \(l2\)  at length \(min\_len\) .\\
 
-  \texttt{\textbf{gte(l1, l2):}} Greater then or equal\\
-  We must consider the cases where the two lists have different lengths.
-  Let $min\_len$ be the minimum between the length of the lists, $exc_1$ be the part of $l1$ 
-  exceeding $min\_len$ and $exc_2$ be the part of $l2$ exceeding $min\_len$. At least one among
-  $exc_1$ and $exc_2$ will be an empty list and will provide no clauses.\\
-  The result is computed as follows:
-  \begin{equation}
-      at\_least\_one(exc_1) \vee ( all\_F(exc_2) \wedge gte\_same\_len(l1\_cut, l2\_cut))
+  \paragraph*{Greater than or equal of numbers represented with the same quantity of bits} \hfill \\
+    The encoding used is the AND encoding with Common Subexpression Elimination as described in 
+    \cite{Elgabou} and \cite{Zhao}.\\
+    Len \(n\)  be the length of the lists \(l1\) , \(l2\) .\\
+    In the case \(n = 1\) 
+    \begin{equation}
+      gte\_same\_len(l1, l2) = l1_0 \lor \neg \ l2_0
+    \end{equation}\\
+
+    Otherwise:\\
+    Let \(k\)  be a list of boolean variables of length \(n-1\) 
+    \begin{equation}
+      first = l1_0 \lor \neg \ l2_0
+    \end{equation}
+    %
+    \begin{equation}
+      second = k_0 \Longleftrightarrow \neg \ (l1_0 \oplus l2_0)
+    \end{equation}
+    %
+    \begin{equation}
+      third = k_{i+1} \Longleftrightarrow k_i \land \neg \ (L1_{i+1} \oplus l2_{i+1}) \ \ \forall i \in [0, n-3]
+    \end{equation}
+    %
+    \begin{equation}
+      fourth = k_i \Longleftrightarrow (l1_{i+1} \lor \neg \ l2_{i+1}) \ \ \forall i \in [0, n-2]
+    \end{equation}
+
+    We chose this encoding because of the considerations of \cite{Zhao} among other linear encodings.
+
+  \paragraph*{Greater than}  \hfill \\
+    We must consider the cases where the two lists have different lengths.
+    Let \(min\_len\)  be the minimum between the length of the lists, \(exc_1\)  be the part of \(l1\)  
+    exceeding \(min\_len\)  and \(exc_2\)  
+    be the part of \(l2\)  exceeding \(min\_len\) . At least one among \(exc_1\)  and \(exc_2\)  will be an
+    empty list and will provide no clauses.\\
+    \begin{equation}
+      gt(l1, l2) = at\_least\_one(exc_1) \lor ( all\_F(exc_2) \land gt\_same\_len(l1\_cut, l2\_cut))
+    \end{equation}
+
+  \paragraph*{Greather than of numbers represented with the same quantity of bits}  \hfill \\
+    The encoding used is the AND encoding with Common Subexpression Elimination. We slightly
+    modified the implementation of \cite{Zhao} to exclude the equality.\\
+    Len \(n\)  be the length of the lists \(l1\) , \(l2\) .\\
+    In the case \(n = 1\) 
+    \begin{equation}
+      gt\_same\_len(l1, l2) = l1_0 \land \neg \ l2_0
+    \end{equation}\\
+
+    Otherwise:\\
+    Let \(k\)  be a list of boolean variables of length \(n-1\) 
+    \begin{equation}
+      first =  l1_0 \land \neg \ l2_0 %first
+    \end{equation}
+    %
+    \begin{equation}
+      second = k_0 \Longleftrightarrow \neg \ (l1_0 \oplus l2_0) %second
+    \end{equation}
+    %
+    \begin{equation}
+      third = \bigwedge_{0 < n-2} k_{i+1} \Longleftrightarrow k_i \land (\neg \ (l1_{i+1} \oplus l2_{i+1})) \ \ \forall i \in [0, n-3]
+    \end{equation}
+    %
+    \begin{equation}
+      fourth = \bigvee_{0 \leq i < n-1} k_i \land (l1_{i+1} \land \neg \ l2_{i+1})  \ \ \forall i \in [0, n-2]
+    \end{equation}
+    \begin{equation}
+      gt\_same\_len(l1, l2) = first \lor (second \land third \land fourth)
+    \end{equation}
+
+  \paragraph*{Less than} \hfill \\
+    \begin{equation}
+      lt(l1, l2) = gt(l2, l1) %; Notice the reverse order of the parameters
+    \end{equation}
+    Notice the reverse order of the parameters\\
+
+  \paragraph*{Less than or equal} \hfill \\
+    \begin{equation}
+      lte(l1, l2) = gte(l2, l1) %; Notice the reverse order of the parameters
+    \end{equation}
+    Notice the reverse order of the parameters\\
+
+  \paragraph*{Sum of two numbers} \hfill \\
+    Padding is performed on the shortest list if need be.
+    Let \(n\)  be the length of the lists, eventually padded. Let \(carry\)  be a list of boolean
+    variables of length \(n\) . \(carry_0\)  is set to \texttt{false}.  
+    \begin{equation}
+      carry_{i+1} = ((l1_i \oplus l2_i) \land carry_i) \lor (l1_i \land l2_i) \ \ \forall i \in [0, n]
+    \end{equation}
+    \begin{equation}
+      sum\_b(l1, l2) = (l1_i \oplus l2_i) \oplus carry_i \  \ \forall i \in [0, n-1]
   \end{equation}
-  Where $l1\_cut$ and $l2\_cut$ are the result of pruning $l1$ and $l2$ at length $min\_len$.\\
 
-  \texttt{\textbf{gte\_same\_len(l1, l2):}} Greater then or equal of two list of the same length\\
-  The encoding used is the AND encoding with Common Subexpression Elimination as described in 
-  \cite{Elgabou} and \cite{Zhao}\\
-
-  \texttt{\textbf{gt(l1, l2):}} Greater then\\
-  We must consider the cases where the two lists have different lengths.
-  Let $min\_len$ be the minimum between the length of the lists, $exc_1$ be the part of $l1$ 
-  exceeding $min\_len$ and $exc_2$ 
-  be the part of $l2$ exceeding $min\_len$. At least one among $exc_1$ and $exc_2$ will be an
-  empty list and will provide no clauses.\\
-  The result is computed as follows:
-  \begin{equation}
-      at\_least\_one(exc_1) \vee ( all\_F(exc_2) \wedge gt\_same\_len(l1\_cut, l2\_cut))
-  \end{equation}
-
-  \texttt{\textbf{gt\_same\_len(l1, l2):}} Greater then of two list of the same length\\
-  The encoding used is the AND encoding with Common Subexpression Elimination. We slightly
-  modified the implementation of \cite{Zhao} to exclude the equality.\\
-  Len $n$ be the length of the lists $l1$, $l2$.\\
-  If $n=1$:
-  \begin{equation*}
-      l1_0 \wedge \neg l2_0
-  \end{equation*}\\
-
-  Otherwise:\\
-  Let $x$ be a list of boolean variables of length $n-1$
-  \begin{equation*}
-      first =  l1_0 \wedge \neg l2_0 %first
-  \end{equation*}
-  %
-  \begin{equation*}
-      second = x_0 \Longleftrightarrow \neg (l1_0 \oplus l2_0) %second
-  \end{equation*}
-  %
-  \begin{equation*}
-      third = \bigwedge\limits_{0 \leq <n-2} x_{i+1} \Longleftrightarrow x_i \wedge (\not (l1_{i+1} \ \ \oplus \ \ l2_{i+1}))%third
-  \end{equation*}
-  %
-  \begin{equation*}
-      fourth = \bigvee\limits_{0 \leq i < n-1} x_i \wedge (l1_{i+1} \wedge \neg l2_{i+1})
-  \end{equation*}
-  \begin{equation*}
-      result = first \vee (second \wedge third \wedge fourth)
-  \end{equation*}
-
-  \texttt{\textbf{lt(l1, l2):}} Less then\\
-  \begin{equation}
-      result = gt(l2, l1)
-  \end{equation}
-  Notice the reverse order of the parameters\\
-
-  \texttt{\textbf{lte(l1, l2):}} Less then of two lists of the same length\\
-  \begin{equation}
-      result = gte(l2, l1)
-  \end{equation}
-  Notice the reverse order of the parameters\\
-
-  \texttt{\textbf{sum\_b(l1, l2):}} sum of two numbers\\
-  Padding is performed on the shortest list if need be.
-  Let $n$ be the length of the lists, eventually padded. Let $carry$ be a list of boolean
-  variables of length $n$. $carry_0$ is set to \texttt{false}.  
-  \begin{equation}
-      carry_{i+1} = ((l1_i \oplus l2_i) \wedge carry_i) \vee (l1_i \wedge l2_i)  \  \ \forall i \in [0, n]
-  \end{equation}
-  \begin{equation}
-          result_i = (l1_i \ \ \oplus \ \ l2_i) \ \ \oplus \ \ carry_i \  \ \forall i \in [0, n-1]
-  \end{equation}
-
-  $result$ is a list that contains the sum of the numbers. $carry_n$ could be used to
+  The result is a list that represents the sum of the numbers. \(carry_{n-1}\)  could be used to
   notify an overflow but we did  not use it because the domains size are designed to avoid this.\\
 
-  \texttt{\textbf{sub\_b(l1, l2):}} subtraction of two numbers\\
+\paragraph*{Subtraction of two numbers} \hfill \\
   Padding is performed on the shortest list if need be.
-  Let $n$ be the length of the lists, eventually padded.
-  Let $borr$ be a list a list of boolean variables of length $n$. $borr_0$ is set to \texttt{false} 
+  Let \(n\)  be the length of the lists, eventually padded.
+  Let \(borr\)  be a list a list of boolean variables of length \(n\) . \(borr_0\)  is set to \texttt{false} 
   \begin{equation}
-      result_i = (l1_i \ \ \oplus \ \ l2_i) \ \ \oplus \ \ borr_i \  \ \forall i \in [0, n-1]
+    sub\_b(l1, l2) = (l1_i \oplus l2_i) \oplus borr_i \ \ \forall i \in [0, n-1]
   \end{equation}
   \begin{equation}
-      borr_{i+1} = ((\neg (l1_i \ \ \oplus \ \ l2_i) \wedge borr_i) \vee (\neg l1_i \wedge \ \ l2_i)) \  \ 
+    borr_{i+1} = ((\neg \ (l1_i \oplus l2_i) \land borr_i) \lor (\neg \ l1_i \land \ \ l2_i)) \ \ 
       \forall i \in [0, n-1]
   \end{equation}
-
-  % disjunctive = used for cumulative:
-  % disjunctive logic formula
-
-  % fzn\_cumulative:
-  % logic description
-
-  % cumulative:
-  % check if disjunctive can be applied:
-  % OR(gt(r[c]+ min\_r, boundary), c == idx\_min\_r) forall c in C
-
-  % disjunctive => disxunctive(x, dx)
-  % not disjunctive => \_fzn\_cumulative(...)
 
   % symmetrical: calculates the symmetrical position of a coordinate wrt the boundary
   % Xsymm = end - (x - start + dx[i])
@@ -211,72 +235,152 @@
   % x\_symm = symmetrical()
   % put that into logic or math
 
-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-
 \subsection{Constraints}
+  The constraints of the base model are the ones defined in Section \ref{sec:shared_constraints}.
+  We use functions defined in the previous Section \ref{subsec:SAT_predicates} to implement
+  the constraints.\\
+  
+  The following Table contains the mapping between the operators used in Section 
+  \ref{sec:shared_constraints} to define the constraints and the functions of Section 
+  \ref{subsec:SAT_predicates} to implement them in the SAT model.\\
 
-  \textbf{Static constraints}\\
-  The process of finding the best solution is iterative. Some constraints do not 
-  need to be modified along the iteration process because the values on which they 
-  are based do not change during the iteration. They are constraints on the horizontal 
-  direction of the plate.\\
+  \begin{align*}
+    \text{Math operator} \ &\ \leftarrow\ \text{SAT function equivalent}      \\
+               \cline{1-2}
+      a \geq 1 \ &\ \leftarrow\ \text{at\_least\_one}(a) \\
+      a \leq 1 \ &\ \leftarrow\ \text{at\_most\_one}(a)  \\
+         a = 1 \ &\ \leftarrow\ \text{exactly\_one}(a)   \\
+         a = b \ &\ \leftarrow\ \text{equal}(a,b)        \\
+         a < b \ &\ \leftarrow\ lt(a,b)                  \\
+      a \leq b \ &\ \leftarrow\ lte(a,b)                 \\
+         a > b \ &\ \leftarrow\ gt(a,b)                  \\
+      a \geq b \ &\ \leftarrow\ gte(a,b)                 \\
+         a + b \ &\ \leftarrow\ sum\_b(a,b)              \\   
+         a - b \ &\ \leftarrow\ sub\_b(a,b)                 
+  \end{align*}
 
-  \texttt\textbf{diffn(x, y, heights, widths)}\\
-  The diffn constraint, DISCUSSED IN SECTION X is implemented as follow.
-  \begin{equation}
-      \begin{split}
-          \bigwedge\limits_{(i, j) \in CC}&=
-          lte(sum\_b(x_i, widths_i), x_j) \vee \\
-          &lte(sum\_b(y_i, heights_i), y_j) \vee \\
-          &lte(sum\_b(x_j, widths_j), x_i) \vee \\
-          &lte(sum\_b(y_j, heights_j), y_i)
-      \end{split}
-  \end{equation}\\
+  \subsubsection{Static constraints} \label{subsec:SAT_static_cons}
+    The process of finding the best solution is iterative. Some constraints do not 
+    need to be modified along the iteration process because the values on which they 
+    are based do not change during the iteration. They are constraints about the horizontal 
+    direction of the plate.\\
 
-  \texttt\textbf{NAME} Circuits must not be placed over the side of the board\\
-  \begin{equation}
-      \bigwedge\limits_{c \in C} lte(x_c, sub_b(width, widths_c))
-  \end{equation}\\
+    \paragraph*{diff\_n}
+      \texttt\textbf{diffn(x, y, h, w)}\\
+      The diff\_n constraint, defined in Section \ref{sec:shared_constraints}, is implemented
+      as follows.
+      \begin{equation}
+          \begin{split}
+              \bigwedge_{(i, j) \in CC}&=
+              lte(sum\_b(x_i, widths_i), x_j) \lor \\
+              &lte(sum\_b(y_i, heights_i), y_j) \lor \\
+              &lte(sum\_b(x_j, widths_j), x_i) \lor \\
+              &lte(sum\_b(y_j, heights_j), y_i)
+          \end{split}
+      \end{equation}\\
 
-  \texttt\textbf{cumulative(y, heights, widths, width, minw, id\_x) }\\ 
-  Optionally we can impose a cumulative constraint along the x axis. This is an implied
-  constraint. FORMUA LOGICA?\\
+    \paragraph*{Circuits must not be placed over the side of the board}
+      The constraint is defined in Section \ref{sec:shared_constraints}. 
+      For greater clarity the implementation of the constraint is provided:
+      \begin{equation}
+          \bigwedge_{c \in C} lte(x_c, sub_b(width, widths_c))
+      \end{equation}\\
 
-  \textbf{Dynamic constraint}
-  Dynamic constraints are the constraint whose values change during the iteration so we
-  need to update their limits when we perform the optimization. They are the constraints 
-  on the height of the board. We use z3.push() at the beginning of every loop and z3.pop()
-  at the end to avoid jamming the solver with out of date constraints.\\
+    \paragraph*{cumulative\_x}
+      Optionally we can impose a cumulative constraint along the horizontal axis, 
+      as defined in Section \ref{sec:shared_constraints}.
+      This is an implied constraint.
+      \[cumulative\_x(y, heights, w, width, minw, idx) \]
+      Where \(minw\) is \(\min_{i \in [0,nc]} w_i\) and \( w_{idx} 
+      = \min_{i \in [0,nc]} w_i\)
+      %%% qui ci si può mettere l'implementazione di cumulative... volendo
+      
+      %%% spiegazione di disjunctive che è usato nella spiegazione di cumulative
+      %%% disjunctive logic formula
 
-  \texttt\textbf{NAME} Circuits must not be placed over the current limit of height: 
-  $target\_makespan$ \\
-  \begin{equation}
-      \bigwedge\limits_{c \in C} lte(y_c, sub\_b(makespan, heights_c))
-  \end{equation}\\
+      %%% spiegazione di fzn\_cumulative: usato nella spiegazione di cumulative
+      %%%fzn\_cumulative logic formula
+    
+    \paragraph*{Symmetry breaking constraint}
+      Optionally we can impose a constraint to break symmetries between circuits along
+      the horizontal axis.
+      \begin{equation}
+        axial\_symmetry(x, w, width) = lte(x_i, sub\_b(sub\_b(width, x_i), w_i) \ \ \forall i \ in [0, nc]
+      \end{equation}
 
-  \texttt\textbf{cumulative(x,widths,heights, makespan, min\_h, idx)} \\
-  Optionally we can impose a cumulative constraint along the y axis. This is an implied
-  constraint. FORMUA LOGICA?
+  \subsubsection{Dynamic constraints}  \label{subsec:SAT_dynamic_cons}
+    Dynamic constraints are the constraint whose values change during the iteration. We
+    need to update their limits when we perform the optimization. They are the constraints 
+    about the height of the board. We use z3.push() at the beginning of every loop and z3.pop()
+    at the end to avoid jamming the solver with out of date constraints.\\
 
-  % symmetry braking constraints: 
-  % static: 
-  %      we tried also biggest circuit in 0,0 but?
-  %     axial symmetry(w) FORMUA LOGICA
-  % dynamic: (axial symmetry) FORMUA LOGICA
+    \paragraph*{Circuits must not be placed over the current limit of height}
+    The constraint is defined in Section \ref{sec:shared_constraints}. 
+    For greater clarity the implementation of the constraint is provided:
+      \begin{equation}
+          \bigwedge_{c \in C} lte(y_c, sub\_b(target\_makespan, heights_c))
+      \end{equation}
+      With \(target\_makespan\) is intended the makespan that we are currently searching a solution for.
+
+    \paragraph*{cumulative\_y}
+    Optionally we can impose a cumulative constraint along the vertical axis, 
+    as defined in Section \ref{sec:shared_constraints}.
+    This is an implied constraint.
+      \[cumulative(x, w, h, target\_makespan, min\_h, idx) \]
+    Where \(min\_h\) is \(\min_{i \in [0,nc]} h_i\), \( h_{idx} = \min_{i \in [0,nc]} h_i\) and 
+    \(target\_makespan\) is the makespan that we are currently searching a solution for.
+
+    %%% qui ci si può mettere l'implementazione di cumulative... volendo
+
+    \paragraph*{Symmetry breaking constraint}
+    Optionally we can impose a constraint to break symmetries between circuits along the vertical axis.
+    The constraint to be applied is:
+    \begin{equation}
+      axial\_symmetry(y, h, target\_makespan) = lte(y_i, sub\_b(sub\_b(target\_makespan, y_i)), h_i) \ \ \forall i \ in [0, nc]
+    \end{equation}
+    With \(target\_makespan\) is intended the makespan that we are currently searching a solution for.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Rotation}\label{subsec:rotation}
-    \colorbox{BurntOrange}{TODO missing ...}
+\subsection{Rotation}\label{subsec:SAT_rotation}
+  We tackled the problem of rotating the circuit on the board by extending the base model. Every
+  extention provided by the model for the rotations is presented in this Section.\\
+  \begin{equation}
+    domain\_size = \lceil \log_2 (\max_{0 \leq i < nc} (\max(x_i, y_i)) + 1) \rceil
+  \end{equation}
+  When rotation is available all the items of \(h\) and \(w\) must have the same length.
+  \(domain\_size \) is the number of bits that we use to represent every \(w_i\) and \(h_i\)\\
+    \(is\_rotated_i\) = is \(c\_i\) rotated or not\\
+  \(w\_b_i\) list of length \(domain\_size \) of booleans to represent the effective horizontal size of circuit \(i\)
+  \begin{equation}
+    w\_b_i = (is\_rotated_i \land w_i) \lor (\neg \ is\_rotated_i \land h_i) \ \ \forall i \in [0, domain\_size-1] 
+  \end{equation}
+  \(h\_b_i\) list of length \(domain\_size \) of booleans to represent the effective vertical size of circuit \(i\)
+  \begin{equation}
+    h\_b_i = (is\_rotated_i \land h_i) \lor (\neg \ is\_rotated_i \land w_i) \ \ \forall i \in [0, domain\_size-1] 
+  \end{equation}  
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Search}\label{subsec:search}
-    \colorbox{BurntOrange}{TODO missing ...}
+\subsection{Search}\label{subsec:SAT_search}
+  SAT itself does not perform an optimization of the solution that provides.
+  The optimization is made outside from the SAT solver. Initially we have a lower and an upper bound
+  for \(makespan\), that is the value that we want to minimize.\\
+
+  We have to perform a search on the space \([min\_makespan, max\_makespan]\). This is done by performing
+  the solution of the SAT problem in a loop, updating the dynamic constraints at every iteration.\\
+
+  The choice of what \(target\_makespan\) to use every time is done according to a search strategy.
+  We implemented two possible search strategies: linear search starting from \(min\_makespan\) and
+  binary search but starting from \(min\_makespan\) in this case too.
+  The latter starts from \(min\_makespan\) and then performs a binary search over the remaining
+  search space.\\
+
+  A comparison between the performances of the two is made in Section \ref{subsec:SAT_results}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Results}\label{subsec:results}
+\subsection{Results}\label{subsec:SAT_results}
     \colorbox{BurntOrange}{TODO missing ...}
