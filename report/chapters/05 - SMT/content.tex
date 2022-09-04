@@ -11,8 +11,8 @@
     \colorbox{BurntOrange}{TODO missing ...} \\
 
     In order to write a proper SMT formulation, we started from the SAT formulation (available in
-    the Section \ref*{chapter:SAT}) and we have replaced the boolean representation of integer 
-    operators with these operators themself.\\
+    the Section \ref{chapter:SAT}) and we have replaced each boolean representation of integer 
+    operators with the operators themself.\\
 
     In particular, the following replacements have been done:
     \begin{align*}
@@ -20,8 +20,8 @@
                  \cline{1-2}
         a \geq 1 \ &\ \leftarrow\ \text{at\_least\_one}(a) \\
         a \leq 1 \ &\ \leftarrow\ \text{at\_most\_one}(a)  \\
-          a == 1 \ &\ \leftarrow\ \text{exactly\_one}(a)   \\
-          a == b \ &\ \leftarrow\ \text{equal}(a,b)        \\
+           a = 1 \ &\ \leftarrow\ \text{exactly\_one}(a)   \\
+           a = b \ &\ \leftarrow\ \text{equal}(a,b)        \\
            a < b \ &\ \leftarrow\ lt(a,b)                  \\
         a \leq b \ &\ \leftarrow\ lte(a,b)                 \\
            a > b \ &\ \leftarrow\ gt(a,b)                  \\
