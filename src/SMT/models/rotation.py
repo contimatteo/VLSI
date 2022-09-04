@@ -125,7 +125,3 @@ class Z3Model(Z3BaseModel):
 
         return solution
 
-    # def solve(self, file_name: str, symmetry: bool, use_cumulative: bool) -> dict:
-    #     solution_dict = super().solve(file_name, symmetry, use_cumulative)
-    #     solution_dict['model'] = 'rotation'
-    #     return solution_dict
