@@ -38,7 +38,7 @@
     "flatIntConstraints": 65,
     "evaluatedReifiedConstraints": 54,
     "eliminatedImplications": 12,
-    "flatTime": 0.0460668,
+    "flatTime": 0.0480689,
     "nodes": 7,
     "failures": 0,
     "restarts": 1,
@@ -61,7 +61,7 @@
     "randomSeed": 666,
     "nSolutions": 1
   },
-  "TOTAL_TIME": 0.05,
+  "TOTAL_TIME": 0.06,
   "solver": "Chuffed",
   "model": "search.symmetry",
   "data_file": "ins-1"

@@ -1,0 +1,89 @@
+{
+  "solution": {
+    "width": 9,
+    "n_circuits": 5,
+    "dims": [
+      [
+        3,
+        9
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "heights": [
+      9,
+      6,
+      5,
+      4,
+      3
+    ],
+    "x": [
+      0,
+      0,
+      0,
+      5,
+      6
+    ],
+    "y": [
+      0,
+      3,
+      6,
+      6,
+      3
+    ],
+    "is_rotated": [
+      true,
+      true,
+      true,
+      true,
+      false
+    ],
+    "min_makespan": 9,
+    "max_makespan": 9,
+    "makespan": 9
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 10,
+    "flatIntVars": 35,
+    "flatBoolConstraints": 5,
+    "flatIntConstraints": 35,
+    "flatTime": 0.0507916,
+    "initTime": 0.00079,
+    "solveTime": 24.6094,
+    "solutions": 1,
+    "variables": 46,
+    "propagators": 724,
+    "propagations": 313147480,
+    "nodes": 2966343,
+    "failures": 1482008,
+    "restarts": 256,
+    "peakDepth": 21,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 24.67,
+  "solver": "Gecode",
+  "model": "rotation.search",
+  "data_file": "ins-2"
+}
