@@ -160,3 +160,10 @@ src/CP/run_all.sh
 *.json
 *.csv
 *.png
+
+# added by Riccardo to discard output jsons and txt
+src/CP/json/*
+src/SAT/json/*
+src/SMT/json/*
+src/ILP/json/*
+out/**/*.txt
