@@ -32,9 +32,7 @@ class _Storage:
         return ROOT.joinpath("out").joinpath(self._root_dir_name)
 
     def json_dir(self) -> Path:
-        # TODO: verificare se out contiene json
-        # return self._root_dir.joinpath("out/json")
-        return self._root_dir.joinpath("json")
+        return self._root_dir.joinpath("out/json")
 
     #
 
@@ -64,6 +62,7 @@ class _Storage:
         self.out_dir().joinpath(partial_file_url).mkdir(exist_ok=True, parents=True)
 
         return self.out_dir().joinpath(f"{partial_file_url}{file_name}.txt")
+
 
 ###
 
