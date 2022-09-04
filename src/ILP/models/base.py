@@ -3,14 +3,21 @@ from typing import List
 
 import math
 
-from ILP.models.__default import cplexModel as cplexDefaultModel
+from ILP.models.__default import CplexModel as CplexDefaultModel
 from ILP.models.components.helper import compute_max_makespan
-from ILP.models.components.foundation import diffn #, axial_symmetry, cumulative
+from ILP.models.components.foundation import diffn  #, axial_symmetry, cumulative
 # from ILP.models.components.symmetry import axial_symmetry
 
 ###
 
-class cplexModel(cplexDefaultModel):
+
+class CplexModel(CplexDefaultModel):
+
+    @property
+    def name(self) -> str:
+        return "base"
+
+    #
 
     def _variables(self, raw_data: dict) -> dict:
         width, n_circuits, CIRCUITS, widths, heights = self.__variables_support(raw_data)
@@ -22,11 +29,10 @@ class cplexModel(cplexDefaultModel):
         ###  measure time needed for default solution
         t0 = time.time()
         default_solution = compute_max_makespan(heights, widths, width)
-        time_default = int((time.time() - t0)*1000)
+        time_default = int((time.time() - t0) * 1000)
         print('time spent for default solution:', time_default)
         ###  redefine solver timeout
         self.solver_timeout -= time_default
-
 
         min_makespan = max(math.ceil(_c_area_sum / width), max(heights))
         max_makespan = default_solution["makespan"]
@@ -34,18 +40,23 @@ class cplexModel(cplexDefaultModel):
         target_makespan = self.solver.integer_var(lb=min_makespan, ub=max_makespan, name='makespan')
 
         ###  if no rotation -> both width and widths[c] are int values -> setting lb and ub avoid adding some constraints
-        x = [self.solver.integer_var(name='x_'+str(c), lb=0, ub=width-widths[c]) for c in CIRCUITS]
+        x = [
+            self.solver.integer_var(name='x_' + str(c), lb=0, ub=width - widths[c])
+            for c in CIRCUITS
+        ]
         # x = self.solver.integer_var_list(n_circuits, lb=0, ub=width-min(widths), name='x')
 
         ###  makespan is docplex.mp.LinearExpr -> cannot be used to determine ub -> must be added explicitly as constraint
-        y = self.solver.integer_var_list(n_circuits, lb=0, ub=max_makespan-min(heights), name='y')
+        y = self.solver.integer_var_list(n_circuits, lb=0, ub=max_makespan - min(heights), name='y')
 
         ###  all circuits must have each dimension greater than zero
         assert min(heights) > 0 and min(widths) > 0
         assert len(heights) == len(widths) == n_circuits
 
         ###  or variables for diffn
-        n = n_circuits*(n_circuits-1) * 2 # == (n_circuits*(n_circuits-1) // 2) * 4 == n_combinations * 4
+        n = n_circuits * (
+            n_circuits - 1
+        ) * 2  # == (n_circuits*(n_circuits-1) // 2) * 4 == n_combinations * 4
         diffn_vars = self.solver.binary_var_list(n, name='diffn_vars')
 
         VARS_TO_RETURN = [
@@ -63,7 +74,7 @@ class cplexModel(cplexDefaultModel):
         min_w = min(self.variables['widths'])
         idx = self.variables['widths'].index(min_w)
         return min_w, idx
-        
+
     def _get_min_h(self):
         min_h = min(self.variables['heights'])
         idx = self.variables['heights'].index(min_h)
@@ -88,16 +99,15 @@ class cplexModel(cplexDefaultModel):
 
         r = []
         r += diffn(x, y, widths, heights, diffn_vars)
-        
+
         for c in CIRCUITS:
             r += [
-        #         x[c] + widths[c] <= width,
+                #         x[c] + widths[c] <= width,
                 y[c] + heights[c] <= makespan
             ]
-        
 
-        # if use_cumulative: 
-        #     r += [cumulative(y, heights, widths, width, min_w, idx)] 
+        # if use_cumulative:
+        #     r += [cumulative(y, heights, widths, width, min_w, idx)]
         #     r += [cumulative(x, widths, heights, makespan, min_h, idx)]
 
         return r
@@ -111,7 +121,6 @@ class cplexModel(cplexDefaultModel):
     #     widths = var["widths"]
     #     heights = var["heights"]
     #     makespan = var["target_makespan"]
-
 
     #     return [
     #         # sym_bigger_circuit_origin(x, y, widths, heights),

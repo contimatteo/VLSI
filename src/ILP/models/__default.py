@@ -1,12 +1,14 @@
 from typing import List, Tuple
-from copy import deepcopy
 
 import time
-from docplex.mp.model import Model
+
+from copy import deepcopy
+from docplex.mp.model import Model  # pylint: disable=import-error
 
 ###
 
-class cplexModel():
+
+class CplexModel():
 
     def __init__(self, timeout: int = 300, seed: int = 666) -> None:
         self.solver = None
@@ -15,12 +17,16 @@ class cplexModel():
         self.solver_random_seed = seed
         self.solver_timeout = min(timeout, 300)
 
+    @property
+    def name(self) -> str:
+        raise NotImplementedError
+
     #
 
     def __configure_solver(self) -> None:
         self.solver = Model(name='VLSI model')
 
-    def __variables_support(self, raw_data: dict) -> Tuple[int, int, List[int], List[int]]:
+    def __variables_support(self, raw_data: dict) -> Tuple[int, int, List[int], List[int]]:  # pylint: disable=unused-private-member
         width = raw_data["width"]
         n_circuits = raw_data["n_circuits"]
         CIRCUITS = list(range(n_circuits))
@@ -96,7 +102,7 @@ class cplexModel():
             "all_solutions": [],
             "solution": {},
             "stats": [],
-            "model": "base",
+            "model": self.name,
             "data_file": file_name,
             #"data": self.variables,
             "solver": "cplex",
@@ -119,9 +125,9 @@ class cplexModel():
 
         #
         self.solver.minimize(target_makespan)
-        
+
         ### set timeout to the model
-        self.solver.parameters.timelimit=self.solver_timeout
+        self.solver.parameters.timelimit = self.solver_timeout
 
         ### start solver
         t0 = time.time()

@@ -20,10 +20,13 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
     def __file_url(F_json=True):
         if F_json:
             file_sub_dir = solutions_dict["model"]
-            return str(ILPStorage.json_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+            return str(
+                ILPStorage.json_file_url(solutions_dict["data_file"], file_sub_dir).resolve()
+            )
         else:
             file_sub_dir = solutions_dict["model"]
             return str(ILPStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+
     def __clean_dict(obj):
         obj_copy = copy.deepcopy(obj)
         del obj_copy["all_solutions"]
@@ -44,7 +47,7 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
     with open(__file_url(F_json=False), 'w') as file:
         file.write(lines)
         file.close()
-    
+
     return json_data
 
 
@@ -71,7 +74,7 @@ def main(args):
     solutions_dict = {}
 
     CURRENT_MODEL_MODULE = import_module(f"{MODELS_MODULE_NAMESPACE}.{args.model}")
-    ModelClass = getattr(CURRENT_MODEL_MODULE, "cplexModel")
+    ModelClass = getattr(CURRENT_MODEL_MODULE, "CplexModel")
 
     model = ModelClass(timeout=args.time)
     model.initialize(data_dict)
