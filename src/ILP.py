@@ -6,7 +6,9 @@ from importlib import import_module
 
 from ILP.utils.args import parse_args
 
-from utils import ILPStorage, plot_solutions
+from utils import ILPStorage
+from utils import plot_solutions
+from utils import solutions_dict_to_txt_file
 
 ###
 
@@ -17,15 +19,13 @@ MODELS_MODULE_NAMESPACE = "ILP.models"
 
 def __store_solutions_dict(solutions_dict: dict) -> None:
 
-    def __file_url(F_json=True):
-        if F_json:
-            file_sub_dir = solutions_dict["model"]
-            return str(
-                ILPStorage.json_file_url(solutions_dict["data_file"], file_sub_dir).resolve()
-            )
-        else:
-            file_sub_dir = solutions_dict["model"]
-            return str(ILPStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+    def __json_file_url() -> str:
+        file_sub_dir = solutions_dict["model"]
+        return str(ILPStorage.json_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+
+    def __txt_file_url() -> str:
+        file_sub_dir = solutions_dict["model"]
+        return str(ILPStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
 
     def __clean_dict(obj):
         obj_copy = copy.deepcopy(obj)
@@ -35,17 +35,11 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
     json_data = copy.deepcopy(solutions_dict)
     json_data = __clean_dict(json_data)
 
-    with open(__file_url(), 'w', encoding="utf-8") as file:
+    with open(__json_file_url(), 'w', encoding="utf-8") as file:
         json.dump(json_data, file, indent=2)
 
-    jsol = json_data['solution']
-    lines = str(jsol['width']) + ' ' + str(int(np.ceil(jsol['makespan']))) + '\n'
-    lines += str(jsol['n_circuits']) + '\n'
-    for i in range(jsol['n_circuits']):
-        lines += str(jsol['widths'][i]) + ' ' + str(jsol['heights'][i]) + ' ' +\
-                str(int(np.ceil(jsol['x'][i]))) + ' ' + str(int(np.ceil(jsol['y'][i]))) + '\n'
-    with open(__file_url(F_json=False), 'w') as file:
-        file.write(lines)
+    with open(__txt_file_url(), 'w', encoding="utf-8") as file:
+        file.write(solutions_dict_to_txt_file(json_data))
         file.close()
 
     return json_data

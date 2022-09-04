@@ -4,7 +4,9 @@ import json
 
 from SMT.utils import parse_args
 
-from utils import SMTStorage, plot_solutions
+from utils import SMTStorage
+from utils import plot_solutions
+from utils import solutions_dict_to_txt_file
 
 ###
 
@@ -15,13 +17,13 @@ MODELS_MODULE_NAMESPACE = "SMT.models"
 
 def __store_solutions_dict(solutions_dict: dict, search_strategy: str) -> None:
 
-    def __file_url(F_json = True):
-        if F_json:
-            file_sub_dir = solutions_dict["model"] + "/" + search_strategy.lower()
-            return str(SMTStorage.json_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
-        else:
-            file_sub_dir = solutions_dict["model"] + "/" + search_strategy.lower()
-            return str(SMTStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+    def __json_file_url() -> str:
+        file_sub_dir = solutions_dict["model"] + "/" + search_strategy.lower()
+        return str(SMTStorage.json_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+
+    def __txt_file_url() -> str:
+        file_sub_dir = solutions_dict["model"] + "/" + search_strategy.lower()
+        return str(SMTStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
 
     def __clean_dict(obj):
         obj_copy = copy.deepcopy(obj)
@@ -40,17 +42,11 @@ def __store_solutions_dict(solutions_dict: dict, search_strategy: str) -> None:
     json_data = __clean_dict(json_data)
     # json_data = __format_dict(json_data)
 
-    with open(__file_url(), 'w', encoding="utf-8") as file:
+    with open(__json_file_url(), 'w', encoding="utf-8") as file:
         json.dump(json_data, file, indent=2)
 
-    jsol = json_data['solution']
-    lines = str(jsol['width']) + ' ' + str(jsol['makespan']) + '\n'
-    lines += str(jsol['n_circuits']) + '\n'
-    for i in range(jsol['n_circuits']):
-        lines += str(jsol['widths'][i]) + ' ' + str(jsol['heights'][i]) + ' ' +\
-                str(jsol['x'][i]) + ' ' + str(jsol['y'][i]) + '\n'
-    with open(__file_url(F_json=False), 'w') as file:
-        file.write(lines)
+    with open(__txt_file_url(), 'w', encoding="utf-8") as file:
+        file.write(solutions_dict_to_txt_file(json_data))
         file.close()
 
     return json_data

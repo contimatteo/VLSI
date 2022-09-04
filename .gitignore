@@ -166,4 +166,4 @@ src/CP/json/*
 src/SAT/json/*
 src/SMT/json/*
 src/ILP/json/*
-out/*
+out/**/*.txt
