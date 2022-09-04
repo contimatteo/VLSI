@@ -3,21 +3,21 @@ from typing import List
 
 import math
 
-from ILP.models.__default import Z3Model as Z3DefaultModel
+from ILP.models.__default import CplexModel as CplexDefaultModel
 from ILP.models.components.helper import compute_max_makespan
 from ILP.models.components.foundation import diffn  #, axial_symmetry, cumulative
 # from ILP.models.components.symmetry import axial_symmetry
 
 ###
 
-###
 
-
-class Z3Model(Z3DefaultModel):
+class CplexModel(CplexDefaultModel):
 
     @property
     def model_name(self) -> str:
         return "base"
+
+    #
 
     def _variables(self, raw_data: dict) -> dict:
         width, n_circuits, CIRCUITS, widths, heights = self.__variables_support(raw_data)
@@ -30,7 +30,6 @@ class Z3Model(Z3DefaultModel):
         t0 = time.time()
         default_solution = compute_max_makespan(heights, widths, width)
         time_default = int((time.time() - t0) * 1000)
-
         ###  redefine solver timeout
         self.solver_timeout -= time_default
 
