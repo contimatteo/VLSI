@@ -167,3 +167,5 @@ src/SAT/json/*
 src/SMT/json/*
 src/ILP/json/*
 out/**/*.txt
+
+**/.DS_Store
