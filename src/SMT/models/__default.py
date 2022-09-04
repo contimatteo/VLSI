@@ -27,12 +27,6 @@ class Z3Model():
 
     def __configure_solver(self) -> None:
         self.solver = Optimize()
-        # self.solver.set("smt.local_search", True)
-        # self.solver.set("smt.local_search_threads", 1)
-        # self.solver.set("smt.threads", 3)
-        # self.solver.set("smt.lookahead_simplify", True)
-        # self.solver.set("smt.lookahead.use_learned", True)
-        # self.solver.set('smt.random_seed', self.solver_random_seed)
 
     def __variables_support(self, raw_data: dict) -> Tuple[int, int, List[int], List[int]]:
         width = raw_data["width"]
@@ -147,19 +141,6 @@ class Z3Model():
 
         check = self.solver.check()
         time_spent = time.time() - time_before_exec_start
-
-        #
-
-        # if time_spent >= self.solver_timeout:
-        #     print('time exceeded, optimal solution not found')
-
-        # if check == z3.unknown:
-        #     print('z3 did not found any solution => check=="unknown"')
-        #     if time_spent >= self.solver_timeout:
-        #         print('reason of "unknown": exceeded time limit')
-        #     else:
-        #         print('reason of "unknown":', self.solver.reason_unknown())
-        #     solution = default_solution
 
         solution = None
 

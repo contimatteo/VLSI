@@ -20,4 +20,5 @@ pandas
 pytest
 python-dotenv
 numpy
+seaborn
 z3-solver
