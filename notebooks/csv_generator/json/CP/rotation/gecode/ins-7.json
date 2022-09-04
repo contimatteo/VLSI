@@ -1,0 +1,125 @@
+{
+  "solution": {
+    "width": 14,
+    "n_circuits": 9,
+    "dims": [
+      [
+        5,
+        10
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      5,
+      3,
+      3,
+      3,
+      5,
+      3,
+      3,
+      3,
+      3
+    ],
+    "heights": [
+      10,
+      9,
+      8,
+      7,
+      4,
+      6,
+      5,
+      4,
+      3
+    ],
+    "x": [
+      0,
+      5,
+      8,
+      11,
+      0,
+      8,
+      5,
+      11,
+      11
+    ],
+    "y": [
+      0,
+      0,
+      0,
+      0,
+      10,
+      8,
+      9,
+      10,
+      7
+    ],
+    "is_rotated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "min_makespan": 14,
+    "max_makespan": 20,
+    "makespan": 14
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 18,
+    "flatIntVars": 63,
+    "flatBoolConstraints": 9,
+    "flatIntConstraints": 59,
+    "flatTime": 0.0444294,
+    "initTime": 0.001305,
+    "solveTime": 0.001276,
+    "solutions": 3,
+    "variables": 81,
+    "propagators": 2113,
+    "propagations": 14528,
+    "nodes": 50,
+    "failures": 16,
+    "restarts": 0,
+    "peakDepth": 28,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 0.06,
+  "solver": "Gecode",
+  "model": "rotation",
+  "data_file": "ins-7"
+}

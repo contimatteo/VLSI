@@ -1,0 +1,81 @@
+{
+  "solution": {
+    "width": 16,
+    "n_circuits": 10,
+    "widths": [
+      7,
+      3,
+      3,
+      4,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "heights": [
+      9,
+      12,
+      10,
+      7,
+      8,
+      7,
+      6,
+      5,
+      4,
+      3
+    ],
+    "x": [
+      0,
+      7,
+      13,
+      0,
+      10,
+      4,
+      13,
+      10,
+      7,
+      10
+    ],
+    "y": [
+      0,
+      0,
+      0,
+      9,
+      0,
+      9,
+      10,
+      8,
+      12,
+      13
+    ],
+    "min_makespan": 16,
+    "max_makespan": 21,
+    "makespan": 16
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 145,
+    "flatIntVars": 51,
+    "flatBoolConstraints": 58,
+    "flatIntConstraints": 154,
+    "evaluatedReifiedConstraints": 116,
+    "flatTime": 0.0568694,
+    "initTime": 0.001302,
+    "solveTime": 0.001453,
+    "solutions": 3,
+    "variables": 196,
+    "propagators": 211,
+    "propagations": 8697,
+    "nodes": 193,
+    "failures": 91,
+    "restarts": 0,
+    "peakDepth": 21,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 0.07,
+  "solver": "Gecode",
+  "model": "symmetry",
+  "data_file": "ins-9"
+}
