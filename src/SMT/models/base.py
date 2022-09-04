@@ -33,9 +33,6 @@ class Z3Model(Z3DefaultModel):
         _c_area_sum = sum([heights[c] * widths[c] for c in CIRCUITS])
         default_solution = compute_max_makespan(heights, widths, width)
 
-        ###  redefine solver timeout
-        self.solver_timeout -= time_default
-
         min_makespan = max(math.ceil(_c_area_sum / width), max(heights))
         max_makespan = default_solution["makespan"]
         default_solution['min_makespan'] = min_makespan
