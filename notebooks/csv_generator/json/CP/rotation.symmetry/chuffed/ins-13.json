@@ -1,0 +1,182 @@
+{
+  "solution": {
+    "width": 20,
+    "n_circuits": 14,
+    "dims": [
+      [
+        4,
+        17
+      ],
+      [
+        3,
+        17
+      ],
+      [
+        4,
+        11
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        3,
+        11
+      ],
+      [
+        3,
+        10
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      4,
+      3,
+      4,
+      4,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      3
+    ],
+    "heights": [
+      17,
+      17,
+      11,
+      9,
+      11,
+      10,
+      9,
+      8,
+      7,
+      6,
+      5,
+      4,
+      3,
+      3
+    ],
+    "x": [
+      4,
+      14,
+      0,
+      0,
+      11,
+      4,
+      17,
+      8,
+      13,
+      8,
+      8,
+      17,
+      17,
+      8
+    ],
+    "y": [
+      0,
+      3,
+      0,
+      11,
+      6,
+      17,
+      11,
+      6,
+      0,
+      3,
+      0,
+      3,
+      7,
+      14
+    ],
+    "is_rotated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      true,
+      true,
+      false,
+      true,
+      false
+    ],
+    "min_makespan": 20,
+    "max_makespan": 25,
+    "makespan": 20
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 749,
+    "flatIntVars": 110,
+    "flatBoolConstraints": 269,
+    "flatIntConstraints": 766,
+    "evaluatedReifiedConstraints": 638,
+    "eliminatedImplications": 52,
+    "flatTime": 0.0798434,
+    "nodes": 2097,
+    "failures": 1010,
+    "restarts": 6,
+    "variables": 5060,
+    "intVars": 111,
+    "boolVariables": 4947,
+    "propagators": 1583,
+    "propagations": 611886,
+    "peakDepth": 80,
+    "nogoods": 1010,
+    "backjumps": 708,
+    "peakMem": 0.0,
+    "time": 0.078,
+    "initTime": 0.011,
+    "solveTime": 0.067,
+    "objective": 20,
+    "optTime": 0.067,
+    "baseMem": 0.0,
+    "trailMem": 0.01,
+    "randomSeed": 666,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 0.18,
+  "solver": "Chuffed",
+  "model": "rotation.symmetry",
+  "data_file": "ins-13"
+}

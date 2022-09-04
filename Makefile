@@ -16,13 +16,25 @@ help:
 	@echo "+-------------------------------------------------+"
 	@echo "|    OS    |    Hardware    |    Setup Command    |"
 	@echo "+-------------------------------------------------+"
-	@echo "|    //    |       //       |    'make setup'     |"
+	@echo "|    //    |       CPU       |  'make setup.CPU'  |"
+	@echo "|    //    |    Apple M1     |  'make setup.M1'   |"
 	@echo "+-------------------------------------------------+"
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-setup:
-	pip install -r requirements.txt
+setup.CPU:
+	pip install -r tools/requirements/CPU.txt
+setup.M1:
+	pip install -r tools/requirements/M1.txt
+
+CP.run.all:
+	sh scripts/CP.sh
+SAT.run.all:
+	sh scripts/SAT.sh
+SMT.run.all:
+	sh scripts/SMT.sh
+ILP.run.all:
+	sh scripts/ILP.sh
 
 test:
 	python -m pytest -rP tests
@@ -35,6 +47,11 @@ clean:
 # .PHONY defines parts of the makefile that are not dependant on any specific file
 # This is most often used to store functions
 .PHONY: help
-.PHONY: setup
+.PHONY: setup.CPU
+.PHONY: setup.M1
+.PHONY: CP.run.all
+.PHONY: SAT.run.all
+.PHONY: SMT.run.all
+.PHONY: ILP.run.all
 .PHONY: test
 .PHONY: clean

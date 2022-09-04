@@ -1,0 +1,163 @@
+{
+  "solution": {
+    "width": 17,
+    "n_circuits": 12,
+    "dims": [
+      [
+        4,
+        14
+      ],
+      [
+        7,
+        6
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        7,
+        3
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      4,
+      7,
+      4,
+      3,
+      3,
+      3,
+      7,
+      3,
+      3,
+      3,
+      4,
+      3
+    ],
+    "heights": [
+      14,
+      6,
+      8,
+      9,
+      8,
+      7,
+      3,
+      6,
+      5,
+      4,
+      3,
+      3
+    ],
+    "x": [
+      0,
+      0,
+      0,
+      0,
+      9,
+      7,
+      7,
+      14,
+      14,
+      8,
+      11,
+      14
+    ],
+    "y": [
+      0,
+      4,
+      10,
+      14,
+      14,
+      4,
+      7,
+      0,
+      6,
+      10,
+      10,
+      11
+    ],
+    "is_rotated": [
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false
+    ],
+    "min_makespan": 17,
+    "max_makespan": 18,
+    "makespan": 17
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 288,
+    "flatIntVars": 94,
+    "flatBoolConstraints": 78,
+    "flatIntConstraints": 373,
+    "evaluatedReifiedConstraints": 264,
+    "flatTime": 0.0512753,
+    "nodes": 198785,
+    "failures": 179732,
+    "restarts": 52,
+    "variables": 3228,
+    "intVars": 95,
+    "boolVariables": 3131,
+    "propagators": 649,
+    "propagations": 100823124,
+    "peakDepth": 27,
+    "nogoods": 179732,
+    "backjumps": 18458,
+    "peakMem": 0.0,
+    "time": 15.346,
+    "initTime": 0.006,
+    "solveTime": 15.34,
+    "objective": 17,
+    "optTime": 15.326,
+    "baseMem": 0.0,
+    "trailMem": 0.01,
+    "randomSeed": 666,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 15.42,
+  "solver": "Chuffed",
+  "model": "rotation.search",
+  "data_file": "ins-10"
+}

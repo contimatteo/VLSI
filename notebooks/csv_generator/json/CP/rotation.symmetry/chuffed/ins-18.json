@@ -1,0 +1,227 @@
+{
+  "solution": {
+    "width": 25,
+    "n_circuits": 19,
+    "dims": [
+      [
+        3,
+        25
+      ],
+      [
+        3,
+        19
+      ],
+      [
+        3,
+        18
+      ],
+      [
+        4,
+        13
+      ],
+      [
+        3,
+        17
+      ],
+      [
+        3,
+        14
+      ],
+      [
+        3,
+        13
+      ],
+      [
+        3,
+        11
+      ],
+      [
+        3,
+        10
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        6,
+        3
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      3,
+      3,
+      3,
+      4,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      3,
+      3,
+      3,
+      4,
+      3,
+      6,
+      3,
+      3,
+      3
+    ],
+    "heights": [
+      25,
+      19,
+      18,
+      13,
+      17,
+      14,
+      13,
+      11,
+      10,
+      7,
+      9,
+      8,
+      7,
+      5,
+      6,
+      3,
+      5,
+      4,
+      3
+    ],
+    "x": [
+      10,
+      16,
+      19,
+      3,
+      22,
+      7,
+      3,
+      13,
+      15,
+      6,
+      0,
+      0,
+      13,
+      6,
+      13,
+      22,
+      0,
+      19,
+      0
+    ],
+    "y": [
+      0,
+      7,
+      8,
+      13,
+      3,
+      12,
+      0,
+      6,
+      0,
+      0,
+      9,
+      18,
+      17,
+      7,
+      3,
+      20,
+      0,
+      3,
+      5
+    ],
+    "is_rotated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      true
+    ],
+    "min_makespan": 25,
+    "max_makespan": 30,
+    "makespan": 26
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 1394,
+    "flatIntVars": 150,
+    "flatBoolConstraints": 488,
+    "flatIntConstraints": 1379,
+    "evaluatedReifiedConstraints": 1206,
+    "eliminatedImplications": 72,
+    "flatTime": 0.109419,
+    "nodes": 2665788,
+    "failures": 2282958,
+    "restarts": 5,
+    "variables": 8543,
+    "intVars": 151,
+    "boolVariables": 8390,
+    "propagators": 2940,
+    "propagations": 1627704562,
+    "peakDepth": 107,
+    "nogoods": 2282958,
+    "backjumps": 382339,
+    "peakMem": 0.0,
+    "time": 299.908,
+    "initTime": 0.021,
+    "solveTime": 299.887,
+    "objective": 26,
+    "optTime": 0.701,
+    "baseMem": 0.0,
+    "trailMem": 0.02,
+    "randomSeed": 666,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 300.06,
+  "solver": "Chuffed",
+  "model": "rotation.symmetry",
+  "data_file": "ins-18"
+}

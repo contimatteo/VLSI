@@ -1,11 +1,14 @@
 import copy
 import json
+import numpy as np
 
 from importlib import import_module
 
 from ILP.utils.args import parse_args
 
-from utils import ILPStorage, plot_solutions
+from utils import ILPStorage
+from utils import plot_solutions
+from utils import solutions_dict_to_txt_file
 
 ###
 
@@ -16,8 +19,12 @@ MODELS_MODULE_NAMESPACE = "ILP.models"
 
 def __store_solutions_dict(solutions_dict: dict) -> None:
 
-    def __file_url():
-        file_sub_dir = solutions_dict["model"]
+    def __json_file_url() -> str:
+        file_sub_dir = solutions_dict["model"] + "/" + "simplex"
+        return str(ILPStorage.json_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+
+    def __txt_file_url() -> str:
+        file_sub_dir = solutions_dict["model"] + "/" + "simplex"
         return str(ILPStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
 
     def __clean_dict(obj):
@@ -28,8 +35,12 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
     json_data = copy.deepcopy(solutions_dict)
     json_data = __clean_dict(json_data)
 
-    with open(__file_url(), 'w', encoding="utf-8") as file:
+    with open(__json_file_url(), 'w', encoding="utf-8") as file:
         json.dump(json_data, file, indent=2)
+
+    with open(__txt_file_url(), 'w', encoding="utf-8") as file:
+        file.write(solutions_dict_to_txt_file(json_data))
+        file.close()
 
     return json_data
 
@@ -57,7 +68,7 @@ def main(args):
     solutions_dict = {}
 
     CURRENT_MODEL_MODULE = import_module(f"{MODELS_MODULE_NAMESPACE}.{args.model}")
-    ModelClass = getattr(CURRENT_MODEL_MODULE, "Z3Model")
+    ModelClass = getattr(CURRENT_MODEL_MODULE, "CplexModel")
 
     model = ModelClass(timeout=args.time)
     model.initialize(data_dict)

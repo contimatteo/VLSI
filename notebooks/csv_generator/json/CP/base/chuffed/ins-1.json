@@ -1,0 +1,85 @@
+{
+  "solution": {
+    "width": 4,
+    "n_circuits": 4,
+    "dims": [
+      [
+        1,
+        2
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "widths": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "heights": [
+      2,
+      1,
+      1,
+      1
+    ],
+    "x": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "y": [
+      0,
+      1,
+      1,
+      1
+    ],
+    "min_makespan": 2,
+    "max_makespan": 2,
+    "makespan": 2
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 24,
+    "flatIntVars": 15,
+    "flatBoolConstraints": 6,
+    "flatIntConstraints": 35,
+    "evaluatedReifiedConstraints": 24,
+    "flatTime": 0.0452997,
+    "nodes": 7,
+    "failures": 0,
+    "restarts": 1,
+    "variables": 180,
+    "intVars": 26,
+    "boolVariables": 152,
+    "propagators": 63,
+    "propagations": 138,
+    "peakDepth": 6,
+    "nogoods": 0,
+    "backjumps": 0,
+    "peakMem": 0.0,
+    "time": 0.0,
+    "initTime": 0.0,
+    "solveTime": 0.0,
+    "objective": 2,
+    "optTime": 0.0,
+    "baseMem": 0.0,
+    "trailMem": 0.0,
+    "randomSeed": 666,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 0.05,
+  "solver": "Chuffed",
+  "model": "base",
+  "data_file": "ins-1"
+}
