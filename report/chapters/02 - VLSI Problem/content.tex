@@ -6,13 +6,12 @@
 
     The solution of the problem gives the position of each circuit (the coordinates of the bottom left corner) and,
     in case a circuit has been rotated, its width and height are coherently modified.
-    \colorbox{BurntOrange}{TODO improve ...}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Format of the Instances}
     \paragraph*{Instance Format}
-        An instance of \textit{VLSI} is a text file consisting of lines of integer values. The first line gives \textit{width}, 
+        An instance of \textit{VLSI} is aa text file consisting of lines of integer values. The first line gives \textit{width}, 
         which is the width of the silicon plate. The following line gives \textit{nc}, which is the number of necessary circuits 
         to place inside the plate. Then \textit{nc} lines follow, each with $w_i$ and $h_i$, representing the horizontal and 
         vertical dimension of the \textit{i-th} circuit.
@@ -24,15 +23,13 @@
         through the rotation of a circuit $i$, then, in the output file, the horizontal and vertical dimensions ($w_i$ and $h_i$) 
         will be swapped w.r.t. the input text file.
 
-    \colorbox{BurntOrange}{TODO improve ...}
-
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Shared Variables Declaration} \label{sec:shared_variables}
     In this section we list the constants and the variables that are shared in the mathematical formalization of 
     models and constraints from now on.
 
-    Constant values:
+    \paragraph{Constant values:}
     \begin{align*}
         nc\             &\ =\ \text{total number of circuits}                   \\
         width\          &\ =\ \text{width of the plate}                         \\
@@ -46,41 +43,42 @@
         CC\             &\ =\ \{(i, j) \in C \times C\ |\ i<j \}
     \end{align*}
 
-    Variables:
-    \begin{align}
-        x_i\        &\ =\ \text{x coordinate of the bottom-left corner of circuit  } i        \\
-        y_i\        &\ =\ \text{y coordinate of the bottom-left corner of circuit  } i        \\
-        r_i\        &\ =\ \text{boolean variable indicating if circuit \textit{i} is rotated} 
-        \label{eq:rotation_vars}    \\
+    \paragraph{Variables:}
+    \begin{align*}
+        x_i\            &\ =\ \text{x coordinate of the bottom-left corner of circuit  } i        \\
+        y_i\            &\ =\ \text{y coordinate of the bottom-left corner of circuit  } i        \\
+        r_i\            &\ =\ \text{boolean variable indicating if circuit \textit{i} is rotated} \\
         % X\          &\ =\ \bigcup_{c=1}^{nc} x_c                                              \\
         % Y\          &\ =\ \bigcup_{c=1}^{nc} y_c                                              \\
-        X\          &\ =\ \{ x_i\ |\ i \in [1, nc]\}                                          \\
-        Y\          &\ =\ \{ y_i\ |\ i \in [1, nc]\}                                          \\
-        Xcross(x)\  &\ =\ \{ c \in C\ |\ (x_c \leq x) \land (x_c + w_c > x) \}                \\
-        Ycross(y)\  &\ =\ \{ c \in C\ |\ (y_c \leq y) \land (y_c + h_c > y) \}                \\
-        makespan\   &\ =\ \max_{c \in C}\ y_c + h_c
-    \end{align}
-    \colorbox{BurntOrange}{TODO: uniformare pedici}
+        X\              &\ =\ \{ x_i\ |\ i \in [1, nc]\}                                          \\
+        Y\              &\ =\ \{ y_i\ |\ i \in [1, nc]\}                                          \\
+        Xcross(x)\      &\ =\ \{ c \in C\ |\ (x_c \leq x) \land (x_c + w_c > x) \}                \\
+        Ycross(y)\      &\ =\ \{ c \in C\ |\ (y_c \leq y) \land (y_c + h_c > y) \}                \\
+        makespan\       &\ =\ \max_{c \in C}\ y_c + h_c                                           \\
+        w\_index_{min}  &\ =\ i \in C\ |\ w_i = \min_{c \in C} w_c                                \\
+        h\_index_{min}  &\ =\ i \in C\ |\ h_i = \min_{c \in C} h_c                                \\
+    \end{align*}
 
     \subsubsection{Makespan lower bound}
         In order to limit the search domain of the \textit{makespan} variable, we defined an algorithm to find 
         its lower (\textit{min\_makespan}) and upper (\textit{max\_makespan}) bound.
 
         The lower bound is determined starting from the area that the circuits occupy: 
-        \begin{equation}
+        \begin{equation*}
             a = \sum_{c \in C} w_c \cdot h_c
-        \end{equation}
-        The best situation is the one in which all circuits fit in the plate 
+        \end{equation*}
+        The best situation is the one in which all circuits fit in a rectangle with width=$width$ and height=$makespan$,
         without leaving any empty space, so that the \textit{makespan} would be $makespan = \lceil a / width \rceil$. 
-        We could set accordingly $min\_makespan = \lceil a / width \rceil$, but there is a case in which,
-        even if there are no empty spaces left, the \textit{makespan} is not the one defined before. 
-        Indeed, we may have a very "high" circuit (let's name it $c_{high}$) such that:
+        We could set accordingly $min\_makespan = \lceil a / width \rceil$, but there is simple a case in which,
+        even if there are no empty spaces left, the \textit{makespan} can be easily improved (increased). 
+        Indeed, we may have a very "high" circuit (let its name be $c_{high}$) such that:
         \begin{equation}
             h_{c_{high}} >= \lceil \frac{\sum_{c \in C - \{c_{high}\}} w_c \cdot h_c}{width - w_{c_{high}}} \rceil
             \label{eq:h_high}
         \end{equation}
         where the numerator is the sum of the areas of all circuits $c_i \neq c_{high}$, obtaining on the right of
-        the inequality the $min\_makespan'$ without $c_{high}$ and with $width' = width - w_{c_{high}}$.
+        the inequality the $min\_makespan'$ computed without $c_{high}$ and with a reduced width of the plate 
+        $width' = width - w_{c_{high}}$.
 
         Let's call $m$ the right side of the inequality, it's almost intuitive that the $min\_makespan$ computed
         as before is lower than $h_{c_{high}}$:
@@ -110,8 +108,8 @@
             \includegraphics[width=0.6\textwidth]{02/min_makespan_exc.jpg}
             \caption{
                 On the left a possible solution with circuit $c_n=c_{high}$ satisfying condition \ref{eq:h_high}, 
-                with $m$ defined in \ref{eq:m}, $h = h_{c_{high}}$ and $w = w_{c_{high}}$. On the right, how $min\_makespan$ was taken before
-                improving it. In this situations we always have $m \leq min\_makespan \leq h_{c_{high}}$.
+                with $m$ defined in \ref{eq:m}, $h = h_{c_{high}}$ and $w = w_{c_{high}}$. On the right, how $min\_makespan$ 
+                was computed before improving it. In this situations we always have $m \leq min\_makespan \leq h_{c_{high}}$.
             }
             \label{fig:min_makespan}
         \end{figure}
@@ -128,7 +126,7 @@
         of the instance. This strategy is very simple and fast but the result easily over estimates by a lot the final 
         \textit{makespan} value. A more effective strategy was adopted.
         
-        A much better algorithm requires to consider each circuit as a node and to build a possible solution building a tree of the nodes. 
+        A much better algorithm requires to consider each circuit as a node and to reach a possible solution building a tree of the nodes. 
         Each circuit is represented as a node that contains the dimensions of the circuit $w_c$, $h_c$, its coordinates 
         $x_c$, $y_c$, the index of the circuit, the index of the parent node and a list of the children nodes 
         $children\_list$. The $altitude$ of the node can be computed as:
@@ -146,21 +144,20 @@
         All the other nodes are added to a list of nodes.
         First the list of nodes is sorted on the width of the circuit in descending order:
         \begin{equation}
-            w_i \geq w_j \Longleftrightarrow i \leq j\   \ \forall (i,j) \in CC
+            \forall (i,j) \in CC.\ \ w_i \geq w_j \ 
         \end{equation}
-        \colorbox{BurntOrange}{abbiamo già $i < j$ per definizione di CC, secondo me basta $w_i \geq w_j \ \forall (i,j) \in CC$}
-
+        
         In this way the nodes are added to the tree from the widest to the least wide.
         The nodes are then inserted into the tree using the following strategy. A list of possible parent nodes $fringe$ is kept. 
         A node to be a parent of another must have enough free space on top. Let $x$ be the circuit that 
-        is being inserted. $fringe$ is the list of all the nodes $c$ already in the tree that satisfy: 
+        is being inserted; $fringe_x$ is the list of all the nodes $c$ already in the tree that satisfy: 
         \begin{equation}
-            w_x \leq w_c - \sum_{i \in children\_list_c} w_i
+            fringe_x = \left[c \in C\ |\ w_x \leq w_c - \sum_{i \in children\_list_c} w_i\right]
         \end{equation}
         
         Each new node is appended to the node in the fringe whose altitude is the lowest.
         \begin{equation}
-            altitude_{father} = \min_{c \in fringe}\ {altitude_c} 
+            altitude_{father} = \min_{c \in fringe_x}\ {altitude_c} 
         \end{equation}
 
         Once all the nodes are in the tree we can calculate the maximum altitude $altitude_{max}$ reached by the nodes.
@@ -193,30 +190,36 @@
 
     \begin{align}
       \text{diff\_n}\ &\ \leftarrow\ \bigwedge_{i,j \in CC}\ (x_i + w_i \leq x_j) \lor (y_i + h_i \leq y_j) \lor\ (x_j + w_j \leq x_i) \lor (y_j + h_j \leq y_i) \label{eq:diffn} \\
-      \text{cumulative\_x}\ &\ \leftarrow\ \bigwedge_{x \in X}\ \sum_{c \in Xcross(x)} y_c \leq makespan \label{eq:cumulative_x} \\
-      \text{cumulative\_y}\ &\ \leftarrow\ \bigwedge_{y \in Y}\ \sum_{c \in Ycross(y)} x_c \leq width \label{eq:cumulative_y} \\
+      \text{cumulative\_x}\ &\ \leftarrow\ \bigwedge_{x \in X}\ \sum_{c \in Xcross(x)} h_c \leq makespan \label{eq:cumulative_x} \\
+      \text{cumulative\_y}\ &\ \leftarrow\ \bigwedge_{y \in Y}\ \sum_{c \in Ycross(y)} w_c \leq width \label{eq:cumulative_y} \\
       \text{disj\_cond\_x}\ &\ \leftarrow\ \bigwedge_{c \in C} (h_c + h_{min} > makespan) \lor (c = h\_index_{min}) \\
       \text{disj\_cond\_y}\ &\ \leftarrow\ \bigwedge_{c \in C} (w_c + w_{min} > width) \lor (c = w\_index_{min}) \\
-      \text{disj\_x}\ &\ \leftarrow\ \bigwedge_{c1,c2 \in C} (x_{c1} + h_{c1} \leq x_{c2}) \lor (x_{c2} + h_{c2} \leq x_{c1}) \\
-      \text{disj\_y}\ &\ \leftarrow\ \bigwedge_{c1,c2 \in C} (y_{c1} + h_{c1} \leq y_{c2}) \lor (y_{c2} + h_{c2} \leq y_{c1})
+      \text{disj\_x}\ &\ \leftarrow\ \bigwedge_{(c1,c2) \in CC} (x_{c1} + h_{c1} \leq x_{c2}) \lor (x_{c2} + h_{c2} \leq x_{c1}) \\
+      \text{disj\_y}\ &\ \leftarrow\ \bigwedge_{(c1,c2) \in CC} (y_{c1} + h_{c1} \leq y_{c2}) \lor (y_{c2} + h_{c2} \leq y_{c1})
     \end{align}
 
-    Once we have done this, we have defined tha following constraints valid over all models (CP, SAT, SMT, ILP):
+    Once we have done this, we have defined the following constraints valid over all models (CP, SAT, SMT, ILP):
     \begin{align*}
         \bigwedge_{c \in C}\ w_c > 0\ \    \land\                   &\ w_c \leq width \\
         \bigwedge_{c \in C}\ h_c > 0\ \   \land\                    &\ h_c \leq makespan \\
         \bigwedge_{c \in C}\ x_c \geq 0\ \ \land\                   &\ x_c \leq width - w_c \\
         \bigwedge_{c \in C}\ y_c \geq 0\ \ \land\                   &\ y_c \leq makespan - h_c \\
         \text{diff\_n}\ \ \land\ &\ \top \\
+    \end{align*}
+    \colorbox{BurntOrange}{TODO: maybe $diff\_n$ alone is better}
+
+    Being common to CP, SAT and SMT, here we list the cumulative constraints adopted:
+    \begin{align*}
         (\text{disj\_cond\_x} \rightarrow \text{disj\_x})\ \ \land\ &\ (\neg (\text{disj\_cond\_x}) \rightarrow \text{cumulative\_x}) \\
         (\text{disj\_cond\_y} \rightarrow \text{disj\_y})\ \ \land\ &\ (\neg (\text{disj\_cond\_y}) \rightarrow \text{cumulative\_y})
     \end{align*}
-    
-    \colorbox{BurntOrange}{TODO: check formalization ($C_x$ and $X_{CROSS}$)}
+    Like in the "cumulative" of MiniZinc \footnote[1]{https://github.com/MiniZinc/libminizinc/blob/master/share/minizinc/std/cumulative.mzn, \label{fn:minizinc_cumulative}}, 
+    the constraint first checks if disjunctive 
+    ($disj_x$, $disj_y$) can be used instead. Actually in \ref{fn:minizinc_cumulative} 
+    is checked also if $all\_different$ can be used, which is even faster, but also improbable in our use case. 
+    \colorbox{BurntOrange}{TODO: add biblio ref}
 
     \subsubsection{Symmetries} \label{sec:symmetries}
-    \colorbox{BurntOrange}{TODO controllare assolutamente formulazione delle frasi ...}
-
 
         Given a solution there are two main ways to get a different one with the same \textit{makespan}:
         swap circuits with same dimensions [Fig.\ref{fig:symmetry_swap}] or get the solution specular w.r.t. the horizontal 
@@ -226,7 +229,7 @@
         the same \textit{makespan} [Fig.\ref{fig:symmetry_vc}].
         In particular we can find a symmetric solution swapping any couple of circuits or \textit{virtual} circuits 
         with same dimensions. Another possibility is to substitute any \textit{virtual} circuit with the set of regular circuits within it, 
-        but with specular positions. Obviously, any combination of the previous cases will create other symmetric 
+        but with specular positions. Obviously, combinations of the previous cases will bring to other symmetric 
         solutions [Fig.\ref{fig:vc_specular_out}].
 
         \begin{figure}[H]
@@ -330,13 +333,15 @@
         as possible.
 
         Let's define first some support variables:
-        \begin{align*}
-            x\_v\   &\ =\ [x_c\ |\ c \in C]                     \\
-            y\_v\   &\ =\ [y_c\ |\ c \in C]                     \\
-            x\_v'\  &\ =\ [width - (x_c + w_c)\ |\ c \in C]     \\
-            y\_v'\  &\ =\ [makesapan - (y_c + h_c)\ |\ c \in C] \\ 
+        \begin{align}
             \label{eq:specular_coord}
-        \end{align*}
+            \begin{split}
+                x\_v\   &\ =\ [x_c\ |\ c \in C]                     \\
+                y\_v\   &\ =\ [y_c\ |\ c \in C]                     \\
+                x\_v'\  &\ =\ [width - (x_c + w_c)\ |\ c \in C]     \\
+                y\_v'\  &\ =\ [makesapan - (y_c + h_c)\ |\ c \in C] \\                
+            \end{split} 
+        \end{align}
         where $x\_v$ and $y\_v$ are respectively the vector of all horizontal and vertical coordinates,
         while $x\_v'$ and $y\_v'$ are the horizontal and the vertical coordinates of the specular circuits.
 
