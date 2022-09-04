@@ -50,10 +50,13 @@
     other previously seen approaches. We implemented a couple of function which have the scope of 
     manage the rotation and the real dimension of each circuit $i$ according to the value of its 
     specific variable rotation $u_i$:
-    \begin{align*}
-        f_h(u_i) &\ = w_i \ u_i + h_i \ (1 - u_i)\\
-        f_w(u_i) &\ = h_i \ u_i + w_i \ (1 - u_i)
-    \end{align*}
+    \begin{subequations}
+        \label{ilp:f_dims}
+        \begin{align}
+            f_h(u_i) &\ = w_i \ u_i + h_i \ (1 - u_i)\\
+            f_w(u_i) &\ = h_i \ u_i + w_i \ (1 - u_i)
+        \end{align}    
+    \end{subequations}
     Please notice that the use of such function will not remove the linearity of each constraints,
     but it is just a name we gave to increase the readability of the report. 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -62,6 +65,7 @@
     MILP, by considering the notation previously cited. Let's start with the base model without
     the rotations.
 \begin{subequations}
+    \label{ilp:base}
     \begin{align}
         \label{ilp:base_obj} \text{minimize}\ makespan                                   &\  &\                       \\
         \label{ilp:base_ycons}  y_c + h_c            &\ \leq\ makespan                       &\ \forall c \in C       \\
@@ -116,11 +120,12 @@
 
 \subsection{Rotation}
     \colorbox{BurntOrange}{TODO }
-    Next is step consist to extend the model in order take into account also the box rotation.
+    Next step consists to extend the model in order take into account also the box rotation.
     For this scope we introduced, as we did also in the previous sections, a new set of bianary 
     variables $u_c$. 
 
     \begin{subequations}
+        \label{ilp:rot}
         \begin{align}
         \label{ilp:rot_obj} \text{minimize}\ makespan                                   &\  &\                       \\
         \label{ilp:rot_ycons}  y_c + f_h(u_c)       &\ \leq\ makespan                       &\ \forall c \in C       \\
@@ -131,7 +136,7 @@
         \label{ilp:rot_diffn5} l_{c_1c_2} + r_{c_1c_2} + a_{c_1c_2} + b_{c_1c_2}  &\ \geq 1 &\ \forall c_1, c_2 \in C\\
         \label{ilp:rot_diffn6} l_{c_1c_2} + r_{c_1c_2} + a_{c_1c_2} + b_{c_1c_2}  &\ \leq 2 &\ \forall c_1, c_2 \in C\\
         \label{ilp:rot_b_x} 0                       &\ \leq\ x_c \leq\ width - w_c          &\ \forall c \in C       \\
-        \label{ilp:rot_b_y} 0                       &\ \leq\ y_c \leq\ max\_makespan-h_c    &\ \forall c \in C       \\
+        \label{ilp:rot_b_y} 0                    &\ \leq\ y_c \leq\ max\_makespan-f_h(u_c)  &\ \forall c \in C       \\
         \label{ilp:rot_b_makspan} min\_makespan     &\ \leq\ makespan \leq\ max\_makespan   &\ \forall c \in C       \\
         \label{ilp:rot_b_a} 0\                      &\ \leq\ a_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C \\
         \label{ilp:rot_b_b} 0\                      &\ \leq\ b_{c_1c_2}\ \leq\ 1            &\ \forall c_1,c_2 \in C \\
@@ -141,6 +146,13 @@
         \end{align}    
     \end{subequations}
 
+    As we previously said, the use of the functions defined in the equation \ref{ilp:f_dims}, are 
+    needed to express the correct dimension to the model to each box in each condition. In this way 
+    it is possible to extend the model in a way that it can be possible to preserve the 
+    formalisation of the no rotations model, i.e. the base one (see equations \ref{ilp:base}).
+    Indeed, looking at the model, we didn't any changes to the objective function. We just modified
+    the constraints \ref{ilp:rot_diffn1}-\ref{ilp:rot_diffn4}, so that they take into account the 
+    correct dimensions and similarly the constraints \ref{ilp:rot_ycons} and \ref{ilp:rot_b_y}.
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 % \subsection{Search}
