@@ -6,11 +6,14 @@ import numpy as np
 from dotenv import load_dotenv
 
 from CP.utils import parse_args
-from CP.utils import convert_txt_file_to_dzn, convert_raw_result_to_solutions_dict
+from CP.utils import convert_txt_file_to_dzn
+from CP.utils import convert_raw_result_to_solutions_dict
 # from CP.utils import plot_solutions_v2
 # from CP.utils import CP_model_file_url, CP_data_file_url, CP_out_file_url
 
-from utils import CPStorage, plot_solutions
+from utils import CPStorage
+from utils import plot_solutions
+from utils import solutions_dict_to_txt_file
 
 ###
 
@@ -44,7 +47,11 @@ def __convert_raw_results_to_dict(raw_results: dict, args) -> dict:
 
 def __store_solutions_dict(solutions_dict: dict) -> None:
 
-    def __file_url():
+    def __json_file_url() -> str:
+        file_sub_dir = solutions_dict["model"] + "/" + str(solutions_dict["solver"]).lower()
+        return str(CPStorage.json_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+
+    def __txt_file_url() -> str:
         file_sub_dir = solutions_dict["model"] + "/" + str(solutions_dict["solver"]).lower()
         return str(CPStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
 
@@ -66,8 +73,12 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
     json_data = __clean_dict(json_data)
     # json_data = __format_dict(json_data)
 
-    with open(__file_url(), 'w', encoding="utf-8") as file:
+    with open(__json_file_url(), 'w', encoding="utf-8") as file:
         json.dump(json_data, file, indent=2)
+
+    with open(__txt_file_url(), 'w', encoding="utf-8") as file:
+        file.write(solutions_dict_to_txt_file(json_data))
+        file.close()
 
     return json_data
 

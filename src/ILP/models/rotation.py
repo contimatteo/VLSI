@@ -1,27 +1,13 @@
-from lib2to3.pgen2.token import LBRACE
-from typing import List
-
 import math
 import time
 
-from z3 import Bool, And, Or, Not, BoolRef, Solver, Int, IntVector, BoolVector, If
-
-from ILP.models.base import Z3Model as Z3BaseModel
+from ILP.models.base import CplexModel as CplexBaseModel
 from ILP.models.components.helper import compute_max_makespan
-from ILP.models.components.foundation import diffn  #, axial_symmetry
-# from SAT.models.components.symmetry import axial_symmetry
-
-###  FIXME: AssertionError "assert solutions_dict is not None and isinstance(solutions_dict, dict)"
-
-###
-
-T_Z3Clause = BoolRef
-T_Z3Solver = Solver
 
 ###
 
 
-class Z3Model(Z3BaseModel):
+class CplexModel(CplexBaseModel):
 
     @property
     def model_name(self) -> str:
@@ -38,7 +24,6 @@ class Z3Model(Z3BaseModel):
         t0 = time.time()
         default_solution = compute_max_makespan(heights_int, widths_int, width)
         time_default = int((time.time() - t0) * 1000)
-
         ###  redefine solver timeout
         self.solver_timeout -= time_default
 
@@ -103,7 +88,7 @@ class Z3Model(Z3BaseModel):
     def _get_min_h(self):
         return self._get_min_dim()
 
-    def _constraints(self, use_cumulative: bool) -> List[T_Z3Clause]:
+    def _constraints(self, use_cumulative: bool):
         var = self.variables
 
         width = var["width"]
