@@ -1,41 +1,40 @@
-\subsection{Background}
+\subsection{Background}\label{subsec:background}
     
 SAT problems are based only on boolean variables. We have to represent positive integer numbers. 
 One-hot encoding is a possible solution for representing integers using only boolean variables.\\
 How does one-hot encoding works:\\
 For every integer variable we declare one boolean variable for every item of the domain of 
-the numeric variable. Only one boolean per integer variable is set to True. The only True 
+the numeric variable. Only one boolean per integer variable is set to \texttt{True}. The only \texttt{True} 
 variable corresponds to the value of the domain that is being represented.\\
 This solution leads to a simple implementation of the operations but is not very efficient 
-because it requires the SAT solver to manage a very big quantity of variables.
+because it requires the SAT solver to manage a very big quantity of variables and clauses.
 
 We decided to use decimal encoding. Let $domain\_max$ be the maximum value of the domain of 
 a positive integer variable. The number of boolean variables allocated to represent it is:
 \begin{equation}
     var\_size = \lceil \log_2 (domain\_max + 1)\rceil
 \end{equation}
-The list of boolean variables take the value of the corresponding bit of the binary encoding
+We have a list of boolean variables that take the value of the corresponding bit of the binary encoding
 of the positive integer. We implemented specific functions for handling mathematical operations.
-They are discussed in their section.
+They are discussed in \ref*{subsec:predicates}
 \\\\
 Implementation of the models:
 we decided to create a default abstract model that has the common parts that will be needed by
-every concrete model. The abstract model is extend by the Base model and the Rotation model. 
-The rotation model is discussed in its section. REFERENCE
+every concrete model. The abstract model is extended by the Base model and the Rotation model. 
+The rotation model is discussed in its section \ref*{subsec:rotation}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Variables}
-The decision variables for the SAT solver are lists of boolean variables but do not differ from
-the Shared variables.\\
+\subsection{Variables}\label{subsec:variables}
+The variables for the SAT solver are lists of boolean variables but their meaning does not differ from the 
+definitions in \ref{sec:shared_variables}.\\
 Several variables are used only locally in functions and they are defined there.\\
 Being numbers represented with lists of boolean the notation for the $i$-th element of list 
 $list$ is $list_i$.
-OK?
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Predicates and Functions}
+\subsection{Predicates and Functions}\label{subsec:predicates}
 We created several support functions for dealing with the conversion from integers to lists of
 boolean variables and back.\\
 If an integer value is provided then it is converted to a list of python \texttt{bool} variables
@@ -89,14 +88,15 @@ Let $min\_len$ be the minimum between the length of the lists, $exc_1$ be the pa
 among $exc_1$ and $exc_2$ will be an empty list and will provide no clauses.\\
 The result is computed as follows:
 \begin{equation}
-    result = at\_least\_one(exc_1) \vee at\_least\_one(exc_2) \vee \underline{\bigvee\limits_{i \leq min\_len}}(l1_i, l2_i)
+    at\_least\_one(exc_1) \vee at\_least\_one(exc_2) \vee \underline{\bigvee}\limits_{i \leq min\_len}(l1_i, l2_i)
+    %%% any other way to represent the XOR?
 \end{equation}
 
 \texttt{\textbf{eq(l1, l2):}} Equal\\
 One of the lists is eventually padded with bits set to \texttt{False} then we can
 calculate the result:
 \begin{equation}
-    result = \bigwedge\limits_{0 \leq i < n} \neg (l1[i]      \ \ \underline\vee\ \ l2[i] )
+    \bigwedge\limits_{0 \leq i < n} \neg (l1[i]      \ \ \underline\vee\ \ l2[i] )
 \end{equation}
 
 
@@ -107,13 +107,13 @@ exceeding $min\_len$ and $exc_2$ be the part of $l2$ exceeding $min\_len$. At le
 $exc_1$ and $exc_2$ will be an empty list and will provide no clauses.\\
 The result is computed as follows:
 \begin{equation}
-    result = at\_least\_one(exc_1) \vee ( all\_F(exc_2) \wedge gte\_same\_len(l1\_cut, l2\_cut))
+    at\_least\_one(exc_1) \vee ( all\_F(exc_2) \wedge gte\_same\_len(l1\_cut, l2\_cut))
 \end{equation}
 Where $l1\_cut$ and $l2\_cut$ are the result of pruning $l1$ and $l2$ at length $min\_len$.\\
 
 \texttt{\textbf{gte\_same\_len(l1, l2):}} Greater then or equal of two list of the same length\\
-The encoding used is the AND encoding with Common Subexpression Elimination. \colorbox{orange}
-{CITARE I DOCS IN USEFUL MATERIAL, FRISCH HA LAVORATO CON ZEYNEP}
+The encoding used is the AND encoding with Common Subexpression Elimination as described in 
+\cite{Elgabou} and \cite{Zhao}\\
 
 \texttt{\textbf{gt(l1, l2):}} Greater then\\
 We must consider the cases where the two lists have different lengths.
@@ -123,14 +123,38 @@ be the part of $l2$ exceeding $min\_len$. At least one among $exc_1$ and $exc_2$
 empty list and will provide no clauses.\\
 The result is computed as follows:
 \begin{equation}
-    result = at\_least\_one(exc_1) \vee ( all\_F(exc_2) \wedge gt\_same\_len(l1\_cut, l2\_cut))
+    at\_least\_one(exc_1) \vee ( all\_F(exc_2) \wedge gt\_same\_len(l1\_cut, l2\_cut))
 \end{equation}
 
 \texttt{\textbf{gt\_same\_len(l1, l2):}} Greater then of two list of the same length\\
 The encoding used is the AND encoding with Common Subexpression Elimination. We slightly
-modified the formulas to exclude the equality.
-\colorbox{orange}{copiare le formule da python?}
-\colorbox{orange}{CITARE I DOCS IN USEFUL materials}
+modified the implementation of \cite{Zhao} to exclude the equality.\\
+Len $n$ be the length of the lists $l1$, $l2$.\\
+If $n=1$:
+\begin{equation*}
+    l1_0 \wedge \neg l2_0
+\end{equation*}\\
+
+Otherwise:\\
+Let $x$ be a list of boolean variables of length $n-1$
+\begin{equation*}
+    first =  l1_0 \wedge \neg l2_0 %first
+\end{equation*}
+%
+\begin{equation*}
+    second = x_0 \Longleftrightarrow \neg (l1_0 \underline\vee l2_0) %second
+\end{equation*}
+%
+\begin{equation*}
+    third = \bigwedge\limits_{0 \leq <n-2} x_{i+1} \Longleftrightarrow x_i \wedge (\not (l1_{i+1} \ \ \underline\vee \ \ l2_{i+1}))%third
+\end{equation*}
+%
+\begin{equation*}
+    fourth = \bigvee\limits_{0 \leq i < n-1} x_i \wedge (l1_{i+1} \wedge \neg l2_{i+1})
+\end{equation*}
+\begin{equation*}
+    result = first \vee (second \wedge third \wedge fourth)
+\end{equation*}
 
 \texttt{\textbf{lt(l1, l2):}} Less then\\
 \begin{equation}
@@ -249,15 +273,15 @@ dynamic: (axial symmetry) FORMUA LOGICA
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Rotation}
+\subsection{Rotation}\label{subsec:rotation}
     \colorbox{BurntOrange}{TODO missing ...}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Search}
+\subsection{Search}\label{subsec:search}
     \colorbox{BurntOrange}{TODO missing ...}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Results}
+\subsection{Results}\label{subsec:results}
     \colorbox{BurntOrange}{TODO missing ...}
