@@ -18,6 +18,9 @@
 \usepackage{subcaption}
 \usepackage{float}
 
+\usepackage{biblatex}
+\addbibresource{bibliography.bib}
+
 \graphicspath{{./assets/images/}}
 \setlength{\parindent}{0pt}
 
@@ -63,9 +66,9 @@
     \input{chapters/03 - CP/content.tex}
     \newpage
 
-\section{SAT}\label{chapter:SAT}
-    \input{chapters/04 - SAT/content.tex}
-    \newpage
+% \section{SAT}\label{chapter:SAT}
+%     \input{chapters/04 - SAT/content.tex}
+%     \newpage
 
 \section{SMT}\label{chapter:SMT}
     \input{chapters/05 - SMT/content.tex}
@@ -76,8 +79,10 @@
     \input{chapters/06 - ILP/content.tex}
     \newpage
 
-\bibliographystyle{abbrv}
-\bibliography{bibliography}
+% \bibliographystyle{abbrv}
+% \bibliography{bibliography}
+\nocite{*}
+\printbibliography
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
