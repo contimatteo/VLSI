@@ -15,6 +15,8 @@ MODELS_CHOICES = [
     # "base_decimal_encoding_diffn",
     "rotation"
 ]
+DEFAULT_SEARCH_STRATEGY = 'linear'
+SEARCH_CHOICES = ['linear', 'binary']
 
 ###
 
@@ -31,7 +33,14 @@ def parse_args():
         choices=MODELS_CHOICES,
         help='name of the model to use'
     )
-
+    # parser.add_argument(
+    #     '--solver',
+    #     required=False,
+    #     type=str,
+    #     default=DEFAULT_SOLVER_NAME,
+    #     choices=SOLVERS_CHOICES,
+    #     help='name of the solver to use'
+    # )
     parser.add_argument(
         '--sol', required=False, type=int, default=DEFAULT_N_SOLUTIONS, help='max no. of solutions'
     )
@@ -59,6 +68,23 @@ def parse_args():
     )
     parser.add_argument(
         '--debug', required=False, action="store_true", help='prints development debug infos'
+    )
+    parser.add_argument(
+        '--search',
+        required=False,
+        type=str,
+        default=DEFAULT_SEARCH_STRATEGY,
+        choices=SEARCH_CHOICES,
+        help='makespan search strategy'
+    )
+    parser.add_argument(
+        '--symmetry', required=False, action="store_true", help='add symmetry constraints'
+    )
+    parser.add_argument(
+        '--cumulative',
+        required=False,
+        action="store_true",
+        help='add cumulative constraint on both x and y'
     )
     #
 
