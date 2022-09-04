@@ -1,7 +1,5 @@
 
 \subsection{Background}
-    \colorbox{BurntOrange}{TODO missing ...}\\
-
     \textit{Satisfiability Modulo Theories (SMT)} is the problem of determining whether a
     mathematical formula is satisfiable. It generalizes the Boolean satisfiability problem (SAT) to
     more complex formulas involving real numbers, integers, and/or various data structures such as 
@@ -9,53 +7,26 @@
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Variables \& Constants}
+\subsection{Formulation}
     \colorbox{BurntOrange}{TODO missing ...} \\
-    Let's define four more support constants:
+
+    In order to write a proper SMT formulation, we started from the SAT formulation (available in
+    the Section \ref*{chapter:SAT}) and we have replaced the boolean representation of integer 
+    operators with these operators themself.\\
+
+    In particular, the following replacements have been done:
     \begin{align*}
-      w_{min} &\ =\ \min_{c \in C} w_c \\
-      h_{min} &\ =\ \min_{c \in C} h_c \\
-      w\_index_{min} &\ =\ \argmin_{c \in C} w_c \\
-      h\_index_{min} &\ =\ \argmin_{c \in C} h_c
+      \text{SMT} \ &\ \leftarrow\ \text{SAT}      \\
+                 \cline{1-2}
+        a \geq 1 \ &\ \leftarrow\ \text{at\_least\_one}(a) \\
+           a < b \ &\ \leftarrow\ lt(a,b)         \\
+        a \leq b \ &\ \leftarrow\ lte(a,b)        \\
+           a > b \ &\ \leftarrow\ gt(a,b)         \\
+        a \geq b \ &\ \leftarrow\ gte(a,b)   
     \end{align*}
 
-  
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-
-\subsection{Predicates \& Functions}
-    % Firt of all, we have defined a custom function:
-    % \[
-    %   fzn_\cumulative(ax, dim, r, bound)\ =\ 
-    %   \bigwedge_{c\_ref \in C} (
-    %     \sum_{c \in C} if(condition, r_c)
-    %   ) \leq bound
-    % \]
-
-    We have defined our \textit{cumulative} predicates as following:
-
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-
-\subsection{Constraints}
-    \colorbox{BurntOrange}{TODO missing ...} \\
-    The reference model is the one with the constraints described in Section \ref{sec:shared_constraints}. \\
-
-    Moreover, in the \textit{cumulative} version of the model we have two additional constraints:
-    \[
-      cumulative\_y\ \land\ cumulative\_x
-    \]
-
-
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-
-\subsection{Rotation}
-    \colorbox{BurntOrange}{TODO missing ...} \\
-
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-
-\subsection{Search}
-    \colorbox{BurntOrange}{TODO missing ...} \\
+    The final formulation obtained is very "near" to the one defined for CP in the
+    Section \ref{chapter:CP}.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
