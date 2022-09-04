@@ -75,7 +75,23 @@ class CsvGenerator():
             )
 
     def ILP_json_injection(self, json_data: List[dict]) -> None:
-        pass
+        for data in json_data:
+            self._ILP_results.append(
+                pd.Series(
+                    {
+                        "technology": "ILP",
+                        "data_name": data["data_file"],
+                        "data_index": data["data_file"].replace("ins-", ""),
+                        "stats_tot_time": data["TOTAL_TIME"],
+                        "stats_solved": data["TOTAL_TIME"] < self._solved_max_time,
+                        "solver": None,
+                        "model": data["model"],
+                        "symmetry": False,
+                        "cumulative": False,
+                        "search": "primal-simplex",
+                    }
+                )
+            )
 
     #
 
