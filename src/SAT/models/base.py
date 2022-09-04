@@ -31,10 +31,7 @@ class Z3Model(Z3DefaultModel):
 
         ###  define makespan boundaries
         _c_area_sum = sum([heights[c] * widths[c] for c in CIRCUITS])
-        ###  measure time needed for default solution
-        t0 = time.time()
         default_solution = compute_max_makespan(heights, widths, width)
-        time_default = int((time.time() - t0) * 1000)
 
         ###  redefine solver timeout
         self.solver_timeout -= time_default
