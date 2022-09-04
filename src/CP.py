@@ -141,6 +141,23 @@ def main(args):
     if args.plot is True:
         __plot(solutions_dict)
 
+    #
+
+    # def __json_file_url() -> str:
+    #     file_sub_dir = args.model + "/" + str(args.solver).lower()
+    #     return str(CPStorage.json_file_url(args.data, file_sub_dir).resolve())
+
+    # def __txt_file_url() -> str:
+    #     file_sub_dir = args.model + "/" + str(args.solver).lower()
+    #     return str(CPStorage.out_file_url(args.data, file_sub_dir).resolve())
+
+
+    # with open(__json_file_url(), 'r', encoding="utf-8") as file:
+    #     json_data = json.load(file)
+
+    # with open(__txt_file_url(), 'w', encoding="utf-8") as file:
+    #     file.write(solutions_dict_to_txt_file(json_data))
+    #     file.close()
 
 ###
 
