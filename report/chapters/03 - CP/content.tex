@@ -37,7 +37,7 @@
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Functions \& Predicates}
+\subsection{Functions \& Predicates} \label{sec:CP_functions_predicates}
     The additional functions and predicates we define in this section will later be used in the models
     adopting symmetry breaking constraints and the ones allowing rotation of circuits; the others work 
     with the constraints already defined in \ref{sec:shared_constraints}.
@@ -73,7 +73,7 @@
                                                 &   (vc\_is\_valid(vc_1) \land vc\_is\_valid(vc_2) \land                         \\
                                                 &&  \neg (vc_{1x} == vc_{2x}) \land \\
                                                 &&  vc_{1w} == vc_{2w} \land vc_{1h} == vc_{2h} \land \\
-                                                &&  (|vc_{1x} - vc_{2x}| \geq vc_{1w} lor |vc_{1y} - vc_{2y}| \geq vc_{1h})) \\
+                                                &&  (|vc_{1x} - vc_{2x}| \geq vc_{1w} \lor |vc_{1y} - vc_{2y}| \geq vc_{1h})) \\
                                                 &&  \rightarrow lex\_lesseq([vc_{1x}, vc_{1y}], [vc_{2x}, vc_{2y}]) \\
         c\_consecutive\_on\_x(c_1, c_2) &\leftarrow  &   x_{c_1} + w_{c_1} == x_{c_2} \lor x_{c_2} + w_{c_2} == x_{c_1} \\
         c\_consecutive\_on\_y(c_1, c_2) &\leftarrow  &   y_{c_1} + h_{c_1} == y_{c_2} \lor y_{c_2} + h_{c_2} == y_{c_1} \\
@@ -87,9 +87,12 @@
     This condition is checked by the predicate $vc\_is\_valid(vc_{i,j})$, where 
     $vc_x = vc\_x(vc_{i,j})$, $vc_y = vc\_y(vc_{i,j})$, $vc_w = vc\_width(vc_{i,j})$, $vc_h = vc\_height(vc_{i,j})$.
     The predicates $c\_equal\_dim\_symmetry$, $vc\_equal\_dim\_symmetry$, $vv\_equal\_dim\_symmetry$ apply 
-    lexicographic order to circuits with same dimensionality; in particular the first keep in consideratio only
+    lexicographic order to circuits with same dimensionality; in particular the first keep in consideration only
     regular circuits, the second a regular circuit and a \textit{virtual} circuit, and the third only couples of 
-    \textit{virtual} circuits. The last one 
+    \textit{virtual} circuits. The last one must also check that the circuits $c_1$ and $c_2$ do not overlap,
+    otherwise it would be in contrast with any lexicographic order constraint, making the solution unfeasible.
+    Another possible case in which a couple of circuit can be swapped is when they have a shared side with same length;
+    the last predicates are needed to catch those situations and apply to those couple of circuits the lexicographic order. 
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -121,12 +124,65 @@
 
     \subsubsection{Symmetry}
 
+        As already discussed in \ref{sec:symmetries}, we decided to break, among all symmetries we 
+        detected, only a few of them. The following are the constraints added to models in order to 
+        deal with symmetries. 
+        
+        First of all we removed the solutions specular w.r.t. the horizontal and vertical axis \ref{fig:symmetry_specular}:
+        
+        \begin{equation*}
+            lex\_lesseq(x\_v, x\_v') \land lex\_lesseq(y\_v, y\_v')
+        \end{equation*} 
+        with $x\_v$, $x\_v'$, $y\_v$, $y\_v'$ already defined in \ref{eq:specular_coord}.
+
+        Then we avoid swapping of circuits with same dimensions \ref{fig:symmetry_swap} \ref{fig:vc_swap}, 
+        which obviously lead to a different solution, but with same \textit{makespan}:
+        \begin{equation*}
+            c\_equal\_dim\_symmetry \land vc\_equal\_dim\_symmetry \land vv\_equal\_dim\_symmetry
+        \end{equation*}
+        
+        The case we simplified is the one figured in \ref{fig:vc_specular_in}: instead of applying
+        lexicographic order to all regular circuits within a generic \textit{virtual} circuit, we 
+        decided to limit ourself to \textit{virtual} circuits containing only two regular circuits.
+        We can see this like avoiding adjacent circuits, having the shared edge with the same length,
+        to swap their position:
+        \begin{equation*}
+            c\_consecutive\_symmetry\ \ (== \top)
+        \end{equation*}
+        in order to have better understanding of the predicates above, read \ref{sec:CP_functions_predicates}.
+        
+
+
         
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Search}
-    \colorbox{BurntOrange}{TODO missing ...}
+        The performances of all the models are compared with and without the search strategy we selected.
+        Actually in the input of all models, the circuits are sorted in decreasing order according to their area,
+        but then we also implemented a sequental search 
+        \footnote[1]{https://www.minizinc.org/doc-2.5.5/en/mzn\_search.html\#search-annotations}
+         with the following annotation search, in this specific order:
+        \begin{enumerate}
+            \item ann\_search\_makespan = int\_search([ $makespan$ ], input\_order, indomain\_split)
+            \item ann\_search\_x = int\_search($x$, input\_order, indomain\_min)
+            \item ann\_search\_y = int\_search($y$, input\_order, indomain\_min)
+        \end{enumerate}
+
+        Model with rotation allowed and search strategies included have, at the end of the sequential search 
+        list, also:
+        \begin{enumerate}[resume]
+            \item ann\_search\_rot = bool\_search($[r_c\ |\ c \in C]$, input\_order, indomain\_min)
+        \end{enumerate}
+
+        To avoid being stacked during the search of the solution we added also luby restart strategy
+        \footnote[2]{https://www.minizinc.org/doc-2.5.5/en/mzn\_search.html\#restart},
+        choosing empirically
+        the value of parameter $scale$.
+
+
+
+
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -159,6 +215,3 @@
     %     \caption{weeeeeeeeeeee}
     %     \label{fig:vneqpwijvnpjewqnpivnenq}
     % \end{figure}
-
-\subsection{Virtual Circuits}
-    \colorbox{BurntOrange}{TODO missing ...}
