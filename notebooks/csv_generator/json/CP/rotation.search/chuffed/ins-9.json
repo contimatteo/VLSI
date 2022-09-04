@@ -1,0 +1,145 @@
+{
+  "solution": {
+    "width": 16,
+    "n_circuits": 10,
+    "dims": [
+      [
+        7,
+        9
+      ],
+      [
+        3,
+        12
+      ],
+      [
+        3,
+        10
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      7,
+      3,
+      3,
+      4,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "heights": [
+      9,
+      12,
+      10,
+      7,
+      8,
+      7,
+      6,
+      5,
+      4,
+      3
+    ],
+    "x": [
+      0,
+      0,
+      0,
+      9,
+      0,
+      9,
+      10,
+      8,
+      12,
+      13
+    ],
+    "y": [
+      0,
+      7,
+      10,
+      0,
+      13,
+      4,
+      10,
+      13,
+      7,
+      13
+    ],
+    "is_rotated": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false
+    ],
+    "min_makespan": 16,
+    "max_makespan": 21,
+    "makespan": 16
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 200,
+    "flatIntVars": 78,
+    "flatBoolConstraints": 55,
+    "flatIntConstraints": 271,
+    "evaluatedReifiedConstraints": 180,
+    "flatTime": 0.0482114,
+    "nodes": 72723,
+    "failures": 55502,
+    "restarts": 20,
+    "variables": 2761,
+    "intVars": 79,
+    "boolVariables": 2680,
+    "propagators": 461,
+    "propagations": 18775809,
+    "peakDepth": 23,
+    "nogoods": 55502,
+    "backjumps": 17011,
+    "peakMem": 0.0,
+    "time": 2.291,
+    "initTime": 0.005,
+    "solveTime": 2.286,
+    "objective": 16,
+    "optTime": 2.286,
+    "baseMem": 0.0,
+    "trailMem": 0.01,
+    "randomSeed": 666,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 2.35,
+  "solver": "Chuffed",
+  "model": "rotation.search",
+  "data_file": "ins-9"
+}

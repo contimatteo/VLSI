@@ -10,7 +10,7 @@ from ILP.models.components.helper import compute_max_makespan
 class CplexModel(CplexBaseModel):
 
     @property
-    def name(self) -> str:
+    def model_name(self) -> str:
         return "rotation"
 
     #
@@ -24,7 +24,6 @@ class CplexModel(CplexBaseModel):
         t0 = time.time()
         default_solution = compute_max_makespan(heights_int, widths_int, width)
         time_default = int((time.time() - t0) * 1000)
-        print('time spent for default solution:', time_default)
         ###  redefine solver timeout
         self.solver_timeout -= time_default
 
@@ -92,6 +91,8 @@ class CplexModel(CplexBaseModel):
     def _constraints(self, use_cumulative: bool):
         var = self.variables
 
+        width = var["width"]
+        x = var["x"]
         widths = var["widths_int"]
         heights = var["heights_int"]
         widths_b = var["widths"]
@@ -108,7 +109,9 @@ class CplexModel(CplexBaseModel):
             for c in CIRCUITS
         ]
 
-        return super()._constraints(use_cumulative) + link_w + link_h
+        x_constr = [x[c] + widths_b[c] <= width for c in CIRCUITS]
+
+        return super()._constraints(use_cumulative) + link_w + link_h + x_constr
 
     def _evaluate_solution(self, min_makespan, max_makespan):
         CIRCUITS = self.variables['CIRCUITS']

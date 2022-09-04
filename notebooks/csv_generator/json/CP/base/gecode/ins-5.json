@@ -1,0 +1,104 @@
+{
+  "solution": {
+    "width": 12,
+    "n_circuits": 8,
+    "dims": [
+      [
+        3,
+        9
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        6,
+        3
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      3,
+      3,
+      3,
+      3,
+      6,
+      3,
+      3,
+      3
+    ],
+    "heights": [
+      9,
+      8,
+      7,
+      6,
+      3,
+      5,
+      4,
+      3
+    ],
+    "x": [
+      0,
+      6,
+      9,
+      3,
+      0,
+      9,
+      6,
+      3
+    ],
+    "y": [
+      0,
+      0,
+      0,
+      0,
+      9,
+      7,
+      8,
+      6
+    ],
+    "min_makespan": 12,
+    "max_makespan": 13,
+    "makespan": 12
+  },
+  "stats": {
+    "paths": 0,
+    "flatIntVars": 25,
+    "flatIntConstraints": 14,
+    "flatTime": 0.0424645,
+    "initTime": 0.000325,
+    "solveTime": 0.000448,
+    "solutions": 2,
+    "variables": 25,
+    "propagators": 16,
+    "propagations": 607,
+    "nodes": 79,
+    "failures": 36,
+    "restarts": 0,
+    "peakDepth": 15,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 0.05,
+  "solver": "Gecode",
+  "model": "base",
+  "data_file": "ins-5"
+}

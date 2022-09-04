@@ -14,7 +14,7 @@ from ILP.models.components.foundation import diffn  #, axial_symmetry, cumulativ
 class CplexModel(CplexDefaultModel):
 
     @property
-    def name(self) -> str:
+    def model_name(self) -> str:
         return "base"
 
     #
@@ -30,7 +30,6 @@ class CplexModel(CplexDefaultModel):
         t0 = time.time()
         default_solution = compute_max_makespan(heights, widths, width)
         time_default = int((time.time() - t0) * 1000)
-        print('time spent for default solution:', time_default)
         ###  redefine solver timeout
         self.solver_timeout -= time_default
 

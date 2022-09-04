@@ -1,0 +1,229 @@
+{
+  "solution": {
+    "width": 26,
+    "n_circuits": 22,
+    "dims": [
+      [
+        3,
+        19
+      ],
+      [
+        4,
+        14
+      ],
+      [
+        3,
+        17
+      ],
+      [
+        3,
+        16
+      ],
+      [
+        3,
+        15
+      ],
+      [
+        4,
+        11
+      ],
+      [
+        3,
+        14
+      ],
+      [
+        3,
+        12
+      ],
+      [
+        3,
+        11
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        3,
+        10
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      3,
+      4,
+      3,
+      3,
+      3,
+      4,
+      3,
+      3,
+      3,
+      4,
+      3,
+      4,
+      3,
+      3,
+      3,
+      4,
+      3,
+      4,
+      3,
+      3,
+      4,
+      3
+    ],
+    "heights": [
+      19,
+      14,
+      17,
+      16,
+      15,
+      11,
+      14,
+      12,
+      11,
+      8,
+      10,
+      7,
+      9,
+      8,
+      7,
+      5,
+      6,
+      4,
+      5,
+      4,
+      3,
+      3
+    ],
+    "x": [
+      16,
+      22,
+      3,
+      0,
+      13,
+      12,
+      6,
+      10,
+      19,
+      6,
+      0,
+      22,
+      19,
+      9,
+      16,
+      22,
+      19,
+      6,
+      3,
+      3,
+      9,
+      9
+    ],
+    "y": [
+      0,
+      7,
+      0,
+      10,
+      0,
+      15,
+      12,
+      0,
+      15,
+      0,
+      0,
+      0,
+      6,
+      18,
+      19,
+      21,
+      0,
+      8,
+      21,
+      17,
+      12,
+      15
+    ],
+    "min_makespan": 26,
+    "max_makespan": 37,
+    "makespan": 26
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 924,
+    "flatIntVars": 87,
+    "flatBoolConstraints": 231,
+    "flatIntConstraints": 971,
+    "evaluatedReifiedConstraints": 924,
+    "flatTime": 0.0664171,
+    "nodes": 169250,
+    "failures": 145519,
+    "restarts": 12,
+    "variables": 7117,
+    "intVars": 147,
+    "boolVariables": 6968,
+    "propagators": 1918,
+    "propagations": 57115872,
+    "peakDepth": 117,
+    "nogoods": 145519,
+    "backjumps": 22824,
+    "peakMem": 0.0,
+    "time": 9.86,
+    "initTime": 0.013,
+    "solveTime": 9.847,
+    "objective": 26,
+    "optTime": 9.834,
+    "baseMem": 0.0,
+    "trailMem": 0.04,
+    "randomSeed": 666,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 9.95,
+  "solver": "Chuffed",
+  "model": "base",
+  "data_file": "ins-19"
+}

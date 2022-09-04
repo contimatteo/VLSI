@@ -22,6 +22,12 @@ T_Z3Solver = Solver
 
 class Z3Model(Z3BaseModel):
 
+    @property
+    def model_name(self) -> str:
+        return "rotation"
+
+    #
+
     def _variables(self, raw_data: dict) -> dict:
         width, n_circuits, CIRCUITS, widths_int, heights_int = self.__variables_support(raw_data)
 
@@ -30,11 +36,10 @@ class Z3Model(Z3BaseModel):
         ###  measure time needed for default solution
         t0 = time.time()
         default_solution = compute_max_makespan(heights_int, widths_int, width)
-        time_default = int((time.time() - t0)*1000)
-        print('time spent for default solution:', time_default)
+        time_default = int((time.time() - t0) * 1000)
+
         ###  redefine solver timeout
         self.solver_timeout -= time_default
-
 
         min_makespan = max(math.ceil(_c_area_sum / width), max(heights_int))
         max_makespan = default_solution["makespan"]
@@ -164,7 +169,5 @@ class Z3Model(Z3BaseModel):
 
         return solution
 
-    def solve(self, file_name: str, search: str, symmetry: bool, use_cumulative: bool) -> dict:
-        solution_dict = super().solve(file_name, search, symmetry, use_cumulative)
-        solution_dict['model'] = 'rotation'
-        return solution_dict
+    # def solve(self, file_name: str, search: str, symmetry: bool, use_cumulative: bool) -> dict:
+    #     return self.solve(file_name, search, symmetry, use_cumulative)

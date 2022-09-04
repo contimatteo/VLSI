@@ -1,0 +1,41 @@
+{
+  "solver": "SMT",
+  "model": "rotation",
+  "data_file": "ins-1",
+  "search": "linear",
+  "symmetry": true,
+  "cumulative": false,
+  "TOTAL_TIME": 0.0025017261505126953,
+  "stats": [],
+  "solution": {
+    "width": 8,
+    "n_circuits": 4,
+    "widths": [
+      3,
+      3,
+      5,
+      5
+    ],
+    "heights": [
+      3,
+      5,
+      3,
+      5
+    ],
+    "x": [
+      0,
+      5,
+      3,
+      0
+    ],
+    "y": [
+      0,
+      3,
+      0,
+      3
+    ],
+    "min_makespan": 8,
+    "max_makespan": 8,
+    "makespan": 8
+  }
+}

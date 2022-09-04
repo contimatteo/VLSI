@@ -1,0 +1,188 @@
+{
+  "solution": {
+    "width": 18,
+    "n_circuits": 16,
+    "dims": [
+      [
+        3,
+        11
+      ],
+      [
+        3,
+        10
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        5,
+        5
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        4,
+        6
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        4
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        5,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        3
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      3,
+      3,
+      5,
+      5,
+      3,
+      4,
+      3,
+      4,
+      5,
+      3,
+      4,
+      3,
+      5,
+      3,
+      4,
+      3
+    ],
+    "heights": [
+      11,
+      10,
+      6,
+      5,
+      8,
+      6,
+      7,
+      5,
+      4,
+      6,
+      4,
+      5,
+      3,
+      4,
+      3,
+      3
+    ],
+    "x": [
+      0,
+      3,
+      9,
+      9,
+      6,
+      14,
+      5,
+      8,
+      0,
+      12,
+      14,
+      15,
+      0,
+      15,
+      8,
+      6
+    ],
+    "y": [
+      0,
+      0,
+      5,
+      0,
+      0,
+      4,
+      11,
+      11,
+      14,
+      11,
+      0,
+      14,
+      11,
+      10,
+      16,
+      8
+    ],
+    "is_rotated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "min_makespan": 18,
+    "max_makespan": 23,
+    "makespan": 19
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 32,
+    "flatIntVars": 110,
+    "flatBoolConstraints": 16,
+    "flatIntConstraints": 99,
+    "flatTime": 0.0591384,
+    "initTime": 0.002407,
+    "solveTime": 299.937,
+    "solutions": 5,
+    "variables": 142,
+    "propagators": 4239,
+    "propagations": 4649554443,
+    "nodes": 11377672,
+    "failures": 5688807,
+    "restarts": 0,
+    "peakDepth": 64,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 300.01,
+  "solver": "Gecode",
+  "model": "rotation",
+  "data_file": "ins-11"
+}

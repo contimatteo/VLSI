@@ -18,7 +18,7 @@ class CplexModel():
         self.solver_timeout = min(timeout, 300)
 
     @property
-    def name(self) -> str:
+    def model_name(self) -> str:
         raise NotImplementedError
 
     #
@@ -102,7 +102,7 @@ class CplexModel():
             "all_solutions": [],
             "solution": {},
             "stats": [],
-            "model": self.name,
+            "model": self.model_name,
             "data_file": file_name,
             #"data": self.variables,
             "solver": "cplex",

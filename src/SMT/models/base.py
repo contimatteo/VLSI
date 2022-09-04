@@ -20,6 +20,12 @@ T_Z3Solver = Solver
 
 class Z3Model(Z3DefaultModel):
 
+    @property
+    def model_name(self) -> str:
+        return "base"
+
+    #
+
     def _variables(self, raw_data: dict) -> dict:
         width, n_circuits, CIRCUITS, widths, heights = self.__variables_support(raw_data)
 
@@ -29,7 +35,7 @@ class Z3Model(Z3DefaultModel):
         t0 = time.time()
         default_solution = compute_max_makespan(heights, widths, width)
         time_default = int((time.time() - t0) * 1000)
-        print('time spent for default solution:', time_default)
+
         ###  redefine solver timeout
         self.solver_timeout -= time_default
 
@@ -79,8 +85,8 @@ class Z3Model(Z3DefaultModel):
         max_makespan = var["max_makespan"]
         CIRCUITS = var["CIRCUITS"]
 
-        min_w, idx = self._get_min_w()
-        min_h, idx = self._get_min_h()
+        min_w, min_w_idx = self._get_min_w()
+        min_h, min_h_idx = self._get_min_h()
 
         r = [
             diffn(x, y, widths, heights),
@@ -93,8 +99,8 @@ class Z3Model(Z3DefaultModel):
         ]
 
         if use_cumulative:
-            r += [cumulative(y, heights, widths, width, min_w, idx)]
-            r += [cumulative(x, widths, heights, makespan, min_h, idx)]
+            r += [cumulative(y, heights, widths, width, min_w, min_w_idx)]
+            r += [cumulative(x, widths, heights, makespan, min_h, min_h_idx)]
 
         return r
 

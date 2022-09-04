@@ -15,19 +15,27 @@ MODELS_MODULE_NAMESPACE = "SAT.models"
 ###
 
 
-def __store_solutions_dict(solutions_dict: dict, search_strategy: str) -> None:
+def __store_solutions_dict(solutions_dict: dict) -> None:
+    model = solutions_dict["model"]
+    search = solutions_dict["search"]
+    symmetry = solutions_dict["symmetry"]
+    data_file = solutions_dict["data_file"]
+    cumulative = solutions_dict["cumulative"]
 
     def __json_file_url() -> str:
-        file_sub_dir = solutions_dict["model"] + "/" + search_strategy.lower()
-        return str(SATStorage.json_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+        file_sub_dir = model + "/" + search.lower()
+        file_sub_dir += ".symmetry" if symmetry is True else ""
+        file_sub_dir += ".cumulative" if cumulative is True else ""
+        return str(SATStorage.json_file_url(data_file, file_sub_dir).resolve())
 
     def __txt_file_url() -> str:
-        file_sub_dir = solutions_dict["model"] + "/" + search_strategy.lower()
-        return str(SATStorage.out_file_url(solutions_dict["data_file"], file_sub_dir).resolve())
+        file_sub_dir = model + "/" + search.lower()
+        file_sub_dir += ".symmetry" if symmetry is True else ""
+        file_sub_dir += ".cumulative" if cumulative is True else ""
+        return str(SATStorage.out_file_url(data_file, file_sub_dir).resolve())
 
     def __clean_dict(obj):
         obj_copy = copy.deepcopy(obj)
-        # del obj_copy["stats"]
         del obj_copy["all_solutions"]
         return obj_copy
 
@@ -57,9 +65,7 @@ def __store_solutions_dict(solutions_dict: dict, search_strategy: str) -> None:
 
 
 def main(args):
-    # mi dice quale tra i file .py in models usare (ogni file contine un modello diverso)
-
-    # open file
+    ### open file
     sat_file_url = SATStorage.data_file_url(args.data, "txt")
     with open(sat_file_url, encoding="utf-8") as f:
         txt_lines = f.readlines()
@@ -75,6 +81,8 @@ def main(args):
         x, y = txt_lines[line_idx][:-1].split(sep=' ')
         data_dict['dims'].append((int(x), int(y)))
 
+    #
+
     solutions_dict = {}
 
     CURRENT_MODEL_MODULE = import_module(f"{MODELS_MODULE_NAMESPACE}.{args.model}")
@@ -86,12 +94,13 @@ def main(args):
 
     assert solutions_dict is not None and isinstance(solutions_dict, dict)
 
-    # plot
+    #
+
+    ### plot
     if args.plot:
         plot_solutions(solutions_dict)
 
-    # save_results(args, 'SAT', solutions_dict)
-    __store_solutions_dict(solutions_dict, args.search)
+    __store_solutions_dict(solutions_dict)
 
 
 ###

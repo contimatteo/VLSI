@@ -1,0 +1,128 @@
+{
+  "solution": {
+    "width": 12,
+    "n_circuits": 8,
+    "dims": [
+      [
+        3,
+        9
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        6,
+        3
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      3,
+      3,
+      3,
+      3,
+      6,
+      3,
+      3,
+      3
+    ],
+    "heights": [
+      9,
+      8,
+      7,
+      6,
+      3,
+      5,
+      4,
+      3
+    ],
+    "x": [
+      3,
+      9,
+      6,
+      0,
+      0,
+      6,
+      9,
+      0
+    ],
+    "y": [
+      0,
+      0,
+      0,
+      9,
+      3,
+      7,
+      8,
+      0
+    ],
+    "is_rotated": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false
+    ],
+    "min_makespan": 12,
+    "max_makespan": 13,
+    "makespan": 12
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 284,
+    "flatIntVars": 62,
+    "flatBoolConstraints": 110,
+    "flatIntConstraints": 304,
+    "evaluatedReifiedConstraints": 230,
+    "eliminatedImplications": 28,
+    "flatTime": 0.0567566,
+    "nodes": 399,
+    "failures": 219,
+    "restarts": 2,
+    "variables": 1740,
+    "intVars": 63,
+    "boolVariables": 1675,
+    "propagators": 608,
+    "propagations": 64585,
+    "peakDepth": 28,
+    "nogoods": 219,
+    "backjumps": 128,
+    "peakMem": 0.0,
+    "time": 0.011,
+    "initTime": 0.004,
+    "solveTime": 0.007,
+    "objective": 12,
+    "optTime": 0.007,
+    "baseMem": 0.0,
+    "trailMem": 0.0,
+    "randomSeed": 666,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 0.08,
+  "solver": "Chuffed",
+  "model": "rotation.symmetry",
+  "data_file": "ins-5"
+}
