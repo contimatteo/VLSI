@@ -97,7 +97,7 @@ class CplexModel():
         self.variables = self._variables(deepcopy(raw_data))
         self.__validate_variables()
 
-    def solve(self, file_name: str, symmetry: bool, use_cumulative: bool) -> dict:
+    def solve(self, file_name: str) -> dict:
         solutions_dict = { ### each solution in all_solutions is a dict
             "all_solutions": [],
             "solution": {},
@@ -116,12 +116,8 @@ class CplexModel():
 
         #
 
-        for clause in self._constraints(use_cumulative):
+        for clause in self._constraints():
             self.solver.add_constraint(clause)
-
-        if symmetry:
-            for clause in self._symmetries_breaking():
-                self.solver.add_constraint(clause)
 
         #
         self.solver.minimize(target_makespan)

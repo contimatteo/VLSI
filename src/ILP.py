@@ -72,7 +72,7 @@ def main(args):
 
     model = ModelClass(timeout=args.time)
     model.initialize(data_dict)
-    solutions_dict = model.solve(args.data, args.symmetry, args.cumulative)
+    solutions_dict = model.solve(args.data)
 
     assert solutions_dict is not None and isinstance(solutions_dict, dict)
 

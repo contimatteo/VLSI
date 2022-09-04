@@ -32,10 +32,7 @@ STRATEGY_ARGS = {
         'cumulative': [True, False]
     },
     'ILP': {
-        'model': ILP_args.MODELS_CHOICES,
-        'search': ILP_args.SEARCH_CHOICES,
-        'symmetry': [False],
-        'cumulative': [False]
+        'model': ILP_args.MODELS_CHOICES
     },
 }
 
