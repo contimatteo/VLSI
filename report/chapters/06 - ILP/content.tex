@@ -86,8 +86,8 @@
     
     Also for what concern ILP, the VLSI problem had been defined with the objective of minimizing 
     the chip height. This can be seen in the model in the equation \ref{ilp:base_obj} where it is
-    shown the problem direction, namely the minimization of the integer variable $makespan$.
-    In order to complete the project task it is necessary to minimize the variable $makespan$ which
+    shown the problem direction, namely the minimization of the integer variable \(makespan\).
+    In order to complete the project task it is necessary to minimize the variable \(makespan\) which
     is an integer variable with lower bound $min\_makespan$ and with upper bound $max\_makespan$.
     Please notice also that the  boundaries $min\_makespan$ and $max\_makespan$ had been computed
     in the same way as for the previous approaches (i.e. SAT, CP and SMT).
@@ -103,7 +103,13 @@
     clause conditions, we need to control the variable's results. The constraints 
     \ref{ilp:base_diffn1}-\ref{ilp:base_diffn4} states the position of a circuit $c_1$ respect to
     another circuit $c_2$. The auxiliary parameter $M$ has the scope to falsify the disequation
-    when the corrispondent variable is set to 0. Then the subsequent constraints 
+    when the corrispondent variable is set to 0. Please notice that \(M\) is a parameter that can.
+    be set by the user, we just want to highlight the fact that for its nature \(M\) is constrained
+    to be higher at least than the maximum between all the box dimensions, so we decided to set it:
+    \begin{align*}
+        M\ =\ \max{max\_makespan, width} + 1 
+    \end{align*}
+    We used for our implementation the smaller value Then the subsequent constraints 
     \ref{ilp:base_diffn5}-\ref{ilp:base_diffn6} are needed to allow the sum of the binary variables 
     (namely $r_{c_1c_2}$, $l_{c_1c_2}$, $a_{c_1c_2}$ and $b_{c_1c_2}$) belonging in in the range
     between $1$ and $2$. 
