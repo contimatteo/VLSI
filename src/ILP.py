@@ -1,5 +1,6 @@
 import copy
 import json
+import numpy as np
 
 from importlib import import_module
 
@@ -35,11 +36,11 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
         json.dump(json_data, file, indent=2)
 
     jsol = json_data['solution']
-    lines = str(jsol['width']) + ' ' + str(jsol['makespan']) + '\n'
+    lines = str(jsol['width']) + ' ' + str(int(np.ceil(jsol['makespan']))) + '\n'
     lines += str(jsol['n_circuits']) + '\n'
     for i in range(jsol['n_circuits']):
-        lines += str(jsol['widths'])[i] + ' ' + str(jsol['heights'])[i] + ' ' +\
-                str(jsol['x'])[i] + ' ' + str(jsol['y'])[i] + '\n'
+        lines += str(jsol['widths'][i]) + ' ' + str(jsol['heights'][i]) + ' ' +\
+                str(int(np.ceil(jsol['x'][i]))) + ' ' + str(int(np.ceil(jsol['y'][i]))) + '\n'
     with open(__file_url(F_json=False), 'w') as file:
         file.write(lines)
         file.close()

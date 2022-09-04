@@ -78,8 +78,8 @@ def __store_solutions_dict(solutions_dict: dict) -> None:
     lines = str(jsol['width']) + ' ' + str(jsol['makespan']) + '\n'
     lines += str(jsol['n_circuits']) + '\n'
     for i in range(jsol['n_circuits']):
-        lines += str(jsol['widths'])[i] + ' ' + str(jsol['heights'])[i] + ' ' +\
-                str(jsol['x'])[i] + ' ' + str(jsol['y'])[i] + '\n'
+        lines += str(jsol['widths'][i]) + ' ' + str(jsol['heights'][i]) + ' ' +\
+                str(jsol['x'][i]) + ' ' + str(jsol['y'][i]) + '\n'
     with open(__file_url(F_json=False), 'w') as file:
         file.write(lines)
         file.close()
