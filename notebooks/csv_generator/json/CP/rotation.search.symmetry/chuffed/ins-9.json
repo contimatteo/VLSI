@@ -1,0 +1,146 @@
+{
+  "solution": {
+    "width": 16,
+    "n_circuits": 10,
+    "dims": [
+      [
+        7,
+        9
+      ],
+      [
+        3,
+        12
+      ],
+      [
+        3,
+        10
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "widths": [
+      7,
+      3,
+      3,
+      4,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "heights": [
+      9,
+      12,
+      10,
+      7,
+      8,
+      7,
+      6,
+      5,
+      4,
+      3
+    ],
+    "x": [
+      0,
+      0,
+      0,
+      9,
+      0,
+      9,
+      10,
+      8,
+      12,
+      13
+    ],
+    "y": [
+      0,
+      7,
+      10,
+      0,
+      13,
+      4,
+      10,
+      13,
+      7,
+      13
+    ],
+    "is_rotated": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "min_makespan": 16,
+    "max_makespan": 21,
+    "makespan": 16
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 403,
+    "flatIntVars": 78,
+    "flatBoolConstraints": 151,
+    "flatIntConstraints": 426,
+    "evaluatedReifiedConstraints": 334,
+    "eliminatedImplications": 36,
+    "flatTime": 0.0791556,
+    "nodes": 422955,
+    "failures": 287583,
+    "restarts": 63,
+    "variables": 2948,
+    "intVars": 79,
+    "boolVariables": 2867,
+    "propagators": 857,
+    "propagations": 185549276,
+    "peakDepth": 24,
+    "nogoods": 287583,
+    "backjumps": 134613,
+    "peakMem": 0.0,
+    "time": 30.09,
+    "initTime": 0.008,
+    "solveTime": 30.082,
+    "objective": 16,
+    "optTime": 30.082,
+    "baseMem": 0.0,
+    "trailMem": 0.01,
+    "randomSeed": 666,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 30.19,
+  "solver": "Chuffed",
+  "model": "rotation.search.symmetry",
+  "data_file": "ins-9"
+}
