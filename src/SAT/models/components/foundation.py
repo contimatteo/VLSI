@@ -1,3 +1,4 @@
+import math
 from typing import List, Union
 
 import uuid
@@ -66,7 +67,22 @@ def at_least_one_T(bools: List[Bool]) -> T_Z3Clause:
 
 
 def at_most_one_T(bools: List[Bool]) -> T_Z3Clause:
-    return And([Not(And(b1, b2)) for b1, b2 in combinations(bools, 2)])
+    #return And([Not(And(b1, b2)) for b1, b2 in combinations(bools, 2)])
+    ### HEULE ENCODING
+    l = len(bools)
+    result = []
+    if l <= 3:  ###base case
+        return And([Not(And(b1, b2)) for b1, b2 in combinations(bools, 2)])
+
+    ###recursive case
+    y = Bool(f"yamo_{str(uuid.uuid4())}")
+    first = bools[:2].append(y)
+    result = [Not(And(b1, b2)) for b1, b2 in combinations(first, 2)]
+
+    second = bools[2:].append(Not(y))
+    result += at_most_one_T(second)
+
+    return And(result)
 
 
 def exactly_one_T(bools: List[Bool]) -> T_Z3Clause:
