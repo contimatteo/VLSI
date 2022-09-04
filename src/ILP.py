@@ -105,5 +105,5 @@ def txt(args):
 ###
 
 if __name__ == '__main__':
-    # main(parse_args())
-    txt(parse_args())
+    main(parse_args())
+    # txt(parse_args())
