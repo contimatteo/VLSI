@@ -33,17 +33,17 @@
 \title{\huge{\textbf{Very Large Scale Integration Project}}}
 \author{
     \begin{tabular}[t]{c@{\extracolsep{8em}}c}
-                                                         &                                                    \\
-                                                         &                                                    \\
-                                                         &                                                    \\
-        Davide Sangiorgi                                 & Leonardo Monti                                     \\
-        \footnotesize{University of Bologna}             & \footnotesize{University of Bologna}               \\ 
-        \small{\texttt{xxxxxx.xxxxx@studio.unibo.it}}    & \small{\texttt{leonardo.monti3@studio.unibo.it}}   \\
-                                                         &                                                    \\
-        Riccardo Falco                                   & Matteo Conti                                       \\
-        \footnotesize{University of Bologna}             & \footnotesize{University of Bologna}               \\ 
-        \small{\texttt{riccardo.falco2@studio.unibo.it}} & \small{\texttt{matteo.conti16@studio.unibo.it}}    \\
-                                                         &                                 
+                                                           &                                                    \\
+                                                           &                                                    \\
+                                                           &                                                    \\
+        Davide Sangiorgi                                   & Leonardo Monti                                     \\
+        \footnotesize{University of Bologna}               & \footnotesize{University of Bologna}               \\ 
+        \small{\texttt{davide.sangiorgi3@studio.unibo.it}} & \small{\texttt{leonardo.monti3@studio.unibo.it}}   \\
+                                                           &                                                    \\
+        Riccardo Falco                                     & Matteo Conti                                       \\
+        \footnotesize{University of Bologna}               & \footnotesize{University of Bologna}               \\ 
+        \small{\texttt{riccardo.falco2@studio.unibo.it}}   & \small{\texttt{matteo.conti16@studio.unibo.it}}    \\
+                                                           &                                 
     \end{tabular}   
 }
 \date{}
@@ -55,12 +55,17 @@
 \maketitle
 \vspace{2cm}
 \begin{abstract}
-    VLSI is the problem of finding how to position a set of components so that they occupy as little space as possible.\\
-    This report provides four solution for an example of VLSI problem based on a fixed width board where a given set of 
-    different rectangular components must be place. The height of the board must be as small as possible.\\
-    The solutions are based on four different combinatorial optimization techniques: Constraint Programming,
-    Proposition Satisfability, Integer Linear Programming and Satisfability Modulo Theory.\\
-    The proposed solutions prove themselves effective at solving the given problem.
+  \noindent Very Large Scale Integration problem refers to the trend of integrating circuits into
+  silicon chips. In particular, in this report we present the results of four different 
+  optimization technique for a specific instance of VLSI set of problems (based on a plate with a 
+  fixed width inside which a set of given circuits must be placed). 
+  The goal of the objective function is to find the minimum value for the height of the plate.
+  The techniques used during the experiments are: Constraint Programming (CP), Proposition 
+  Satisfability (SAT), Satisfiability Modulo Theory (SMT) and Integer Linear Programming (ILP).  
+  Despite the use of the same constraints formulation (with respect to the proper optimization 
+  technique formalization) we obtained quite differents results over the four techniques. In 
+  particular, CP and SAT models out perform the other techinques (SMT, ILP) in terms of number of 
+  solved instances.
 \end{abstract}
 \newpage
 \tableofcontents
@@ -71,29 +76,29 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Introduction}\label{chapter:introduction}
-    \input{chapters/01 - Introduction/content.tex}
-    \newpage
+\input{chapters/01 - Introduction/content.tex}
+\newpage
 
 \section{Background}\label{chapter:background}
-    \input{chapters/02 - VLSI Problem/content.tex}
-    \newpage
+\input{chapters/02 - VLSI Problem/content.tex}
+\newpage
 
 \section{CP}\label{chapter:CP}
-    \input{chapters/03 - CP/content.tex}
-    \newpage
+\input{chapters/03 - CP/content.tex}
+\newpage
 
 \section{SAT}\label{chapter:SAT}
-    \input{chapters/04 - SAT/content.tex}
-    \newpage
+\input{chapters/04 - SAT/content.tex}
+\newpage
 
 \section{SMT}\label{chapter:SMT}
-    \input{chapters/05 - SMT/content.tex}
-    \newpage
+\input{chapters/05 - SMT/content.tex}
+\newpage
 
 
 \section{ILP}\label{chapter:ILP}
-    \input{chapters/06 - ILP/content.tex}
-    \newpage
+\input{chapters/06 - ILP/content.tex}
+\newpage
 
 % \bibliographystyle{abbrv}
 % \bibliography{bibliography}

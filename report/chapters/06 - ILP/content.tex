@@ -115,8 +115,8 @@
     
     Finally, the last ones are just bounding constraints, which describe the upper and lower bounds
     of the variables. More in details, while the integer variables \(x_c\) can be in the range 
-    between \(0\) and \(width-widths_c\) (see constraint \ref{ilp:base_b_x}), the variables \(y_c\) 
-    can have values in the range between \(0\) and \(makespan-heights_c\) (see constraint 
+    between \(0\) and \(width-w_c\) (see constraint \ref{ilp:base_b_x}), the variables \(y_c\) 
+    can have values in the range between \(0\) and \(makespan-h_c\) (see constraint 
     \ref{ilp:base_b_y}). This is due to the fact that we cannot place boxes in a position such that 
     the chip's dimension exceeds the circuit plate both in high and in width. Then, since all the 
     variables of the constraints \textit{diffn} are binary, their value should fall in the range 
@@ -124,7 +124,6 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Rotation}
-    % \colorbox{BurntOrange}{TODO }
     The next step consists to extend the model in order to take into account also the box rotation.
     For this scope, we introduced, as we did also in the previous sections, a new set of binary 
     variables \(u_c\). 
@@ -158,10 +157,6 @@
     Indeed, looking at the model, we didn't any changes to the objective function. We just modified
     the constraints \ref{ilp:rot_diffn1}-\ref{ilp:rot_diffn4}, so that they take into account the 
     correct dimensions and similarly the constraints \ref{ilp:rot_ycons} and \ref{ilp:rot_b_y}.
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-
-% \subsection{Search}
-%     \colorbox{BurntOrange}{TODO missing ...}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
