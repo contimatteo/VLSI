@@ -5,58 +5,57 @@
   "search": "linear",
   "symmetry": false,
   "cumulative": false,
-  "TOTAL_TIME": 0.024021148681640625,
+  "TOTAL_TIME": 0.02979874610900879,
   "stats": {
-    "conflicts": 162,
-    "decisions": 2824,
-    "propagations": 21856,
-    "binary propagations": 9007,
-    "restarts": 1,
+    "conflicts": 425,
+    "decisions": 3305,
+    "propagations": 57370,
+    "binary propagations": 23529,
+    "restarts": 4,
     "final checks": 1,
-    "mk clause": 2575,
-    "mk clause binary": 1501,
-    "del clause": 40,
-    "minimized lits": 168,
+    "mk clause": 2832,
+    "del clause": 69,
+    "minimized lits": 1074,
     "num checks": 1,
     "mk bool var": 1288,
     "arith-make-feasible": 2,
     "arith-max-columns": 4,
-    "num allocs": 437777,
-    "rlimit count": 78322,
-    "max memory": 20.52,
-    "memory": 20.52,
-    "time": 0.005
+    "num allocs": 437920,
+    "rlimit count": 116777,
+    "max memory": 20.12,
+    "memory": 20.12,
+    "time": 0.01
   },
   "solution": {
     "width": 9,
     "n_circuits": 5,
     "widths": [
       3,
+      3,
+      3,
+      3,
+      3
+    ],
+    "heights": [
+      3,
       4,
       5,
       6,
       9
     ],
-    "heights": [
-      3,
-      3,
-      3,
-      3,
-      3
-    ],
     "x": [
+      0,
+      6,
       6,
       0,
-      4,
-      0,
-      0
+      3
     ],
     "y": [
-      6,
       0,
+      5,
       0,
-      6,
-      3
+      3,
+      0
     ],
     "min_makespan": 9,
     "max_makespan": 13,
