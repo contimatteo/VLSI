@@ -14,10 +14,10 @@
 \subsection{Notation}
     A new parameter will be considered in the following solution in order to correct define our model:
     \begin{align*}
-        M\        &\ =\ \text{A very large positive number}
+        M\        &\ =\ \text{A very large positive number} > \max (width, max\_makespan)
     \end{align*}
 
-    Next, we can explicit the new model's variables:
+    Next, we need to add to the variables defined in Section \ref{sec:shared_variables} the following:
     \begin{align*}
         % makespan\   &\ =\ \text{height of the plate  } i                                          \\
         % x_i\    &\ =\ \text{horizontal coordinate of bottom left corner of circuit  } i           \\
@@ -101,10 +101,12 @@
     it is defined in CP as \ref{eq:diffn}. So, in order to have the same result of the disjoint
     clause conditions, we need to control the variable's results. The constraints 
     \ref{ilp:base_diffn1}-\ref{ilp:base_diffn4} states the position of a circuit \(c_1\) respect to
-    another circuit \(c_2\). The auxiliary parameter \(M\) has the scope to falsify the equation
-    when the correspondent variable is set to 0. Please notice that \(M\) is a parameter that can.
+    another circuit \(c_2\). The auxiliary parameter \(M\) has the scope to falsify the equations 
+    \ref{ilp:base_diffn1}-\ref{ilp:base_diffn4}
+    when the correspondent variable is set to 0. Please notice that \(M\) is a parameter that can
     be set by the user, we just want to highlight the fact that for its nature \(M\) is constrained
-    to be higher at least than the maximum between all the box dimensions, so we decided to set it:
+    to be higher than the difference between any couple of \(x\) variables and any couple of \(y\)
+    variables, so we decided to set it:
     \begin{align*}
         M\ =\ \max{max\_makespan, width} + 1 
     \end{align*}
@@ -115,8 +117,8 @@
     
     Finally, the last ones are just bounding constraints, which describe the upper and lower bounds
     of the variables. More in details, while the integer variables \(x_c\) can be in the range 
-    between \(0\) and \(width-widths_c\) (see constraint \ref{ilp:base_b_x}), the variables \(y_c\) 
-    can have values in the range between \(0\) and \(makespan-heights_c\) (see constraint 
+    between \(0\) and \(width-w_c\) (see constraint \ref{ilp:base_b_x}), the variables \(y_c\) 
+    can have values in the range between \(0\) and \(makespan-h_c\) (see constraint 
     \ref{ilp:base_b_y}). This is due to the fact that we cannot place boxes in a position such that 
     the chip's dimension exceeds the circuit plate both in high and in width. Then, since all the 
     variables of the constraints \textit{diffn} are binary, their value should fall in the range 
@@ -124,7 +126,6 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Rotation}
-    % \colorbox{BurntOrange}{TODO }
     The next step consists to extend the model in order to take into account also the box rotation.
     For this scope, we introduced, as we did also in the previous sections, a new set of binary 
     variables \(u_c\). 
@@ -158,20 +159,13 @@
     Indeed, looking at the model, we didn't any changes to the objective function. We just modified
     the constraints \ref{ilp:rot_diffn1}-\ref{ilp:rot_diffn4}, so that they take into account the 
     correct dimensions and similarly the constraints \ref{ilp:rot_ycons} and \ref{ilp:rot_b_y}.
-% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-
-% \subsection{Search}
-%     \colorbox{BurntOrange}{TODO missing ...}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Results}
-    We performed tests with the following system properties:
-    \begin{itemize}
-        \item CPU: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz, 4 cores, 2.30 GHz
-        \item RAM: 16GB, 2133 MHz
-        \item OS: Windows 10, 64-bit
-    \end{itemize}
+    All the experiments for the MILP technology have been executed on a laptop computer running 
+    Windows 10 Pro, 64-bit, equipped with the following hardware:
+    \texttt{Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz, 4 cores, 16Gb Ram 2.30GHz}.\\
 
     As we can see in Figure \ref{fig:ILP_results1}, we obtained quite good results for the 
     first 20 instances in the model \(base\). In particular, we can notice that the time spent for
