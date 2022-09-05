@@ -375,7 +375,7 @@
   binary search but starting from \(min\_makespan\) in this case too.
   The latter starts from \(min\_makespan\) and then performs a binary search over the remaining
   search space.\\
-
+  
   A comparison between the performances of the two is made in Section \ref{subsec:SAT_results}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -387,11 +387,38 @@
     equipped with the following hardware:
     \texttt{Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz, 16Gb Ram 2.4GHz}.
 
+  \paragraph{Observations}
+  %%% GENERAL COMMENT
+    We can see how all of the models are able to solve the large part of the instances withint
+    the 5 minutes time limit, despite the modest computation power provided. The linear complexity
+    of the used encodings is the key to the success of the model.\\
+
+  %%% SYMMETRY BREAKING AND OTHER VARIANTS
+    The symmetry breaking is not of any help in this model because it adds more clauses and more to
+    be elaborated and satisfied.
+    The same holds for the implied cumulative constraint. Despite not introducing any new literal it 
+    nearly always has a slowing effect.
+    It is interesting how the combination of the symmetry breaking constraints and of the implied 
+    cumulative constraint obtains an overall performance very similar to the only cumulative constraint one.\\
+
+  %%% SEARCH STRATEGIES
+    In nearly all the solutions of the proposed instances the circuits can be fitted in order to achieve
+    a flat upper overll margin and no empty space is left between circuits. This is the reason why the 
+    \(min\_makespan\) nearly always prove to be the final \(makespan\) of the solution.In this circumstances
+    a sequential search from the bottom to the top performs better than any other search strategy.
+    In a more general situation, where empty spaces may have to be left in between circuits, the binary search
+    strategy could be more effective than the linear one.\\
+
+%%% ROTATION
+    With no surprise the complexity of the problem arises much more faster when we allow the circuits to rotate 
+    but the SAT model dedicate to the problem supported well the effort.
+  %
+  \pagebreak
+  %
   \paragraph{Base model}
     The results obtained with the Base model are in Figures [\ref{fig:SAT_results_base_linear1}, \ref{fig:SAT_results_base_linear2}]
     for linear search and in Figures [\ref{fig:SAT_results_base_binary1}, \ref{fig:SAT_results_base_binary2}] for binary search.
-
-  \pagebreak
+  %\pagebreak
   %
   \begin{figure}[H]
     \centering
@@ -469,30 +496,4 @@
     \label{fig:SAT_results_rotation_binary2}
   \end{figure}
 
-  \paragraph{Observations}
-    We can see how all of the models are able to solve the large part
-    of the instances withint the 5 minutes time limit despite the modest
-    computation power provided. The linear complexity of the used
-    encodings is the key to the success of the model.\\
 
-    The symmetry breaking is not of any help in this model because it adds
-    more clauses and more to be elaborated and satisfied.\\
-    The same holds for the implied cumulative constraint. Despite 
-    not introducing any new literal it nearly always has a slowing effect.\\
-
-    It is interesting how the combination of the symmetry breaking constraints
-    and of the implied cumulative constraint obtains an overall performance 
-    very similar to the only cumulative constraint one.\\
-
-    In nearly all the solutions of the proposed instances the circuits can be
-    fitted in order to achieve a flat upper overll margin and no empty space 
-    is left between circuits. This is the reason why the \(min\_makespan\) nearly
-    always prove to be the final \(makespan\) of the solution.
-    In this circumstances a sequential search from the bottom to the top performs 
-    better than any other search strategy. In a more general view where empty spaces
-    can happen to be left in between circuits the binary search strategy can be
-    more effective than the linear one.\\
-
-    With no surprise the complexity of the problem arises much more faster when we
-    allow the circuits to rotate but the SAT model dedicate to the problem supported
-    well the effort.
