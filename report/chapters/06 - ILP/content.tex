@@ -166,13 +166,35 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Results}
-    \colorbox{BurntOrange}{TODO missing ...} \\
+    We performed tests with the following system properties:
+    \begin{itemize}
+        \item CPU: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz, 4 cores, 2.30 GHz
+        \item RAM: 16GB, 2133 MHz
+        \item OS: Windows 10, 64-bit
+    \end{itemize}
+
+    As we can see in the Figure \ref{fig:ILP_results1}, we obtained quite good results for the 
+    first 20 instances in the model \(base\). In particular we can notice that the time spent for
+    proving the optimal solution is for the first 11 instances always less than 1 second. The 
+    things start to get worse after the 17th instance when the time spent reached suddenly the
+    threshold of 60 seconds. In later instances (Figure \ref{fig:ILP_results1}), things get even 
+    more difficult. The tests we did shows that many instances had been jumped due to the 
+    complexity of the problem, showing moreover an instability in for what concern the time used 
+    for solve the problem. \\
+    
+    In the case of \(rotations\) the Figure \ref{fig:ILP_results1} shows a similarity across the
+    two models, it seems like the complexity of the problem didn't exceed the one of \(base\)
+    until the 15th instance. Indeed, the subsequent ones appeared to be more difficult for the
+    solver which failed to prove the optimality many times (look at Figure \ref{fig:ILP_results1} 
+    for more details). \\ 
 
     \begin{figure}[H]
       \centering
       \includegraphics[width=1\textwidth]{06/results1.png}
       \caption{
-        \colorbox{BurntOrange}{TODO missing ...}
+        First 20 instances total time spent for proving optimality ILP cplex solver. Quite good 
+        results obtained in the fist attempt, with a progressive decrease in the quality of the 
+        results as the difficulty of the problem increases.
       }
       \label{fig:ILP_results1}
     \end{figure}
@@ -180,7 +202,9 @@
       \centering
       \includegraphics[width=1\textwidth]{06/results2.png}
       \caption{
-        \colorbox{BurntOrange}{TODO missing ...}
+        Last 20 instances total time spent for proving optimality ILP cplex solver. Many 
+        instances failed to reach the optimality with a with greater difficulty in the case of 
+        \(rotation\), as it was easy to expect.
       }
       \label{fig:ILP_results2}
     \end{figure}
