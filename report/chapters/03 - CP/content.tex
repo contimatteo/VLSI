@@ -47,9 +47,9 @@ work with the constraints already defined in Section \ref{sec:shared_constraints
   vc\_y(vc_{i,j})\        =\  & min(y_i, y_j)                                                     \nonumber \\
   vc\_width(vc_{i,j})\    =\  & max(x_i + w_i, x_j + w_j) - vc\_x(vc_{i,j})                       \nonumber \\
   vc\_height(vc_{i,j})\   =\  & max(y_i + h_i, y_j + h_j) - vc\_y(vc_{i,j})                       \nonumber \\
-  r\_w(c) =\                  & bool2int(\neg\ is\_rotated_c) \cdot w_c + bool2int(is\_rotated_c) \cdot h_c
+  r\_w(c) =\                  & bool2int(\neg\ r_c) \cdot w_c + bool2int(r_c) \cdot h_c
   \label{eq:CP_r_w}                                                                                         \\
-  r\_h(c) =\                  & bool2int(\neg\ is\_rotated_c) \cdot h_c + bool2int(is\_rotated_c) \cdot w_c
+  r\_h(c) =\                  & bool2int(\neg\ r_c) \cdot h_c + bool2int(r_c) \cdot w_c
   \label{eq:CP_r_h}
 \end{align}
 
@@ -113,7 +113,7 @@ $vc_x = vc\_x(vc_{i,j})$, $vc_y = vc\_y(vc_{i,j})$, $vc_w = vc\_width(vc_{i,j})$
 The predicates $c\_eq\_dim\_sym$, $vc\_eq\_dim\_sym$, $vv\_eq\_dim\_sym$ apply
 lexicographic order to circuits with same dimensionality; in particular the first predicate keeps in consideration only
 \textit{real} circuits, the second a \textit{real} circuit and a \textit{virtual} circuit, the third only couples of
-\textit{virtual} circuits. The last one must also check that the circuits $c_1$ and $c_2$ do not overlap,
+\textit{virtual} circuits. The last one must also check that the circuits $vc_1$ and $vc_2$ do not overlap,
 otherwise it would be in contrast with any lexicographic order constraint, making the solution unfeasible.
 Another possible case in which a couple of circuit can be swapped is when they have a shared side with same length;
 the last predicates are needed to catch those situations and apply to those couple of circuits the lexicographic order.
@@ -163,7 +163,7 @@ which obviously lead to a different solution, but with same \textit{makespan}:
 \end{equation*}
 As demonstration of the inefficiency of \textit{virtual} circuit constraint, we will show 
 separately in the results [Section \ref{sec:CP_results}] a model with only \(c\_eq\_dim\_sym\)
-and a model with also \(vc\_eq\_dim\_sym\ \land vv\_eq\_dim\_sym\) (the last one will have "virtual" in the name).\\
+and a model with also \(vc\_eq\_dim\_sym\ \land vv\_eq\_dim\_sym\).\\
 
 The case we simplified is the one figured in [Fig.\ref{fig:vc_specular_in}]: instead of applying
 lexicographic order to all \textit{real} circuits within a generic \textit{virtual} circuit, we
@@ -222,8 +222,7 @@ The performances of the base model (Section \ref{sec:CP_base}) are compared with
   \centering
   \includegraphics[width=1\textwidth]{03/results/base1.png}
   \caption{
-    CP \(Base\) Model: comparison of time performance of \textit{base}, \textit{base search}, \textit{base symmetry} and \textit{base search symmetry} models
-    for the first 20 instances.
+    CP Results obtained with base model - base search - base symmetry - base search symmetry - instances [1,20]
   }
   \label{fig:CP_results_base1}
 \end{figure}
@@ -231,8 +230,7 @@ The performances of the base model (Section \ref{sec:CP_base}) are compared with
   \centering
   \includegraphics[width=1\textwidth]{03/results/base2.png}
   \caption{
-    CP \(Base\) Model: comparison of time performance of \textit{base}, \textit{base search}, \textit{base symmetry} and \textit{base search symmetry} models
-    for the first 20 instances.
+    CP Results obtained with base model - base search - base symmetry - base search symmetry - instances [21,40]
   }
   \label{fig:CP_results_base2}
 \end{figure}
@@ -245,8 +243,8 @@ The first 20 instances do not show any particular difference in performances bet
 We can already notice an increasing behaviour of solve time, but with some peaks for "random" instances showing 
 how the solve time does not depend only on the number of circuits to place. \\
 
-The secon 20 instances are not solved by all models, showing the first differences: the model solving 
-the most of the instances is \textit{base search} and if we compare \textit{base symmetry} with 
+The second 20 instances are not solved by all models, showing the first difference: the model solving 
+most of the instances is \textit{base search} and if we compare \textit{base symmetry} with 
 \textit{base symmetry search} we have the proof that the search and restart strategies are quite effective.
 We can also notice that most of the time adding the symmetry breaking constraints that we defined in 
 Section \ref{sec:CP_symmetry} make the performances worse, confirming what already said.\\
@@ -263,8 +261,7 @@ The performances of the rotation model (Section \ref{sec:CP_rotation}) are compa
   \centering
   \includegraphics[width=1\textwidth]{03/results/rotation1.png}
   \caption{
-    CP \(rotation\) Model: comparison of time performance of \textit{rotation}, \textit{rotation search}, \textit{rotation symmetry} and \textit{rotation search symmetry} models
-    for the first 20 instances.
+    CP Results obtained with Rotation model - rotation search - rotation symmetry - rotation search symmetry - instances [1,20]
   }
   \label{fig:CP_results_rotation1}
 \end{figure}
@@ -272,20 +269,19 @@ The performances of the rotation model (Section \ref{sec:CP_rotation}) are compa
   \centering
   \includegraphics[width=1\textwidth]{03/results/rotation2.png}
   \caption{
-    CP \(rotation\) Model: comparison of time performance of \textit{rotation}, \textit{rotation search}, \textit{rotation symmetry} and \textit{rotation search symmetry} models
-    for the last 20 instances.
+    CP Results obtained with Rotation model - rotation search - rotation symmetry - rotation search symmetry - instances [21,40]
   }
   \label{fig:CP_results_rotation2}
 \end{figure}
 
-The results obtained for \textit{rotation} models are quite different from before: we still have an increasing solve 
-time with some exceptional instances, but the first main difference is the impact of search strategies. 
+The results obtained for \textit{rotation} models are quite different from the ones presented before before: we still have an increasing solve 
+time, but the first main difference is the impact of search strategies. 
 While, with \textit{base} models, search strategies improved the efficiency, with \textit{rotation} model is the opposite.
 We were not expecting any significant impact from the search strategy for the boolean variables \(r_i\) since their domain 
-is highly limited and random search was not even implemented yet.
+is highly limited and random search was not even implemented.
 After checking the solutions and seeing that most of the \textit{makespan} values (in \textit{base} models) match with our 
-definition of \textit{min\_makespan}, we may hazard that the dimensions of the circuits have been designed specifically for 
-the \textit{VLSI} problem without rotations.\\
+definition of \textit{min\_makespan}, we may hazard that the dimensions of the circuits have been designed 
+to e perfectly placed over the plate without neither empty spaces nor rotation. \\
 
 The second main difference from \textit{base} models is that in this case symmetry breaking constraint are more competitive. 
 Maybe \textit{base} model was too simple and adding more constraints (referring to the symmetry breaking constraints) to 
@@ -302,7 +298,7 @@ The models we selected for the comparison are:
   \centering
   \includegraphics[width=1\textwidth]{03/results/solver1.png}
   \caption{
-    \colorbox{BurntOrange}{TODO missing ...}
+    CP Results obtained with base model - base search symmetry - instances [1,20]. Both with Chuffed and Gecode solver.
   }
   \label{fig:CP_results_solver1}
 \end{figure}
@@ -310,7 +306,7 @@ The models we selected for the comparison are:
   \centering
   \includegraphics[width=1\textwidth]{03/results/solver2.png}
   \caption{
-    \colorbox{BurntOrange}{TODO missing ...}
+    CP Results obtained with base model - base search symmetry - instances [21,40]. Both with Chuffed and Gecode solver.
   }
   \label{fig:CP_results_solver2}
 \end{figure}
@@ -326,7 +322,7 @@ constraints even more complex than the ones shown in Section \ref{sec:CP_symmetr
   \centering
   \includegraphics[width=1\textwidth]{03/results/virtual.png}
   \caption{
-    \colorbox{BurntOrange}{TODO missing ...}
+    CP Results obtained with base search symmetry with and without virtual circuits - instances [1,40].
   }
   \label{fig:CP_results_virtual}
 \end{figure}

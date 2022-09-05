@@ -162,7 +162,7 @@
         
         Each new node is appended to the node in the \(fringe_z\) whose altitude is the lowest.
         \begin{equation*}
-            altitude_{father}(z) = \min_{c \in fringe_z}\ {altitude_c} 
+            altitude_{father_z} = \min_{c \in fringe_z}\ {altitude_c} 
         \end{equation*}
 
         Once all the nodes are in the tree we can calculate the maximum altitude $altitude_{max}$ reached by the nodes.
@@ -171,7 +171,7 @@
         \end{equation*}
 
         This value is the makespan of a fully legit solution so it is intuitive that the makespan of the best solution cannot
-        be greater than it. 
+        be greater than it.
         
         The time required for this calculation is negligible w.r.t the time required to obtain the best solutions with any 
         of the technologies used.
@@ -211,14 +211,14 @@
     
     Being common to CP, SAT and SMT, here we list the cumulative constraints adopted:
     \begin{align*}
-        (\text{disj\_cond\_x} \rightarrow \text{disj\_x})\ \ \land\ &\ (\neg (\text{disj\_cond\_x}) \rightarrow \text{cumulative\_x}) \\
-        (\text{disj\_cond\_y} \rightarrow \text{disj\_y})\ \ \land\ &\ (\neg (\text{disj\_cond\_y}) \rightarrow \text{cumulative\_y})
+        (\text{disj\_cond\_x} \rightarrow \text{disj\_x})\ \ \land\ &\ (\neg\ (\text{disj\_cond\_x}) \rightarrow \text{cumulative\_x}) \\
+        (\text{disj\_cond\_y} \rightarrow \text{disj\_y})\ \ \land\ &\ (\neg\ (\text{disj\_cond\_y}) \rightarrow \text{cumulative\_y})
     \end{align*}
 
     Like in the "cumulative" of MiniZinc \footnote[1]{https://github.com/MiniZinc/libminizinc/blob/master/share/minizinc/std/cumulative.mzn, \label{fn:minizinc_cumulative}}, 
     the constraint first checks if disjunctive ($disj_x$, $disj_y$) can be used instead. 
     Actually in the documentation\footref{fn:minizinc_cumulative} 
-    is checked also if $all\_different$ can be used, which is even faster, but also improbable in our use case. 
+    is checked also if \textit{all\_different} can be used, which is even faster, but also improbable in our use case. 
 
     \subsubsection{Symmetries} \label{sec:symmetries}
 
@@ -229,7 +229,7 @@
         \textit{virtual} circuits [Fig.\ref{fig:virtual circuit}], we can generalize what mentioned before and find all solutions with 
         the same \textit{makespan} [Fig.\ref{fig:symmetry_vc}].
         In particular we can find a symmetric solution swapping any couple of circuits or \textit{virtual} circuits 
-        with same dimensions or we can substitute any \textit{virtual} circuit with the set of \textit{real} circuits within it, 
+        with same dimensions, or we can substitute any \textit{virtual} circuit with the set of \textit{real} circuits within it, 
         but with specular positions. Obviously, combinations of the previous cases will lead to other symmetric 
         solutions [Fig.\ref{fig:vc_specular_out}].
 
