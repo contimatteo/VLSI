@@ -22,7 +22,7 @@ This section is mainly needed to introduce constants related to \textit{virtual}
            & \ =\ |CC| = \frac{nc!}{2! \cdot (nc - 2)!} = \frac{nc \cdot (nc-1)}{2} \\
   n\_rvc\  & \ =\ n\_vc + nc                                                        \\
   VC       & \ =\ \{ c_i\ |\ i \in [1,n\_vc] \}                                     \\
-  VV       & \ =\ \{ (i,j)\ \in VC \times VC\ |\ i <j \}                             \\
+  VV       & \ =\ \{ (i,j)\ \in VC \times VC\ |\ i <j \}                            \\
   RVC      & \ =\ \{ c_i\ |\ i \in [1,n\_rvc] \}                                    \\
   % c_pairs &\ =\ [(i,j)\ |\ (i,j) \in CC]
 \end{align*}
@@ -55,8 +55,8 @@ work with the constraints already defined in Section \ref{sec:shared_constraints
 \end{align}
 
 where $vc\_x(vc_{i,j})$, $vc\_y(vc_{i,j})$, $vc\_width(vc_{i,j})$ and $vc\_height(vc_{i,j})$
-return respectively the $x_{vc_{i,j}}$, $y_{vc_{i,j}}$, $w_{vc_{i,j}}$ and $h_{vc_{i,j}}$ of 
-the \textit{virtual} circuit $vc_{i,j}$, while $r\_w(c)$ and $r\_h(c)$ check if circuit $c$ 
+return respectively the $x_{vc_{i,j}}$, $y_{vc_{i,j}}$, $w_{vc_{i,j}}$ and $h_{vc_{i,j}}$ of
+the \textit{virtual} circuit $vc_{i,j}$, while $r\_w(c)$ and $r\_h(c)$ check if circuit $c$
 is rotated and update coherently $w_c$ and $h_c$.
 
 \paragraph{Predicates}
@@ -89,13 +89,13 @@ is rotated and update coherently $w_c$ and $h_c$.
                                              & \nonumber                                                                                                                                                         \\
   \text{c\_eq\_dim\_sym}          \leftarrow & \ \bigwedge_{(c_1, c_2) \in CC} (w_{c_1} == w_{c_2} \land h_{c_1} == h_{c_2}) \rightarrow lex\_lesseq([x_{c_1}, y_{c_1}], [x_{c_2}, y_{c_2}])                     \\
                                              & \nonumber                                                                                                                                                         \\
-  \text{vc\_eq\_dim\_sym}         \leftarrow & \ \bigwedge_{(c, vc) \in C \times VC} \hspace{0.3cm} (\text{vc\_valid}(vc) \land w_{c} == w_{vc} \land h_{c} == h_{vc}) \rightarrow               \nonumber \\
-                                             & \hspace{2.2cm} \rightarrow lex\_lesseq([x_{c}, y_{c}], [x_{vc}, y_{vc}])                                                                                    \\
+  \text{vc\_eq\_dim\_sym}         \leftarrow & \ \bigwedge_{(c, vc) \in C \times VC} \hspace{0.3cm} (\text{vc\_valid}(vc) \land w_{c} == w_{vc} \land h_{c} == h_{vc}) \rightarrow               \nonumber       \\
+                                             & \hspace{2.2cm} \rightarrow lex\_lesseq([x_{c}, y_{c}], [x_{vc}, y_{vc}])                                                                                          \\
                                              & \nonumber                                                                                                                                                         \\
   \text{vv\_eq\_dim\_sym}         \leftarrow & \ \bigwedge_{(vc_1, vc_2) \in VV} (\text{vc\_valid}(vc_1) \land \text{vc\_valid}(vc_2) \land \neg (vc_{1x} == vc_{2x})\ \land                           \nonumber \\
                                              & \hspace{2cm} \land vc_{1w} == vc_{2w} \land vc_{1h} == vc_{2h} \land \nonumber                                                                                    \\
-                                             & \hspace{2cm} \land (|vc_{1x} - vc_{2x}| \geq vc_{1w} \lor  |vc_{1y} - vc_{2y}| \geq vc_{1h}))  \rightarrow              \nonumber                                                                                           \\
-                                             & \hspace{2cm} \rightarrow lex\_lesseq([vc_{1x}, vc_{1y}], [vc_{2x}, vc_{2y}])                                              \\
+                                             & \hspace{2cm} \land (|vc_{1x} - vc_{2x}| \geq vc_{1w} \lor  |vc_{1y} - vc_{2y}| \geq vc_{1h}))  \rightarrow              \nonumber                                 \\
+                                             & \hspace{2cm} \rightarrow lex\_lesseq([vc_{1x}, vc_{1y}], [vc_{2x}, vc_{2y}])                                                                                      \\
                                              & \nonumber                                                                                                                                                         \\
   \text{c\_x\_consec}(c_1, c_2)   \leftarrow & \hspace{0.5cm} x_{c_1} + w_{c_1} == x_{c_2} \lor x_{c_2} + w_{c_2} == x_{c_1}                                                                                     \\
   \text{c\_y\_consec}(c_1, c_2)   \leftarrow & \hspace{0.5cm} y_{c_1} + h_{c_1} == y_{c_2} \lor y_{c_2} + h_{c_2} == y_{c_1}                                                                                     \\
@@ -143,7 +143,7 @@ where $x\_v$, $x\_v'$, $y\_v$, $y\_v'$ are defined in \ref{eq:specular_coord}.
 
 \subsubsection{Rotation}
 
-In order to introduce rotations to the model described in Section \ref{sec:CP_base} or any 
+In order to introduce rotations to the model described in Section \ref{sec:CP_base} or any
 of the following CP models, we need to add rotation variables $r_i$, functions \ref{eq:CP_r_w}, \ref{eq:CP_r_h}. We
 also need to modify already existing constraints substituting $w_c$ with $r\_w(c)$ and $h_c$ with $r\_h(c)$.
 
@@ -205,41 +205,47 @@ choosing empirically the value of parameter $scale$.
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Results}
-  \colorbox{BurntOrange}{TODO missing ...}
+\colorbox{BurntOrange}{TODO missing ...} \\
 
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{03/results/base1.png}
-    \caption{
-      \colorbox{BurntOrange}{TODO missing ...}
-    }
-    \label{fig:CP_results_base1}
-  \end{figure}
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{03/results/base2.png}
-    \caption{
-      \colorbox{BurntOrange}{TODO missing ...}
-    }
-    \label{fig:CP_results_base2}
-  \end{figure}
+All the experiments for the CP technology have been executed on a machine with the following hardware:
+\texttt{Intel i5-8265U, 4-core, 16Gb Ram}.\\
 
-  \colorbox{BurntOrange}{TODO missing ...}
+The results obtained for the \(base\) Model are presented in the Figures [\ref{fig:CP_results_base1},\ref{fig:CP_results_base2}].
 
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{03/results/rotation1.png}
-    \caption{
-      \colorbox{BurntOrange}{TODO missing ...}
-    }
-    \label{fig:CP_results_rotation1}
-  \end{figure}
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{03/results/rotation2.png}
-    \caption{
-      \colorbox{BurntOrange}{TODO missing ...}
-    }
-    \label{fig:CP_results_rotation2}
-  \end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{03/results/base1.png}
+  \caption{
+    \colorbox{BurntOrange}{TODO missing ...}
+  }
+  \label{fig:CP_results_base1}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{03/results/base2.png}
+  \caption{
+    \colorbox{BurntOrange}{TODO missing ...}
+  }
+  \label{fig:CP_results_base2}
+\end{figure}
+
+\colorbox{BurntOrange}{TODO missing ...} \\
+The results obtained for the \(rotation\) Model are presented in the Figures [\ref{fig:CP_results_rotation1},\ref{fig:CP_results_rotation2}].
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{03/results/rotation1.png}
+  \caption{
+    \colorbox{BurntOrange}{TODO missing ...}
+  }
+  \label{fig:CP_results_rotation1}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{03/results/rotation2.png}
+  \caption{
+    \colorbox{BurntOrange}{TODO missing ...}
+  }
+  \label{fig:CP_results_rotation2}
+\end{figure}
 
