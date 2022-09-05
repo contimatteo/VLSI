@@ -73,24 +73,20 @@ def compute_max_makespan(heights, widths, width, with_rotation=False):
         fringe[0].attach_child(list_of_nodes[c])
         attached.append(list_of_nodes[c])
 
-    #        print([fringe[k].c_index for k in range(len(fringe))])
-    #        print([str(attached[k]) for k in range(len(attached))])
-
     makespan = max([list_of_nodes[c].get_altitude() for c in CIRCUITS])
 
     list_of_nodes = sorted(list_of_nodes, key=lambda n: n.c_index)
 
     default_solution = {
-            "width": width,
-            "n_circuits": len(widths),
-            "widths": widths,
-            "heights": heights,
-            "x": [node.x for node in list_of_nodes],
-            "y": [node.y for node in list_of_nodes],
-            "min_makespan": 0,
-            "max_makespan": makespan,
-            "makespan": makespan
-        } 
-
+        "width": width,
+        "n_circuits": len(widths),
+        "widths": widths,
+        "heights": heights,
+        "x": [node.x for node in list_of_nodes],
+        "y": [node.y for node in list_of_nodes],
+        "min_makespan": 0,
+        "max_makespan": makespan,
+        "makespan": makespan
+    }
 
     return default_solution

@@ -135,7 +135,6 @@ class CplexModel():
         #     print('time exceeded, optimal solution not found')
         #     solution = default_solution
         # else:
-        print('solver found at least one solution')
         solution = self._evaluate_solution(min_makespan, max_makespan)
         print(f"TOTAL TIME = {round(time_spent, 2)}")
 

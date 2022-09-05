@@ -4,11 +4,8 @@ from utils import SATStorage
 
 ###
 
-VERBOSE_CHOICES = [0, 1, 2]
-
 DEFAULT_SECONDS_TIME_LIMIT = 300
 DEFAULT_N_SOLUTIONS = 1
-DEFAULT_VERBOSE = 1
 DEFAULT_MODEL_NAME = "base"
 MODELS_CHOICES = ["base", "rotation"]
 DEFAULT_SEARCH_STRATEGY = 'linear'
@@ -29,24 +26,8 @@ def parse_args():
         choices=MODELS_CHOICES,
         help='name of the model to use'
     )
-    # parser.add_argument(
-    #     '--solver',
-    #     required=False,
-    #     type=str,
-    #     default=DEFAULT_SOLVER_NAME,
-    #     choices=SOLVERS_CHOICES,
-    #     help='name of the solver to use'
-    # )
     parser.add_argument(
         '--sol', required=False, type=int, default=DEFAULT_N_SOLUTIONS, help='max no. of solutions'
-    )
-    parser.add_argument(
-        '--verbose',
-        required=False,
-        type=int,
-        default=DEFAULT_VERBOSE,
-        choices=VERBOSE_CHOICES,
-        help='print execution verbose infos'
     )
     parser.add_argument(
         '--plot', required=False, action="store_true", help='show final solutions plot'
@@ -58,9 +39,6 @@ def parse_args():
         type=int,
         default=DEFAULT_SECONDS_TIME_LIMIT,
         help='computation (seconds) time limit'
-    )
-    parser.add_argument(
-        '--stats', required=False, action="store_false", help='prints execution statistics infos'
     )
     parser.add_argument(
         '--debug', required=False, action="store_true", help='prints development debug infos'
@@ -82,6 +60,7 @@ def parse_args():
         action="store_true",
         help='add cumulative constraint on both x and y'
     )
+
     #
 
     args = parser.parse_args()
