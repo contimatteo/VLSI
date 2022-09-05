@@ -85,7 +85,7 @@ class CplexModel():
             "y": [self.variables['y'][c].solution_value for c in CIRCUITS],
             "min_makespan": min_makespan,
             "max_makespan": max_makespan,
-            "makespan": self.variables['target_makespan'].solution_value
+            "makespan": int(self.variables['target_makespan'].solution_value)
         }
         return solution
 
