@@ -112,7 +112,7 @@ class CplexModel():
         min_makespan = self.variables["min_makespan"]
         max_makespan = self.variables["max_makespan"]
         target_makespan = self.variables["target_makespan"]
-        default_solution = self.variables["default_solution"]
+        # default_solution = self.variables["default_solution"]
 
         #
 
@@ -128,16 +128,16 @@ class CplexModel():
         ### start solver
         t0 = time.time()
         sol = self.solver.solve()
-
-        ### print time spent
         time_spent = time.time() - t0
-        if time_spent >= self.solver_timeout:
-            print('time exceeded, optimal solution not found')
-            solution = default_solution
-        else:
-            print('solver found at least one solution')
-            solution = self._evaluate_solution(min_makespan, max_makespan)
-            print(f"TOTAL TIME = {round(time_spent, 2)}")
+
+        assert sol is not None
+        # if time_spent >= self.solver_timeout:
+        #     print('time exceeded, optimal solution not found')
+        #     solution = default_solution
+        # else:
+        print('solver found at least one solution')
+        solution = self._evaluate_solution(min_makespan, max_makespan)
+        print(f"TOTAL TIME = {round(time_spent, 2)}")
 
         solutions_dict["TOTAL_TIME"] = time_spent
         solutions_dict["all_solutions"].append(solution)
