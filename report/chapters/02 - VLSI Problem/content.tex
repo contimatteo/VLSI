@@ -9,17 +9,18 @@
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Format of the Instances}
+\subsection{Format of Files}
     \paragraph*{Instance Format}
         An instance of \textit{VLSI} is a text file consisting of lines of integer values. The first line gives \textit{width}, 
         which is the width of the silicon plate. The following line gives \textit{nc}, which is the number of necessary circuits 
         to place inside the plate. Then \textit{nc} lines follow, each with $w_i$ and $h_i$, representing the horizontal and 
-        vertical dimension of the \textit{i-th} circuit.
+        vertical dimension of the \textit{i-th} circuit. The file is terminated by an empty line.
 
     \paragraph*{Solution Format}
         A solution of \textit{VLSI} is a text file built starting from the input file. To the first line is added the \textit{makespan},
         which is the length of the final device. The second line is kept the same while to the following \textit{nc} lines are added
-        $x_i$ and $y_i$, which are the coordinates of the bottom left corner of the \textit{i-th} circuit. In case a solution is obtained 
+        $x_i$ and $y_i$, which are the coordinates of the bottom left corner of the \textit{i-th} circuit.
+        In case a solution is obtained 
         through the rotation of a circuit $i$, then, in the output file, the horizontal and vertical dimensions ($w_i$ and $h_i$) 
         will be swapped w.r.t. the input text file.
 
@@ -67,20 +68,20 @@
         \begin{equation*}
             a = \sum_{c \in C} w_c \cdot h_c
         \end{equation*}
-        The best situation is the one in which all circuits fit in a rectangle with width=$width$ and height=$makespan$,
+        The best situation is the one in which all circuits fit in a rectangle whose width=$width$ and height=$makespan$,
         without leaving any empty space, so that the \textit{makespan} would be $makespan = \lceil a / width \rceil$. 
-        We could set accordingly $min\_makespan = \lceil a / width \rceil$, but there is simple a case in which,
-        even if there are no empty spaces left, the \textit{makespan} can be easily improved (increased). 
+        We could set accordingly $min\_makespan = \lceil a / width \rceil$, but there is simple a case in which
+        the \textit{makespan} can be easily improved (increased), even if there are no empty spaces left. 
         Indeed, we may have a very "high" circuit (let its name be $c_{high}$) such that:
         \begin{equation}
             h_{c_{high}} >= \lceil \frac{\sum_{c \in C - \{c_{high}\}} w_c \cdot h_c}{width - w_{c_{high}}} \rceil
             \label{eq:h_high}
         \end{equation}
-        where the numerator is the sum of the areas of all circuits $c_i \neq c_{high}$, obtaining on the right of
-        the inequality the $min\_makespan'$ computed without $c_{high}$ and with a reduced width of the plate 
+        where the numerator is the sum of the areas of all circuits $c_i \neq c_{high}$. On the right of
+        the inequality we obtain the $min\_makespan'$ computed without $c_{high}$ and with a reduced width of the plate 
         $width' = width - w_{c_{high}}$.
 
-        Let's call $m$ the right side of the inequality, it's almost intuitive that the $min\_makespan$ computed
+        Let $m$ be the right side of the inequality. It's almost intuitive that the $min\_makespan$ computed
         as before is lower than $h_{c_{high}}$:
         \begin{equation}
             m\ =\ \frac{\sum_{c \in C - \{c_{high}\}} w_c \cdot h_c}{width - w_{c_{high}}}
@@ -94,7 +95,7 @@
         \end{align*}
 
         From the first one we have $min\_makespan \geq m$ since $h_{c_{high}} \geq m$ for definition.
-        From the second we can easily proof $h_{c_{high}} \geq min\_makespan$:
+        From the second we can easily prove $h_{c_{high}} \geq min\_makespan$:
         \begin{align*}
             h_{c_{high}}\ =\ \frac{width}{w_{c_{high}}} \cdot min\_makespan - \left( \frac{width}{w_{c_{high}}} - 1\right) \cdot m\ &\ \geq\ min\_makespan       \\
             \left( \frac{width}{w_{c_{high}}} - 1\right) \cdot min\_makespan - \left( \frac{width}{w_{c_{high}}} - 1\right) \cdot m\ &\ \geq\ 0 \\
@@ -124,9 +125,10 @@
         solution that must be built using an effective and efficient algorithm. 
         The solution with the greatest possible \textit{max\_makespan} is obtained stacking one on top of the other all the circuits
         of the instance. This strategy is very simple and fast but the result easily over estimates by a lot the final 
-        \textit{makespan} value. A more effective strategy was adopted. \\
+        \textit{makespan} value. We adopted a more effective strategy. \\
         
-        A much better algorithm requires to consider each circuit as a node and to reach a possible solution building a tree of the nodes. 
+        A much better algorithm requires to consider each circuit as a node so that we can build a solution by building a 
+        tree of the nodes. 
         Each circuit is represented as a node that contains the dimensions of the circuit $w_c$, $h_c$, its coordinates 
         $x_c$, $y_c$, the index of the circuit, the index of the parent node and a list of the children nodes 
         $children\_list$. The $altitude_c$ of the node \(c\) can be computed as:
@@ -140,16 +142,18 @@
         
         The relationship of a circuit being stacked on top of another is represented with the node of the circuit at the bottom 
         being the father of the node of the circuit stacked on top.
-        A conceptual root node is computed. The width of the root node is the $width$ of the plate and its height is 0.
-        All the other nodes are added to a list of nodes.
-        First the list of nodes is sorted on the width of the circuit in descending order:
+        All the nodes are added to a list of nodes that is sorted on the width of the circuit in descending order:
         \begin{equation*}
             \forall (i,j) \in CC.\ \ w_i \geq w_j \ 
         \end{equation*}
         
-        In this way the nodes are added to the tree from the widest to the least wide.
-        The nodes are then inserted into the tree using the following strategy: a list of possible parent nodes $fringe$ is kept. 
-        A node to be a parent of another must have enough free space on top. Let $x$ be the circuit that 
+        In this way the nodes are added to the tree from the widest to the least wide.\\
+
+        A conceptual root node is computed. The width of the root node is the $width$ of the plate and its height is 0. The root
+        node is inserted in the head of the list of nodes.\\
+
+        All the nodes are then inserted into the tree using the following strategy: a list of possible parent nodes $fringe$ is kept. 
+        A node must have enough free space on top to be a parent of another. Let $x$ be the circuit that 
         is being inserted; $fringe_x$ is the list of all the nodes $c$ already in the tree that satisfy: 
         \begin{equation*}
             fringe_x = \left[c \in C\ |\ w_x \leq w_c - \sum_{i \in children\_list_c} w_i\right]
@@ -192,7 +196,7 @@
 
 \subsection{Shared Constraints} \label{sec:shared_constraints}
     The following formalization will be the one followed for the CP solution and then adapted for
-    SAT and SMT. The ILP model will be described later. \\
+    SAT and SMT. The ILP model will be described after. \\
 
     Starting from the predicates defined in Section \ref{sec:shared_predicates}, we have defined 
     the following constraints valid over all models (CP, SAT, SMT, ILP):
@@ -219,12 +223,12 @@
 
         Given a solution there are two main ways to get a different one with the same \textit{makespan}:
         swap circuits with same dimensions [Fig.\ref{fig:symmetry_swap}] or get the solution specular w.r.t. the horizontal 
-        or vertical axis [Fig.\ref{fig:symmetry_specular}].
+        or the vertical axis [Fig.\ref{fig:symmetry_specular}].
         If we consider also sub-rectangles which do not cross their edges with any circuit and call them 
         \textit{virtual} circuits [Fig.\ref{fig:virtual circuit}], we can generalize what mentioned before and find all solutions with 
         the same \textit{makespan} [Fig.\ref{fig:symmetry_vc}].
         In particular we can find a symmetric solution swapping any couple of circuits or \textit{virtual} circuits 
-        with same dimensions or we can substitute any \textit{virtual} circuit with the set of regular circuits within it, 
+        with same dimensions or we can substitute any \textit{virtual} circuit with the set of \textit{real} circuits within it, 
         but with specular positions. Obviously, combinations of the previous cases will lead to other symmetric 
         solutions [Fig.\ref{fig:vc_specular_out}].
 
@@ -314,7 +318,7 @@
                 Other possible solutions with same makespan as the one plotted in [Fig.\ref{fig:ins_15_mod}],
                 now including also \textit{virtual} circuits in the reasoning.
                 In the left one [Fig.\ref{fig:vc_swap}], the \textit{virtual} circuit introduced in [Fig.\ref{fig:virtual circuit}]
-                at original position (3,0) is swapped with the regular circuit 7 at original position (9,11).
+                at original position (3,0) is swapped with the \textit{real} circuit 7 at original position (9,11).
                 In the middle one [Fig.\ref{fig:vc_specular_in}] the same \textit{virtual} circuit is substituted with 
                 its specular w.r.t. the horizontal axis.
                 The right one [Fig.\ref{fig:vc_specular_out}] is an example of combination of what mentioned before:
@@ -325,10 +329,10 @@
         \end{figure}
 
         Catching all the symmetric solutions described before is quite demanding and we did not find an 
-        efficient way of implementing symmetry breaking constraints, so we tried to keep them as simple 
+        efficient way of implementing all the symmetry breaking constraints, so we tried to keep them as simple 
         as possible.
 
-        Let's define first some support variables:
+        We define first some support variables:
         \begin{align}
             \label{eq:specular_coord}
             \begin{split}
@@ -349,5 +353,5 @@
             lex\_lesseq(y_v, y_v')
         \end{align*}
 
-        Anyway, later we will specify better the adopted constraints and compare the performances of the 
+        Later we will specify with more detail the adopted constraints and compare the performances of the 
         CP, SAT and SMT models with and without the symmetry breaking constraints.

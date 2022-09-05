@@ -3,7 +3,7 @@
   \paragraph*{Representing integers with list of booleans}
     SAT problems are based only on boolean variables. We have to represent positive integer numbers. 
     One-hot encoding is a possible solution for representing integers using only boolean variables.\\
-    How does one-hot encoding works:
+    How does one-hot encoding work:
     For every integer variable we declare one boolean variable for every item of the domain of 
     the numeric variable. Only one boolean per integer variable is set to \texttt{True}. The only \texttt{True} 
     variable corresponds to the value of the domain that is being represented.\\
@@ -11,19 +11,19 @@
     This solution leads to a simple implementation of the operations but is not very efficient 
     because it requires the SAT solver to manage a very big quantity of variables and clauses.
 
-    We decided to use decimal encoding. Let \(domain\_max\)  be the maximum value of the domain of 
+    We decided to use decimal encoding to binary. Let \(domain\_max\) be the maximum value of the domain of 
     a positive integer variable. The number of boolean variables allocated to represent it is:
     \begin{equation}
         var\_size = \lceil \log_2 (domain\_max + 1)\rceil
     \end{equation}
     We have a list of boolean variables that take the value of the corresponding bit of the binary encoding
-    of the positive integer. We implemented specific functions for handling mathematical operations.
+    of the positive integer. We implemented specific functions to perform mathematical operations.
     They are discussed in Section \ref{subsec:SAT_predicates}. \\
 
   \paragraph*{Implementation of the Models}
-    We decided to create a default abstract model that has the common parts that will be needed by
+    We decided to create a default abstract model that has the common parts needed by
     every concrete model. The abstract model is extended by the Base model and the Rotation model. 
-    The rotation model is discussed in Section \ref{subsec:SAT_rotation}\\
+    The details of the Rotation model are discussed in Section \ref{subsec:SAT_rotation}\\
 
     The solver of choice is z3.
 
@@ -79,13 +79,13 @@
     pair-wise encoding is used to calculate the result.\\
     Let n be the length of \(list\) 
     \begin{equation}
-            result\_base = \bigwedge_{0 < i < n} \ \ \bigwedge_{i+1 \leq j \leq n}\neg \ (b_i \land b_j)
+            (n < 4) \Longrightarrow at\_most\_one(list) = \bigwedge_{0 < i < n} \ \ \bigwedge_{i+1 \leq j \leq n}\neg \ (b_i \land b_j)
     \end{equation}
     In the recursive case we split \(list\)  into two parts: \(list_A\)  has length two, \(list_B\)  is
     the remainder. We introduce a new variable \(y\) . We append \(y\)  to \(list_A\)  and ¬\( y\)  to 
     \(list_B\) . We than calculate the result through recursion:
     \begin{equation}
-        result\_recursive = at\_most\_one(list_A) \land at\_most\_one(list_B)
+        (n \geq 4) \Longrightarrow at\_most\_one(list) = at\_most\_one(list_A) \land at\_most\_one(list_B)
     \end{equation}
 
     We chose this encoding because it achieves a number of clauses of \(3n - 6\)  using \((n-3)/2\) new variables. \\
@@ -384,3 +384,78 @@
 
 \subsection{Results}\label{subsec:SAT_results}
     \colorbox{BurntOrange}{TODO missing ...}
+
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{04/results/base_linear1.png}
+      \caption{
+        \colorbox{BurntOrange}{TODO missing ...}
+      }
+      \label{fig:SAT_results_base_linear1}
+    \end{figure}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{04/results/base_linear2.png}
+      \caption{
+        \colorbox{BurntOrange}{TODO missing ...}
+      }
+      \label{fig:SAT_results_base_linear2}
+    \end{figure}
+
+    \colorbox{BurntOrange}{TODO missing ...}
+
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{04/results/base_binary1.png}
+      \caption{
+        \colorbox{BurntOrange}{TODO missing ...}
+      }
+      \label{fig:SAT_results_base_binary1}
+    \end{figure}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{04/results/base_binary2.png}
+      \caption{
+        \colorbox{BurntOrange}{TODO missing ...}
+      }
+      \label{fig:SAT_results_base_binary2}
+    \end{figure}
+
+
+    \colorbox{BurntOrange}{TODO missing ...}
+
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{04/results/rotation_linear1.png}
+      \caption{
+        \colorbox{BurntOrange}{TODO missing ...}
+      }
+      \label{fig:SAT_results_rotation_linear1}
+    \end{figure}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{04/results/rotation_linear2.png}
+      \caption{
+        \colorbox{BurntOrange}{TODO missing ...}
+      }
+      \label{fig:SAT_results_rotation_linear2}
+    \end{figure}
+
+    \colorbox{BurntOrange}{TODO missing ...}
+
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{04/results/rotation_binary1.png}
+      \caption{
+        \colorbox{BurntOrange}{TODO missing ...}
+      }
+      \label{fig:SAT_results_rotation_binary1}
+    \end{figure}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{04/results/rotation_binary2.png}
+      \caption{
+        \colorbox{BurntOrange}{TODO missing ...}
+      }
+      \label{fig:SAT_results_rotation_binary2}
+    \end{figure}

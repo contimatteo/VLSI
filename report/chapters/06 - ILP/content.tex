@@ -1,5 +1,4 @@
 \subsection{Background}
-    % \colorbox{BurntOrange}{TODO missing ...}
     This section focuses on the floorplan design problem of VLSI circuits by using a Mixed Linear
     Programming approach (MILP). To implement our model we used the IBM library of 
     \textit{ILOG cplex}. More precisly we choosed to implement the model by using the extension of
@@ -18,37 +17,37 @@
         M\        &\ =\ \text{A very large positive number}
     \end{align*}
 
-    Next, we can explicit the model's variables:
+    Next, we can explicit the new model's variables:
     \begin{align*}
-        makespan\   &\ =\ \text{height of the plate  } i                     \\
-        x_i\    &\ =\ \text{horizontal coordinate of bottom left corner of circuit  } i            \\
-        y_i\    &\ =\ \text{vertical coordinate of bottom left corner of of circuit  } i              \\
+        % makespan\   &\ =\ \text{height of the plate  } i                                          \\
+        % x_i\    &\ =\ \text{horizontal coordinate of bottom left corner of circuit  } i           \\
+        % y_i\    &\ =\ \text{vertical coordinate of bottom left corner of of circuit  } i          \\
         u_i\    &\ =\ \begin{cases}
-                              1 & \text{if circuit } i \text{ is rotated} \\
+                              1 & \text{if circuit } i \text{ is rotated}                           \\
                               0 & \text{otherwise}
-                          \end{cases}                                        \\
+                          \end{cases}                                                               \\
         l_{i,j} &\ =\ \begin{cases}
                               1 & \text{if circuit } i \text{ is on the left side of the circuit} j \\
                               0 & \text{otherwise}
-                          \end{cases}                                       \\
+                          \end{cases}                                                               \\
         r_{i,j} &\ =\ \begin{cases}
-                            1 & \text{if circuit } i \text{ is on the right side of the circuit} j \\
+                            1 & \text{if circuit } i \text{ is on the right side of the circuit} j  \\
                             0 & \text{otherwise}
-                        \end{cases}                                       \\
+                        \end{cases}                                                                 \\
         a_{i,j} &\ =\ \begin{cases}
-                            1 & \text{if circuit } i \text{ is above the circuit} j \\
+                            1 & \text{if circuit } i \text{ is above the circuit} j                 \\
                             0 & \text{otherwise}
-                        \end{cases}                                       \\
+                        \end{cases}                                                                 \\
         b_{i,j} &\ =\ \begin{cases}
-                            1 & \text{if circuit } i \text{ is below the circuit} j \\
+                            1 & \text{if circuit } i \text{ is below the circuit} j                 \\
                             0 & \text{otherwise}
                         \end{cases}
     \end{align*}
 
     Moreover for what concern the rotation model, we decide to implement a similar procedure to the
     other previously seen approaches. We implemented a couple of function which have the scope of 
-    manage the rotation and the real dimension of each circuit $i$ according to the value of its 
-    specific variable rotation $u_i$:
+    manage the rotation and the real dimension of each circuit \(i\) according to the value of its 
+    specific variable rotation \(u_i\):
     \begin{subequations}
         \label{ilp:f_dims}
         \begin{align}
@@ -88,21 +87,22 @@
     the chip height. This can be seen in the model in the equation \ref{ilp:base_obj} where it is
     shown the problem direction, namely the minimization of the integer variable \(makespan\).
     In order to complete the project task it is necessary to minimize the variable \(makespan\) which
-    is an integer variable with lower bound $min\_makespan$ and with upper bound $max\_makespan$.
-    Please notice also that the  boundaries $min\_makespan$ and $max\_makespan$ had been computed
-    in the same way as for the previous approaches (i.e. SAT, CP and SMT).\\
+
+    is an integer variable with lower bound \(min\_makespan\) and with upper bound \(max\_makespan\).
+    Please notice also that the  boundaries \(min\_makespan\) and \(max\_makespan\) had been computed
+    in the same way as for the previous approaches (i.e. SAT, CP and SMT).
 
     For what concern the constraints, the first one to analise is the one that constraints
-    (equation \ref{ilp:base_ycons}) the variable $y$ to place blocks for which vertical dimension
-    doesn't exceed the value associated to the variable $makespan$.\\
+    (equation \ref{ilp:base_ycons}) the variable \(y\) to place blocks for which vertical dimension
+    doesn't exceed the value associated to the variable \(makespan\).
 
     Now the foucus should be posed on the constraints \ref{ilp:base_diffn1}-\ref{ilp:base_diffn6}.
     These constraints achieve the same task as the \textit{diffn} constraint in CP. More in
     details, we implemented this constraint in ILP by imposing a set of disequations. As we know
     it is defined in CP as \ref{eq:diffn}. So, in order to have the same result of the disjoint
     clause conditions, we need to control the variable's results. The constraints 
-    \ref{ilp:base_diffn1}-\ref{ilp:base_diffn4} states the position of a circuit $c_1$ respect to
-    another circuit $c_2$. The auxiliary parameter $M$ has the scope to falsify the disequation
+    \ref{ilp:base_diffn1}-\ref{ilp:base_diffn4} states the position of a circuit \(c_1\) respect to
+    another circuit \(c_2\). The auxiliary parameter \(M\) has the scope to falsify the disequation
     when the corrispondent variable is set to 0. Please notice that \(M\) is a parameter that can.
     be set by the user, we just want to highlight the fact that for its nature \(M\) is constrained
     to be higher at least than the maximum between all the box dimensions, so we decided to set it:
@@ -111,23 +111,23 @@
     \end{align*}
     We used for our implementation the smaller value Then the subsequent constraints 
     \ref{ilp:base_diffn5}-\ref{ilp:base_diffn6} are needed to allow the sum of the binary variables 
-    (namely $r_{c_1c_2}$, $l_{c_1c_2}$, $a_{c_1c_2}$ and $b_{c_1c_2}$) belonging in in the range
-    between $1$ and $2$. \\
+    (namely \(r_{c_1c_2}\), \(l_{c_1c_2}\), \(a_{c_1c_2}\) and \(b_{c_1c_2}\)) belonging in in the range
+    between \(1\) and \(2\). \\
     
     Finally the last ones are just bounding constraints, which describe the upper and lower bounds
-    of the variables. More in details, while the integer variables $x_c$ can be in the range 
-    between $0$ and $width-widths_c$ (see constraint \ref{ilp:base_b_x}), the variables $y_c$ can have
-    values in the range between $0$ and $makespan-heights_c$ (see constraint \ref{ilp:base_b_y}). 
+    of the variables. More in details, while the integer variables \(x_c\) can be in the range 
+    between \(0\) and \(width-widths_c\) (see constraint \ref{ilp:base_b_x}), the variables \(y_c\) can have
+    values in the range between \(0\) and \(makespan-heights_c\) (see constraint \ref{ilp:base_b_y}). 
     This is due to the fact that we cannot place boxes in a position such that the chip's dimension 
     exceed the circuit plate both in high and in width. Then, since the all the variables of the 
-    constraints \textit{diffn} are binary, their value should fall in the range $0$ and $1$.
+    constraints \textit{diffn} are binary, their value should fall in the range \(0\) and \(1\).
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Rotation}
     % \colorbox{BurntOrange}{TODO }
     Next step consists to extend the model in order take into account also the box rotation.
     For this scope we introduced, as we did also in the previous sections, a new set of bianary 
-    variables $u_c$. 
+    variables \(u_c\). 
 
     \begin{subequations}
         \label{ilp:rot}
@@ -166,4 +166,21 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Results}
-    \colorbox{BurntOrange}{TODO missing ...}
+    \colorbox{BurntOrange}{TODO missing ...} \\
+
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{06/results1.png}
+      \caption{
+        \colorbox{BurntOrange}{TODO missing ...}
+      }
+      \label{fig:ILP_results1}
+    \end{figure}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=1\textwidth]{06/results2.png}
+      \caption{
+        \colorbox{BurntOrange}{TODO missing ...}
+      }
+      \label{fig:ILP_results2}
+    \end{figure}
