@@ -29,11 +29,6 @@ class Z3Model():
 
     def __configure_solver(self) -> None:
         self.solver = Solver()
-        # self.solver.set("sat.local_search", True)
-        # self.solver.set("sat.local_search_threads", 1)
-        # self.solver.set("sat.threads", 3)
-        # self.solver.set("sat.lookahead_simplify", True)
-        # self.solver.set("sat.lookahead.use_learned", True)
         self.solver.set('sat.random_seed', self.solver_random_seed)
 
     def __variables_support(self, raw_data: dict) -> Tuple[int, int, List[int], List[int]]:

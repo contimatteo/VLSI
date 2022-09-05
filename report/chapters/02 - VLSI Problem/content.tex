@@ -25,7 +25,7 @@
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Shared Variables Declaration} \label{sec:shared_variables}
+\subsection{Shared Variables} \label{sec:shared_variables}
     In this section we list the constants and the variables that are shared in the mathematical formalization of 
     models and constraints from now on.
 
@@ -175,30 +175,31 @@
         \colorbox{BurntOrange}{TODO missing ... se dobbiamo metterci solo $r_i$ forse questa sezione non serve ...}
 
 
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Shared Constraints Declaration} \label{sec:shared_constraints}
+
+\subsection{Shared Predicates} \label{sec:shared_predicates}
+    We have defined the following support predicates:
+    \begin{align}
+              \text{diff\_n}\ &\ \leftarrow\ \bigwedge_{i,j \in CC}\ (x_i + w_i \leq x_j) \lor (y_i + h_i \leq y_j) \lor\ (x_j + w_j \leq x_i) \lor (y_j + h_j \leq y_i) \label{eq:diffn}        \\
+        \text{cumulative\_x}\ &\ \leftarrow\ \bigwedge_{x \in X}\ \sum_{c \in Xcross(x)} h_c \leq makespan                                                               \label{eq:cumulative_x} \\
+        \text{cumulative\_y}\ &\ \leftarrow\ \bigwedge_{y \in Y}\ \sum_{c \in Ycross(y)} w_c \leq width                                                                  \label{eq:cumulative_y} \\
+        \text{disj\_cond\_x}\ &\ \leftarrow\ \bigwedge_{c \in C} (h_c + h_{min} > makespan) \lor (c = h\_index_{min})                                                    \nonumber \\
+        \text{disj\_cond\_y}\ &\ \leftarrow\ \bigwedge_{c \in C} (w_c + w_{min} > width) \lor (c = w\_index_{min})                                                       \nonumber \\
+              \text{disj\_x}\ &\ \leftarrow\ \bigwedge_{(c1,c2) \in CC} (x_{c1} + h_{c1} \leq x_{c2}) \lor (x_{c2} + h_{c2} \leq x_{c1})                                 \nonumber \\
+              \text{disj\_y}\ &\ \leftarrow\ \bigwedge_{(c1,c2) \in CC} (y_{c1} + h_{c1} \leq y_{c2}) \lor (y_{c2} + h_{c2} \leq y_{c1})                                 \nonumber
+    \end{align}
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+
+
+\subsection{Shared Constraints} \label{sec:shared_constraints}
     The following formalization will be the one followed for the CP solution and then adapted for
     SAT and SMT. The ILP model will be described later. \\
 
-    First of all, we have defined the following support predicates:
-    % \begin{align}
-    %   (x_i + w_i \leq x_j) \lor (y_i + h_i \leq y_j) &\ \ &\ \nonumber \\
-    %   \lor\ (x_j + w_j \leq x_i) \lor (y_j + h_j \leq y_i)\ &\ \hspace{0.2cm} \forall (i,j) \in CC &\ \text{;diffn} \label{eq:diffn}  \\
-    %   \sum_{c \in C_x} y_c \leq makespan\ &\ \hspace{0.2cm} \forall x \in X, \forall c \in Xcross(x)\ &\ \text{;x axis}  \label{eq:cumulative_x} \\
-    %   \sum_{c \in C_y} x_c \leq width\ &\ \hspace{0.2cm} \forall y \in Y, \forall c \in Ycross(y)\ &\ \text{;y axis} \label{eq:cumulative_y}     
-    % \end{align}
-
-    \begin{align}
-      \text{diff\_n}\ &\ \leftarrow\ \bigwedge_{i,j \in CC}\ (x_i + w_i \leq x_j) \lor (y_i + h_i \leq y_j) \lor\ (x_j + w_j \leq x_i) \lor (y_j + h_j \leq y_i) \label{eq:diffn} \\
-      \text{cumulative\_x}\ &\ \leftarrow\ \bigwedge_{x \in X}\ \sum_{c \in Xcross(x)} h_c \leq makespan \label{eq:cumulative_x} \\
-      \text{cumulative\_y}\ &\ \leftarrow\ \bigwedge_{y \in Y}\ \sum_{c \in Ycross(y)} w_c \leq width \label{eq:cumulative_y} \\
-      \text{disj\_cond\_x}\ &\ \leftarrow\ \bigwedge_{c \in C} (h_c + h_{min} > makespan) \lor (c = h\_index_{min}) \\
-      \text{disj\_cond\_y}\ &\ \leftarrow\ \bigwedge_{c \in C} (w_c + w_{min} > width) \lor (c = w\_index_{min}) \\
-      \text{disj\_x}\ &\ \leftarrow\ \bigwedge_{(c1,c2) \in CC} (x_{c1} + h_{c1} \leq x_{c2}) \lor (x_{c2} + h_{c2} \leq x_{c1}) \\
-      \text{disj\_y}\ &\ \leftarrow\ \bigwedge_{(c1,c2) \in CC} (y_{c1} + h_{c1} \leq y_{c2}) \lor (y_{c2} + h_{c2} \leq y_{c1})
-    \end{align}
-
-    Once we have done this, we have defined the following constraints valid over all models (CP, SAT, SMT, ILP):
+    Starting from the predicates defined in Section \ref{sec:shared_predicates}, we have defined 
+    the following constraints valid over all models (CP, SAT, SMT, ILP):
     \begin{align*}
         \bigwedge_{c \in C}\ w_c > 0\ \    \land\                   &\ w_c \leq width \\
         \bigwedge_{c \in C}\ h_c > 0\ \   \land\                    &\ h_c \leq makespan \\
@@ -213,6 +214,7 @@
         (\text{disj\_cond\_x} \rightarrow \text{disj\_x})\ \ \land\ &\ (\neg (\text{disj\_cond\_x}) \rightarrow \text{cumulative\_x}) \\
         (\text{disj\_cond\_y} \rightarrow \text{disj\_y})\ \ \land\ &\ (\neg (\text{disj\_cond\_y}) \rightarrow \text{cumulative\_y})
     \end{align*}
+
     Like in the "cumulative" of MiniZinc \footnote[1]{https://github.com/MiniZinc/libminizinc/blob/master/share/minizinc/std/cumulative.mzn, \label{fn:minizinc_cumulative}}, 
     the constraint first checks if disjunctive 
     ($disj_x$, $disj_y$) can be used instead. Actually in \ref{fn:minizinc_cumulative} 
