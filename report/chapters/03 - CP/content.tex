@@ -6,7 +6,6 @@ Starting from a base model following the constraints discussed in Section \ref{s
 we added: rotation variables $r_i$, symmetry breaking constraints and search strategies. We have a model
 for each combination of the previous elements.
 To test different behaviour of solvers we chose to run each model on both Chuffed and Gecode solvers.
-\colorbox{BurntOrange}{TODO: check last sentence}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -129,9 +128,7 @@ with the following simple symmetry breaking constraint:
   x_1 <= x_2 \land y_1 <= y_2
 \end{equation*}
 
-which is a simpler and incomplete versions of:
-\colorbox{BurntOrange}{TODO: do not like previous sentence}
-which is simpler and more efficient than
+which is a simpler version of:
 
 \begin{equation*}
   lex\_lesseq(x\_v, x\_v') \land lex\_lesseq(y\_v, y\_v')
@@ -141,13 +138,13 @@ where $x\_v$, $x\_v'$, $y\_v$, $y\_v'$ are defined in \ref{eq:specular_coord}.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsubsection{Rotation}
+\subsubsection{Rotation} \label{sec:CP_rotation}
 
 In order to introduce rotations to the model described in Section \ref{sec:CP_base} or any
 of the following CP models, we need to add rotation variables $r_i$, functions \ref{eq:CP_r_w}, \ref{eq:CP_r_h}. We
 also need to modify already existing constraints substituting $w_c$ with $r\_w(c)$ and $h_c$ with $r\_h(c)$.
 
-\subsubsection{Symmetry}
+\subsubsection{Symmetry} \label{sec:CP_symmetry}
 
 As already discussed in Section \ref{sec:symmetries}, we decided to break only a few symmetries among all the ones we
 detected. The following are the constraints added to the models in order to deal with symmetries.\\
@@ -164,6 +161,9 @@ which obviously lead to a different solution, but with same \textit{makespan}:
 \begin{equation*}
   \text{c\_eq\_dim\_sym} \land \text{vc\_eq\_dim\_sym} \land \text{vv\_eq\_dim\_sym}
 \end{equation*}
+As demonstration of the inefficiency of \textit{virtual} circuit constraint, we will show 
+separately in the results [Section \ref{sec:CP_results}] a model with only \(c\_eq\_dim\_sym\)
+and a model with also \(vc\_eq\_dim\_sym\ \land vv\_eq\_dim\_sym\) (the last one will have "virtual" in the name).\\
 
 The case we simplified is the one figured in [Fig.\ref{fig:vc_specular_in}]: instead of applying
 lexicographic order to all \textit{real} circuits within a generic \textit{virtual} circuit, we
@@ -177,7 +177,7 @@ in order to have better understanding of the predicates above, recover Section \
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Search}
+\subsection{Search} \label{sec:CP_search}
 The performances of all the models are compared with and without the search strategy we selected.
 Actually in the input of all models the circuits are sorted in decreasing order according to their area,
 but then we also implemented a sequential search
@@ -197,28 +197,33 @@ list also have:
 
 To avoid getting stuck during the search of the solution we added also luby restart strategy
 \footnote[3]{https://www.minizinc.org/doc-2.5.5/en/mzn\_search.html\#restart},
-choosing empirically the value of parameter $scale$.
-\colorbox{BurntOrange}{TODO mettere una definizione di scale invece di un nome?}
-
-
+choosing empirically the value of parameter $scale$, where \(scale\) is an integer defining 
+after how many nodes to restart. For Luby restart the \textit{k-th} restart gets 
+\(scale \cdot L[k]\) where \(L[k]\) is the \textit{k-th} number in the Luby sequence.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Results}
-\colorbox{BurntOrange}{TODO missing ...} \\
+\subsection{Results} \label{sec:CP_results}
 
 \paragraph{Hardware specifcations}
 All the experiments for the CP technology have been executed on a laptop computer running Linux Mint 20.3, Linux kernel 5.15
 equipped with the following hardware:
 \texttt{Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz, 16Gb Ram 2.4GHz}.\\
 
-The results obtained for the \(base\) Model are presented in the Figures [\ref{fig:CP_results_base1},\ref{fig:CP_results_base2}].
+The results obtained for the \(base\) models are plotted in the Figures [\ref{fig:CP_results_base1},\ref{fig:CP_results_base2}].
+The performances of the base model (Section \ref{sec:CP_base}) are compared with:
+\begin{itemize}
+  \item \textit{base search}: base model with search strategy described in Section \ref{sec:CP_search}
+  \item \textit{base symmetry}: base model with symmetry breaking constraints described in \ref{sec:CP_symmetry} (no \textit{virtual} circuits)
+  \item \textit{base search symmetry}: \textit{base symmetry} model with search strategy
+\end{itemize}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{03/results/base1.png}
   \caption{
-    \colorbox{BurntOrange}{TODO missing ...}
+    CP \(Base\) Model: comparison of time performance of \textit{base}, \textit{base search}, \textit{base symmetry} and \textit{base search symmetry} models
+    for the first 20 instances.
   }
   \label{fig:CP_results_base1}
 \end{figure}
@@ -226,19 +231,40 @@ The results obtained for the \(base\) Model are presented in the Figures [\ref{f
   \centering
   \includegraphics[width=1\textwidth]{03/results/base2.png}
   \caption{
-    \colorbox{BurntOrange}{TODO missing ...}
+    CP \(Base\) Model: comparison of time performance of \textit{base}, \textit{base search}, \textit{base symmetry} and \textit{base search symmetry} models
+    for the first 20 instances.
   }
   \label{fig:CP_results_base2}
 \end{figure}
 
-\colorbox{BurntOrange}{TODO missing ...} \\
-The results obtained for the \(rotation\) Model are presented in the Figures [\ref{fig:CP_results_rotation1},\ref{fig:CP_results_rotation2}].
+The results are taken fixing the random seed, but should be taken in consideration that changing seed
+the solve time of the same model on the same instance may vary a lot. As consequence we will describe 
+only the most evident trends.\\
+
+The first 20 instances do not show any particular difference in performances between the models.
+We can already notice an increasing behaviour of solve time, but with some peaks for "random" instances showing 
+how the solve time does not depend only on the number of circuits to place. \\
+
+The secon 20 instances are not solved by all models, showing the first differences: the model solving 
+the most of the instances is \textit{base search} and if we compare \textit{base symmetry} with 
+\textit{base symmetry search} we have the proof that the search and restart strategies are quite effective.
+We can also notice that most of the time adding the symmetry breaking constraints that we defined in 
+Section \ref{sec:CP_symmetry} make the performances worse, confirming what already said.\\
+
+The results obtained for the \(rotation\) models are plotted in the Figures [\ref{fig:CP_results_rotation1},\ref{fig:CP_results_rotation2}].
+The performances of the rotation model (Section \ref{sec:CP_rotation}) are compared with:
+\begin{itemize}
+  \item \textit{rotation search}: rotation model with search strategy described in Section \ref{sec:CP_search}
+  \item \textit{rotation symmetry}: rotation model with symmetry breaking constraints described in \ref{sec:CP_symmetry} (no \textit{virtual} circuits)
+  \item \textit{rotation search symmetry}: \textit{rotation symmetry} model with search strategy
+\end{itemize}
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=1\textwidth]{03/results/rotation1.png}
   \caption{
-    \colorbox{BurntOrange}{TODO missing ...}
+    CP \(rotation\) Model: comparison of time performance of \textit{rotation}, \textit{rotation search}, \textit{rotation symmetry} and \textit{rotation search symmetry} models
+    for the first 20 instances.
   }
   \label{fig:CP_results_rotation1}
 \end{figure}
@@ -246,8 +272,21 @@ The results obtained for the \(rotation\) Model are presented in the Figures [\r
   \centering
   \includegraphics[width=1\textwidth]{03/results/rotation2.png}
   \caption{
-    \colorbox{BurntOrange}{TODO missing ...}
+    CP \(rotation\) Model: comparison of time performance of \textit{rotation}, \textit{rotation search}, \textit{rotation symmetry} and \textit{rotation search symmetry} models
+    for the last 20 instances.
   }
   \label{fig:CP_results_rotation2}
 \end{figure}
 
+The results obtained for \textit{rotation} models are quite different from before: we still have an increasing solve 
+time with some exceptional instances, but the first main difference is the impact of search strategies. 
+While, with \textit{base} models, search strategies improved the efficiency, with \textit{rotation} model is the opposite.
+We were not expecting any significant impact from the search strategy for the boolean variables \(r_i\) since their domain 
+is highly limited and random search was not even implemented yet.
+After checking the solutions and seeing that most of the \textit{makespan} values (in \textit{base} models) match with our 
+definition of \textit{min\_makespan}, we may hazard that the dimensions of the circuits have been designed specifically for 
+the \textit{VLSI} problem without rotations.\\
+
+The second main difference from \textit{base} models is that in this case symmetry breaking constraint are more competitive. 
+Maybe \textit{base} model was too simple and adding more constraints (referring to the symmetry breaking constraints) to 
+compute was not balanced by the number of truncated solutions during the search.
