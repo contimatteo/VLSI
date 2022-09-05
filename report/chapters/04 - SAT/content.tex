@@ -55,7 +55,7 @@
   boolean variables and back.\\
   If an integer value is provided than it is converted to a list of python \texttt{bool} variables
   that are consistent with 
-  \texttt{z3 Bool} variables and can be used to do calculations.\\
+  \texttt{z3 Bool} variables and can be used to perform calculations.\\
   In this way we achieve the transparency of the mathematical functions for the type of operand 
   used.\\
   The length of the lists of booleans is calculated upon the maximum value of the domain of the
@@ -295,13 +295,11 @@
       \[cumulative\_x(y, heights, w, width, minw, idx) \]
       Where \(minw\) is \(\min_{i \in [0,nc]} w_i\) and \( w_{idx} 
       = \min_{i \in [0,nc]} w_i\)
-      %%% qui ci si può mettere l'implementazione di cumulative... volendo
+      %%% we could insert here the explanation of the implementation of the cumulative
+      %%% constraint with fzn_cumulative but it is not readable and the explanation in the general section is enough
       
-      %%% spiegazione di disjunctive che è usato nella spiegazione di cumulative
-      %%% disjunctive logic formula
-
-      %%% spiegazione di fzn\_cumulative: usato nella spiegazione di cumulative
-      %%%fzn\_cumulative logic formula
+      %%% we could insert here the explanation of the implementation of the disjunctive
+      %%% constrain but it is not readable and the explanation in the general section is enough
     
     \paragraph*{Symmetry breaking constraint}
       Optionally we can impose a constraint to break symmetries between circuits along
@@ -332,7 +330,7 @@
     Where \(min\_h\) is \(\min_{i \in [0,nc]} h_i\), \( h_{idx} = \min_{i \in [0,nc]} h_i\) and 
     \(target\_makespan\) is the makespan that we are currently searching a solution for.
 
-    %%% qui ci si può mettere l'implementazione di cumulative... volendo
+    %%% same as above for the cumulative implementation
 
     \paragraph*{Symmetry breaking constraint}
     Optionally we can impose a constraint to break symmetries between circuits along the vertical axis.
@@ -383,79 +381,92 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Results}\label{subsec:SAT_results}
-    \colorbox{BurntOrange}{TODO missing...}
 
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/base_linear1.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing...}
-      }
-      \label{fig:SAT_results_base_linear1}
-    \end{figure}
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/base_linear2.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing...}
-      }
-      \label{fig:SAT_results_base_linear2}
-    \end{figure}
+  \paragraph{Hardware specifcations}
+    All the experiments for the SAT technology have been executed on a laptop computer running Linux Mint 20.3, Linux kernel 5.15
+    equipped with the following hardware:
+    \texttt{Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz, 16Gb Ram 2.4GHz}.\\
 
-    \colorbox{BurntOrange}{TODO missing...}
+  \paragraph{Base model}
+    The results obtained with the Base model are in Figures \ref{fig:SAT_results_base_linear1} \ref{fig:SAT_results_base_linear2}
+    for linear search; \ref{fig:SAT_results_base_binary1} \ref{fig:SAT_results_base_binary2} for binary search.
 
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/base_binary1.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing...}
-      }
-      \label{fig:SAT_results_base_binary1}
-    \end{figure}
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/base_binary2.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing...}
-      }
-      \label{fig:SAT_results_base_binary2}
-    \end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/base_linear1.png}
+    \caption{
+      Results obtained with Base model - linear search - instances [1,20]
+    }
+    \label{fig:SAT_results_base_linear1}
+  \end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/base_linear2.png}
+    \caption{
+      Results obtained with Base model - linear search - instances [21,40]
+    }
+    \label{fig:SAT_results_base_linear2}
+  \end{figure}    
 
+  \colorbox{BurntOrange}{TODO missing...} 
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/base_binary1.png}
+    \caption{
+      Results obtained with Base model - Binary search - instances [1,20]
+    }
+    \label{fig:SAT_results_base_binary1}
+  \end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/base_binary2.png}
+    \caption{
+      Results obtained with Base model - binary search - instances [21,40]
+    }
+    \label{fig:SAT_results_base_binary2}
+  \end{figure} 
+  
+  %
 
-    \colorbox{BurntOrange}{TODO missing...}
+  \paragraph{Rotation model}
+  The results obtained with the Rotation model are in Figures \ref{fig:SAT_results_rotation_linear1} \ref{fig:SAT_results_rotation_linear2}
+  for linear search; \ref{fig:SAT_results_rotation_binary1} \ref{fig:SAT_results_rotation_binary2} for binary search.
+  
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/rotation_linear1.png}
+    \caption{
+      Results obtained with Rotation model - linear search - instances [1,20]
+    }
+    \label{fig:SAT_results_rotation_linear1}
+  \end{figure}
 
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/rotation_linear1.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing...}
-      }
-      \label{fig:SAT_results_rotation_linear1}
-    \end{figure}
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/rotation_linear2.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing...}
-      }
-      \label{fig:SAT_results_rotation_linear2}
-    \end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/rotation_linear2.png}
+    \caption{
+      Results obtained with Rotation model - linear search - instances [21,40]
+    }
+    \label{fig:SAT_results_rotation_linear2}
+  \end{figure}    
 
-    \colorbox{BurntOrange}{TODO missing...}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/rotation_binary1.png}
+    \caption{
+      Results obtained with Rotation model - binary search - instances [1,20]
+    }
+    \label{fig:SAT_results_rotation_binary1}
+  \end{figure}
 
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/rotation_binary1.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing...}
-      }
-      \label{fig:SAT_results_rotation_binary1}
-    \end{figure}
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/rotation_binary2.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing...}
-      }
-      \label{fig:SAT_results_rotation_binary2}
-    \end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/rotation_binary2.png}
+    \caption{
+      Results obtained with Rotation model - binary search - instances [21,40]
+    }
+    \label{fig:SAT_results_rotation_binary2}
+
+    \paragraph{Conclusions}
+
+  \end{figure}
