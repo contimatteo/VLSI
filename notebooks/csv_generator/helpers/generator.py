@@ -32,6 +32,7 @@ class CsvGenerator():
                         "symmetry": "symmetry" in data["model"],
                         "cumulative": None,
                         "search": "search" in data["model"],
+                        "makespan": int(data["solution"]["makespan"]),
                     }
                 )
             )
@@ -51,6 +52,7 @@ class CsvGenerator():
                         "symmetry": data["symmetry"],
                         "cumulative": data["cumulative"],
                         "search": data["search"],
+                        "makespan": int(data["solution"]["makespan"]),
                     }
                 )
             )
@@ -70,6 +72,7 @@ class CsvGenerator():
                         "symmetry": data["symmetry"],
                         "cumulative": data["cumulative"],
                         "search": data["search"],
+                        "makespan": int(data["solution"]["makespan"]),
                     }
                 )
             )
@@ -89,6 +92,7 @@ class CsvGenerator():
                         "symmetry": False,
                         "cumulative": False,
                         "search": "primal-simplex",
+                        "makespan": int(data["solution"]["makespan"]),
                     }
                 )
             )
@@ -107,6 +111,7 @@ class CsvGenerator():
             'symmetry': bool,
             'cumulative': bool,
             'search': str,
+            'makespan': int,
         }
 
         df_data = []

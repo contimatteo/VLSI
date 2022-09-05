@@ -4,25 +4,18 @@ from utils import ILPStorage
 
 ###
 
-VERBOSE_CHOICES = [0, 1, 2]
-
 DEFAULT_SECONDS_TIME_LIMIT = 300
 DEFAULT_N_SOLUTIONS = 1
-DEFAULT_VERBOSE = 1
 DEFAULT_MODEL_NAME = "base.py"
-MODELS_CHOICES = [
-    "base",
-    # "base_decimal_encoding_diffn",
-    "rotation"
-]
-DEFAULT_SEARCH_STRATEGY = 'linear'
-SEARCH_CHOICES = ['linear', 'binary']
+MODELS_CHOICES = ["base", "rotation"]
+DEFAULT_SEARCH_STRATEGY = 'simplex'
+SEARCH_CHOICES = ['simplex']
 
 ###
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='SMT solver of VLSI problem.')
+    parser = argparse.ArgumentParser(description='ILP solver of VLSI problem.')
 
     parser.add_argument('--data', required=True, type=str, help='name of txt data file')
     parser.add_argument(
@@ -33,24 +26,8 @@ def parse_args():
         choices=MODELS_CHOICES,
         help='name of the model to use'
     )
-    # parser.add_argument(
-    #     '--solver',
-    #     required=False,
-    #     type=str,
-    #     default=DEFAULT_SOLVER_NAME,
-    #     choices=SOLVERS_CHOICES,
-    #     help='name of the solver to use'
-    # )
     parser.add_argument(
         '--sol', required=False, type=int, default=DEFAULT_N_SOLUTIONS, help='max no. of solutions'
-    )
-    parser.add_argument(
-        '--verbose',
-        required=False,
-        type=int,
-        default=DEFAULT_VERBOSE,
-        choices=VERBOSE_CHOICES,
-        help='print execution verbose infos'
     )
     parser.add_argument(
         '--plot', required=False, action="store_true", help='show final solutions plot'
@@ -77,15 +54,7 @@ def parse_args():
         choices=SEARCH_CHOICES,
         help='makespan search strategy'
     )
-    parser.add_argument(
-        '--symmetry', required=False, action="store_true", help='add symmetry constraints'
-    )
-    parser.add_argument(
-        '--cumulative',
-        required=False,
-        action="store_true",
-        help='add cumulative constraint on both x and y'
-    )
+
     #
 
     args = parser.parse_args()

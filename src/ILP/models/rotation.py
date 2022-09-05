@@ -126,6 +126,4 @@ class CplexModel(CplexBaseModel):
             "max_makespan": max_makespan,
             "makespan": self.variables['target_makespan'].solution_value
         }
-        print(solution)
         return solution
-

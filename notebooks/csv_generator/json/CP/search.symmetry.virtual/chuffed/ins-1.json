@@ -1,0 +1,68 @@
+{
+  "solution": {
+    "width": 8,
+    "n_circuits": 4,
+    "widths": [
+      5,
+      3,
+      5,
+      3
+    ],
+    "heights": [
+      5,
+      5,
+      3,
+      3
+    ],
+    "x": [
+      0,
+      5,
+      0,
+      5
+    ],
+    "y": [
+      0,
+      0,
+      5,
+      5
+    ],
+    "min_makespan": 8,
+    "max_makespan": 8,
+    "makespan": 8
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 756,
+    "flatIntVars": 104,
+    "flatBoolConstraints": 382,
+    "flatIntConstraints": 529,
+    "evaluatedReifiedConstraints": 468,
+    "eliminatedImplications": 12,
+    "flatTime": 0.078792,
+    "nodes": 7,
+    "failures": 0,
+    "restarts": 1,
+    "variables": 2408,
+    "intVars": 123,
+    "boolVariables": 2283,
+    "propagators": 1094,
+    "propagations": 2458,
+    "peakDepth": 6,
+    "nogoods": 0,
+    "backjumps": 0,
+    "peakMem": 0.0,
+    "time": 0.008,
+    "initTime": 0.008,
+    "solveTime": 0.0,
+    "objective": 8,
+    "optTime": 0.0,
+    "baseMem": 0.0,
+    "trailMem": 0.01,
+    "randomSeed": 666,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 0.11,
+  "solver": "Chuffed",
+  "model": "search.symmetry.virtual",
+  "data_file": "ins-1"
+}
