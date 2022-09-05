@@ -205,8 +205,10 @@ after how many nodes to restart. For Luby restart the \textit{k-th} restart gets
 
 \subsection{Results} \label{sec:CP_results}
 
-All the experiments for the CP technology have been executed on a machine with the following hardware:
-\texttt{Intel i5-8265U, 4-core, 16Gb Ram}.\\
+\paragraph{Hardware specifcations}
+All the experiments for the CP technology have been executed on a laptop computer running Linux Mint 20.3, Linux kernel 5.15
+equipped with the following hardware:
+\texttt{Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz, 16Gb Ram 2.4GHz}.\\
 
 The results obtained for the \(base\) models are plotted in the Figures [\ref{fig:CP_results_base1},\ref{fig:CP_results_base2}].
 The performances of the base model (Section \ref{sec:CP_base}) are compared with:
@@ -276,15 +278,15 @@ The performances of the rotation model (Section \ref{sec:CP_rotation}) are compa
   \label{fig:CP_results_rotation2}
 \end{figure}
 
-The results obtained for \textit{rotation} models is quite different from before: we still have an increasing solve 
+The results obtained for \textit{rotation} models are quite different from before: we still have an increasing solve 
 time with some exceptional instances, but the first main difference is the impact of search strategies. 
 While, with \textit{base} models, search strategies improved the efficiency, with \textit{rotation} model is the opposite.
 We were not expecting any significant impact from the search strategy for the boolean variables \(r_i\) since their domain 
-is highly limited and random search was not even implemented yet, but evidently rotating all circuits makes the instances
-much more complicated.
+is highly limited and random search was not even implemented yet.
 After checking the solutions and seeing that most of the \textit{makespan} values (in \textit{base} models) match with our 
-definition of \textit{min_makespan}, we may hazard that the dimensions of the circuits have been designed specifically for 
+definition of \textit{min\_makespan}, we may hazard that the dimensions of the circuits have been designed specifically for 
 the \textit{VLSI} problem without rotations.\\
+
 The second main difference from \textit{base} models is that in this case symmetry breaking constraint are more competitive. 
 Maybe \textit{base} model was too simple and adding more constraints (referring to the symmetry breaking constraints) to 
 compute was not balanced by the number of truncated solutions during the search.
