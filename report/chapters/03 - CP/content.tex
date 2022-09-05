@@ -2,16 +2,17 @@
 \subsection{Background}
 The first paradigm used to solve the VLSI optimization problem is Constraint Programming (CP),
 developed using MiniZinc as modeling language.
-Starting from a base model following the constraints discussed in \ref{sec:shared_constraints},
+Starting from a base model following the constraints discussed in Section \ref{sec:shared_constraints},
 we added: rotation variables $r_i$, symmetry breaking constraints and search strategies;
 to be more precise we have a model for each combination of the previous elements.
 To test different behaviour of solvers we have chosen to run each model on both Chuffed and Gecode solvers.
+\colorbox{BurntOrange}{TODO: check last sentence}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Notation} \label{sec:CP_notation}
 In CP we tried to break also the symmetries related to \textit{virtual} circuits, but, as already
-explained in section \ref{sec:symmetries}, we decided to keep only the simplest ones that will
+explained in Section \ref{sec:symmetries}, we decided to keep only the simplest ones that will
 be described soon.
 
 This section is mainly needed to introduce constans related to \textit{virtual} circuits:
@@ -22,7 +23,7 @@ This section is mainly needed to introduce constans related to \textit{virtual} 
            & \ =\ |CC| = \frac{nc!}{2! \cdot (nc - 2)!} = \frac{nc \cdot (nc-1)}{2} \\
   n\_rvc\  & \ =\ n\_vc + nc                                                        \\
   VC       & \ =\ \{ c_i\ |\ i \in [1,n\_vc] \}                                     \\
-  VV       & \ =\ \{ (i,j)\ \in VC \times VC |\ i <j \}                             \\
+  VV       & \ =\ \{ (i,j)\ \in VC \times VC\ |\ i <j \}                             \\
   RVC      & \ =\ \{ c_i\ |\ i \in [1,n\_rvc] \}                                    \\
   % c_pairs &\ =\ [(i,j)\ |\ (i,j) \in CC]
 \end{align*}
@@ -40,14 +41,14 @@ of two circuit indexes, which is also the cardinality of $CC$.
 \subsection{Functions \& Predicates} \label{sec:CP_functions_predicates}
 The additional functions and predicates we define in this section will later be used in the models
 adopting symmetry breaking constraints and the ones allowing rotation of circuits; the others work
-with the constraints already defined in \ref{sec:shared_constraints}.
+with the constraints already defined in Section \ref{sec:shared_constraints}.
 
 \paragraph{Functions}
 \begin{align}
-  vc\_x(vc_{i,j})\        =\  & min(x_i, x_j)                                                               \\
-  vc\_y(vc_{i,j})\        =\  & min(y_i, y_j)                                                               \\
-  vc\_width(vc_{i,j})\    =\  & max(x_i + w_i, x_j + w_j) - vc\_x(vc_{i,j})                                 \\
-  vc\_height(vc_{i,j})\   =\  & max(y_i + h_i, y_j + h_j) - vc\_y(vc_{i,j})                                 \\
+  vc\_x(vc_{i,j})\        =\  & min(x_i, x_j)                                                     \nonumber \\
+  vc\_y(vc_{i,j})\        =\  & min(y_i, y_j)                                                     \nonumber \\
+  vc\_width(vc_{i,j})\    =\  & max(x_i + w_i, x_j + w_j) - vc\_x(vc_{i,j})                       \nonumber \\
+  vc\_height(vc_{i,j})\   =\  & max(y_i + h_i, y_j + h_j) - vc\_y(vc_{i,j})                       \nonumber \\
   r\_w(c) =\                  & bool2int(\neg\ is\_rotated_c) \cdot w_c + bool2int(is\_rotated_c) \cdot h_c
   \label{eq:CP_r_w}                                                                                         \\
   r\_h(c) =\                  & bool2int(\neg\ is\_rotated_c) \cdot h_c + bool2int(is\_rotated_c) \cdot w_c
@@ -55,8 +56,9 @@ with the constraints already defined in \ref{sec:shared_constraints}.
 \end{align}
 
 where $vc\_x(vc_{i,j})$, $vc\_y(vc_{i,j})$, $vc\_width(vc_{i,j})$ and $vc\_height(vc_{i,j})$
-return respectively the $x$, $y$, $w$ and $h$ of the \textit{virtual} circuit $vc_{i,j}$, while
-$r\_w(c)$ and $r\_h(c)$ check if circuit $c$ is rotated and update coherently $w_c$ and $h_c$.
+return respectively the $x_{vc_{i,j}}$, $y_{vc_{i,j}}$, $w_{vc_{i,j}}$ and $h_{vc_{i,j}}$ of 
+the \textit{virtual} circuit $vc_{i,j}$, while $r\_w(c)$ and $r\_h(c)$ check if circuit $c$ 
+is rotated and update coherently $w_c$ and $h_c$.
 
 \paragraph{Predicates}
 % \begin{align*}
@@ -88,8 +90,8 @@ $r\_w(c)$ and $r\_h(c)$ check if circuit $c$ is rotated and update coherently $w
                                              & \nonumber                                                                                                                                                         \\
   \text{c\_eq\_dim\_sym}          \leftarrow & \ \bigwedge_{(c_1, c_2) \in CC} (w_{c_1} == w_{c_2} \land h_{c_1} == h_{c_2}) \rightarrow lex\_lesseq([x_{c_1}, y_{c_1}], [x_{c_2}, y_{c_2}])                     \\
                                              & \nonumber                                                                                                                                                         \\
-  \text{vc\_eq\_dim\_sym}         \leftarrow & \ \bigwedge_{(c, vc) \in C \times VC} \hspace{0.3cm} (\text{vc\_valid}(vc) \land w_{c_1} == w_{c_2} \land h_{c_1} == h_{c_2}) \rightarrow               \nonumber \\
-                                             & \hspace{2.2cm} \rightarrow lex\_lesseq([x_{c_1}, y_{c_1}], [x_{c_2}, y_{c_2}])                                                                                    \\
+  \text{vc\_eq\_dim\_sym}         \leftarrow & \ \bigwedge_{(c, vc) \in C \times VC} \hspace{0.3cm} (\text{vc\_valid}(vc) \land w_{c} == w_{vc} \land h_{c} == h_{vc}) \rightarrow               \nonumber \\
+                                             & \hspace{2.2cm} \rightarrow lex\_lesseq([x_{c}, y_{c}], [x_{vc}, y_{vc}])                                                                                    \\
                                              & \nonumber                                                                                                                                                         \\
   \text{vv\_eq\_dim\_sym}         \leftarrow & \ \bigwedge_{(vc_1, vc_2) \in VV} (\text{vc\_valid}(vc_1) \land \text{vc\_valid}(vc_2) \land \neg (vc_{1x} == vc_{2x})\ \land                           \nonumber \\
                                              & \hspace{2cm} \land vc_{1w} == vc_{2w} \land vc_{1h} == vc_{2h} \land \nonumber                                                                                    \\
@@ -106,13 +108,13 @@ $r\_w(c)$ and $r\_h(c)$ check if circuit $c$ is rotated and update coherently $w
 \end{align}
 
 \hfill \\
-As mentioned in \ref{sec:CP_notation}, $vc_{i,j}$ defines a rectangle in the plate, but, in order to
-be defined as \textit{virtual} circuit, its edges must not cross any regular circuit.
+As mentioned in Section \ref{sec:CP_notation}, $vc_{i,j}$ defines a rectangle in the plate, but, in order to
+be defined as \textit{virtual} circuit, its edges must not cross any \textit{real} circuit.
 This condition is checked by the predicate $vc\_valid(vc_{i,j})$, where
 $vc_x = vc\_x(vc_{i,j})$, $vc_y = vc\_y(vc_{i,j})$, $vc_w = vc\_width(vc_{i,j})$, $vc_h = vc\_height(vc_{i,j})$.
 The predicates $c\_eq\_dim\_sym$, $vc\_eq\_dim\_sym$, $vv\_eq\_dim\_sym$ apply
 lexicographic order to circuits with same dimensionality; in particular the first keep in consideration only
-regular circuits, the second a regular circuit and a \textit{virtual} circuit, and the third only couples of
+\textit{real} circuits, the second a \textit{real} circuit and a \textit{virtual} circuit, and the third only couples of
 \textit{virtual} circuits. The last one must also check that the circuits $c_1$ and $c_2$ do not overlap,
 otherwise it would be in contrast with any lexicographic order constraint, making the solution unfeasible.
 Another possible case in which a couple of circuit can be swapped is when they have a shared side with same length;
@@ -122,7 +124,7 @@ the last predicates are needed to catch those situations and apply to those coup
 
 \subsection{Constraints}
 \subsubsection{Base} \label{sec:CP_base}
-The reference model is the one with the constraints described in section \ref{sec:shared_constraints}
+The reference model is the one with the constraints described in Section \ref{sec:shared_constraints}
 with the following simple symmetry breaking constraint:
 \begin{equation*}
   x_1 <= x_2 \land y_1 <= y_2
@@ -142,42 +144,38 @@ where $x\_v$, $x\_v'$, $y\_v$, $y\_v'$ are defined in \ref{eq:specular_coord}.
 
 \subsubsection{Rotation}
 
-In order to introduce rotations to \ref{sec:CP_base} or any of the following CP models, we need
-to add rotation variables $r_i$ and functions \ref{eq:CP_r_w}, \ref{eq:CP_r_h} and modify
-already existing constraints substituting $w_c$ with $r\_w(c)$ and $h_c$ with $r\_h(c)$.
+In order to introduce rotations to the model described in Section \ref{sec:CP_base} or any 
+of the following CP models, we need to add rotation variables $r_i$ and functions \ref{eq:CP_r_w}, \ref{eq:CP_r_h} 
+and modify already existing constraints substituting $w_c$ with $r\_w(c)$ and $h_c$ with $r\_h(c)$.
 
 \subsubsection{Symmetry}
 
-As already discussed in \ref{sec:symmetries}, we decided to break, among all symmetries we
+As already discussed in Section \ref{sec:symmetries}, we decided to break, among all symmetries we
 detected, only a few of them. The following are the constraints added to models in order to
-deal with symmetries.
+deal with symmetries.\\
 
-First of all we removed the solutions specular w.r.t. the horizontal and vertical axis \ref{fig:symmetry_specular}:
+First of all we removed the solutions specular w.r.t. the horizontal and vertical axis [Fig.\ref{fig:symmetry_specular}]:
 
 \begin{equation*}
   lex\_lesseq(x\_v, x\_v') \land lex\_lesseq(y\_v, y\_v')
 \end{equation*}
 with $x\_v$, $x\_v'$, $y\_v$, $y\_v'$ already defined in \ref{eq:specular_coord}.
 
-Then we avoid swapping of circuits with same dimensions \ref{fig:symmetry_swap} \ref{fig:vc_swap},
+Then we avoid swapping of circuits with same dimensions [Fig.\ref{fig:symmetry_swap}, \ref{fig:vc_swap}],
 which obviously lead to a different solution, but with same \textit{makespan}:
 \begin{equation*}
   \text{c\_eq\_dim\_sym} \land \text{vc\_eq\_dim\_sym} \land \text{vv\_eq\_dim\_sym}
 \end{equation*}
 
-The case we simplified is the one figured in \ref{fig:vc_specular_in}: instead of applying
-lexicographic order to all regular circuits within a generic \textit{virtual} circuit, we
-decided to limit ourself to \textit{virtual} circuits containing only two regular circuits.
-We can see this like avoiding adjacent circuits, having the shared edge with the same length,
+The case we simplified is the one figured in [Fig.\ref{fig:vc_specular_in}]: instead of applying
+lexicographic order to all \textit{real} circuits within a generic \textit{virtual} circuit, we
+decided to limit ourself to \textit{virtual} circuits containing only two \textit{real} circuits.
+We can see this like avoiding adjacent circuits, having the shared edge with same length,
 to swap their position:
 \begin{equation*}
-  \text{c\_consec\_sym}\ \ (== \top)
+  \text{c\_consec\_sym} \leftrightarrow \top
 \end{equation*}
-in order to have better understanding of the predicates above, read \ref{sec:CP_functions_predicates}.
-
-
-
-
+in order to have better understanding of the predicates above, recover Section \ref{sec:CP_functions_predicates}.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -185,7 +183,7 @@ in order to have better understanding of the predicates above, read \ref{sec:CP_
 The performances of all the models are compared with and without the search strategy we selected.
 Actually in the input of all models, the circuits are sorted in decreasing order according to their area,
 but then we also implemented a sequental search
-\footnote[1]{https://www.minizinc.org/doc-2.5.5/en/mzn\_search.html\#search-annotations}
+\footnote[2]{https://www.minizinc.org/doc-2.5.5/en/mzn\_search.html\#search-annotations}
 with the following annotation search, in this specific order:
 \begin{enumerate}
   \item ann\_search\_makespan = int\_search([ $makespan$ ], input\_order, indomain\_split)
@@ -193,16 +191,15 @@ with the following annotation search, in this specific order:
   \item ann\_search\_y = int\_search($y$, input\_order, indomain\_min)
 \end{enumerate}
 
-Model with rotation allowed and search strategies included have, at the end of the sequential search
+Models with both rotation and search strategies have, at the end of the sequential search
 list, also:
 \begin{enumerate}[resume]
   \item ann\_search\_rot = bool\_search($[r_c\ |\ c \in C]$, input\_order, indomain\_min)
 \end{enumerate}
 
 To avoid being stacked during the search of the solution we added also luby restart strategy
-\footnote[2]{https://www.minizinc.org/doc-2.5.5/en/mzn\_search.html\#restart},
-choosing empirically
-the value of parameter $scale$.
+\footnote[3]{https://www.minizinc.org/doc-2.5.5/en/mzn\_search.html\#restart},
+choosing empirically the value of parameter $scale$.
 
 
 
