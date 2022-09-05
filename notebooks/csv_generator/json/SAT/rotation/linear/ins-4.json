@@ -5,7 +5,7 @@
   "search": "linear",
   "symmetry": false,
   "cumulative": false,
-  "TOTAL_TIME": 0.047041893005371094,
+  "TOTAL_TIME": 0.05977821350097656,
   "stats": {
     "conflicts": 596,
     "decisions": 13389,
@@ -14,18 +14,17 @@
     "restarts": 5,
     "final checks": 1,
     "mk clause": 4961,
-    "mk clause binary": 2894,
     "del clause": 47,
     "minimized lits": 1180,
     "num checks": 1,
     "mk bool var": 2317,
     "arith-make-feasible": 2,
     "arith-max-columns": 4,
-    "num allocs": 606569,
+    "num allocs": 621606,
     "rlimit count": 295384,
-    "max memory": 21.31,
-    "memory": 21.31,
-    "time": 0.024
+    "max memory": 20.93,
+    "memory": 20.93,
+    "time": 0.031
   },
   "solution": {
     "width": 11,
