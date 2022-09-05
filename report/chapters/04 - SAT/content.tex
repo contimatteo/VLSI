@@ -13,9 +13,9 @@
 
     We decided to use decimal encoding to binary. Let \(domain\_max\) be the maximum value of the domain of 
     a positive integer variable. The number of boolean variables allocated to represent it is:
-    \begin{equation}
+    \begin{equation*}
         var\_size = \lceil \log_2 (domain\_max + 1)\rceil
-    \end{equation}
+    \end{equation*}
     We have a list of boolean variables that take the value of the corresponding bit of the binary encoding
     of the positive integer. We implemented specific functions to perform mathematical operations.
     They are discussed in Section \ref{subsec:SAT_predicates}. \\
@@ -25,7 +25,7 @@
     every concrete model. The abstract model is extended by the Base model and the Rotation model. 
     The details of the Rotation model are discussed in Section \ref{subsec:SAT_rotation}\\
 
-    The solver of choice is z3.
+    The solver of choice is z3 Python.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -34,16 +34,16 @@
   definitions in \ref{sec:shared_variables}.\\
 
   The notation for the \(i\) -th element of list 
-  \(list\)  is \(list_i\) .\\
+  \(list\)  is \(list_i\).\\
 
   The size of the lists is calculated to be minimal but safe against overflows of the possible operations.
-  \begin{equation}
+  \begin{equation*}
     x\_domain\_size = \lceil \log_2 (width - \min_{0 \leq i < nc} (w_i) + \max_{0 \leq i < nc}(w_i) + 1) \rceil
-  \end{equation}
+  \end{equation*}
   \( x\_domain\_size \) is the length of each \(x_i\) list of booleans.
-  \begin{equation}
+  \begin{equation*}
     y\_domain\_size = \lceil \log_2 (max\_makespan - \min_{0 \leq i < nc} (h_i) + \max_{0 \leq i < nc}(h_i) + 1) \rceil
-  \end{equation}
+  \end{equation*}
   \(y\_domain\_size\) is the length of each \(y_i\) list of booleans.
 
   Several variables are used only locally in functions: they are defined there.\\
@@ -55,7 +55,7 @@
   boolean variables and back.\\
   If an integer value is provided than it is converted to a list of python \texttt{bool} variables
   that are consistent with 
-  \texttt{z3 Bool} variables and can be used to do calculations.\\
+  \texttt{z3 Bool} variables and can be used to perform calculations.\\
   In this way we achieve the transparency of the mathematical functions for the type of operand 
   used.\\
   The length of the lists of booleans is calculated upon the maximum value of the domain of the
@@ -63,14 +63,14 @@
   two values of different domain sizes. \\
 
   \paragraph*{All the bits of a list set to False} \hfill \\
-    \begin{equation}
+    \begin{equation*}
       all\_F(list) = \bigwedge_{b \in list}\neg \ b
-    \end{equation}
+    \end{equation*}
   
     \paragraph*{At least one bit of a list must be set to True} \hfill \\
-    \begin{equation}
+    \begin{equation*}
       at\_least\_one(list) = \bigvee_{b \in list} b
-    \end{equation}
+    \end{equation*}
 
   \paragraph*{At most one} \hfill \\
   %\texttt{\textbf{at\_most\_one(list):}}\\
@@ -78,75 +78,75 @@
     The base case of the recursion is if the list has less than four elements. In this case the 
     pair-wise encoding is used to calculate the result.\\
     Let n be the length of \(list\) 
-    \begin{equation}
+    \begin{equation*}
             (n < 4) \Longrightarrow at\_most\_one(list) = \bigwedge_{0 < i < n} \ \ \bigwedge_{i+1 \leq j \leq n}\neg \ (b_i \land b_j)
-    \end{equation}
+    \end{equation*}
     In the recursive case we split \(list\)  into two parts: \(list_A\)  has length two, \(list_B\)  is
-    the remainder. We introduce a new variable \(y\) . We append \(y\)  to \(list_A\)  and ¬\( y\)  to 
-    \(list_B\) . We than calculate the result through recursion:
-    \begin{equation}
+    the remainder. We introduce a new variable \(y\). We append \(y\)  to \(list_A\)  and ¬\( y\)  to 
+    \(list_B\). We than calculate the result through recursion:
+    \begin{equation*}
         (n \geq 4) \Longrightarrow at\_most\_one(list) = at\_most\_one(list_A) \land at\_most\_one(list_B)
-    \end{equation}
+    \end{equation*}
 
     We chose this encoding because it achieves a number of clauses of \(3n - 6\)  using \((n-3)/2\) new variables. \\
 
   \paragraph*{Exactly one} \hfill \\
-    \begin{equation}
+    \begin{equation*}
       exactly\_one(list) = at\_most\_one(list) \land at\_least\_one(list)
-    \end{equation}
+    \end{equation*}
 
   \paragraph*{Not equal} \hfill \\
   We must consider the cases where the two lists have different lengths.
   Let \(min\_len\)  be the minimum between the length of the lists, \(exc_1\)  be the part of \(l1\) 
-  exceeding \(min\_len\)  and \(exc_2\)  be the part of \(l2\)  exceeding \(min\_len\) . At least one 
+  exceeding \(min\_len\)  and \(exc_2\)  be the part of \(l2\)  exceeding \(min\_len\). At least one 
   among \(exc_1\)  and \(exc_2\)  will be an empty list and will provide no clauses.\\
-  \begin{equation}
+  \begin{equation*}
     ne(l1, l2) = at\_least\_one(exc_1) \lor at\_least\_one(exc_2)\ \lor \bigoplus_{i \leq min\_len}(l1_i, l2_i)
-  \end{equation}
+  \end{equation*}
 
   \paragraph*{Equal} \hfill \\
     One of the lists is eventually padded with bits set to \texttt{False} than we can
     calculate the result:
-    \begin{equation}
+    \begin{equation*}
       eq(l1, l2)\ =\ \bigwedge_{0 \leq i < n} \neg\ (l1[i] \oplus l2[i])
-    \end{equation}
+    \end{equation*}
 
   \paragraph*{Greater than or equal} \hfill \\
     We must consider the cases where the two lists have different lengths.
     Let \(min\_len\)  be the minimum between the length of the lists, \(exc_1\)  be the part of \(l1\)  
-    exceeding \(min\_len\)  and \(exc_2\)  be the part of \(l2\)  exceeding \(min\_len\) . At least one among
+    exceeding \(min\_len\)  and \(exc_2\)  be the part of \(l2\)  exceeding \(min\_len\). At least one among
     \(exc_1\)  and \(exc_2\)  will be an empty list and will provide no clauses.\\
-    \begin{equation}
+    \begin{equation*}
           gte(l1, l2) = at\_least\_one(exc_1) \lor ( all\_F(exc_2) \land gte\_same\_len(l1\_cut, l2\_cut))
-    \end{equation}
-    Where \(l1\_cut\)  and \(l2\_cut\)  are the result of pruning \(l1\)  and \(l2\)  at length \(min\_len\) .\\
+    \end{equation*}
+    Where \(l1\_cut\)  and \(l2\_cut\)  are the result of pruning \(l1\)  and \(l2\)  at length \(min\_len\).\\
 
   \paragraph*{Greater than or equal of numbers represented with the same quantity of bits} \hfill \\
     The encoding used is the AND encoding with Common Subexpression Elimination as described in 
     \cite{Elgabou} and \cite{Zhao}.\\
-    Len \(n\)  be the length of the lists \(l1\) , \(l2\) .\\
+    Len \(n\)  be the length of the lists \(l1\) , \(l2\).\\
     In the case \(n = 1\) 
-    \begin{equation}
+    \begin{equation*}
       gte\_same\_len(l1, l2) = l1_0 \lor \neg \ l2_0
-    \end{equation}\\
+    \end{equation*}\\
 
     Otherwise:\\
     Let \(k\)  be a list of boolean variables of length \(n-1\) 
-    \begin{equation}
+    \begin{equation*}
       first = l1_0 \lor \neg \ l2_0
-    \end{equation}
+    \end{equation*}
     %
-    \begin{equation}
+    \begin{equation*}
       second = k_0 \Longleftrightarrow \neg \ (l1_0 \oplus l2_0)
-    \end{equation}
+    \end{equation*}
     %
-    \begin{equation}
+    \begin{equation*}
       third = k_{i+1} \Longleftrightarrow k_i \land \neg \ (L1_{i+1} \oplus l2_{i+1}) \ \ \forall i \in [0, n-3]
-    \end{equation}
+    \end{equation*}
     %
-    \begin{equation}
+    \begin{equation*}
       fourth = k_i \Longleftrightarrow (l1_{i+1} \lor \neg \ l2_{i+1}) \ \ \forall i \in [0, n-2]
-    \end{equation}
+    \end{equation*}
 
     We chose this encoding because of the considerations of \cite{Zhao} among other linear encodings.
 
@@ -154,64 +154,64 @@
     We must consider the cases where the two lists have different lengths.
     Let \(min\_len\)  be the minimum between the length of the lists, \(exc_1\)  be the part of \(l1\)  
     exceeding \(min\_len\)  and \(exc_2\)  
-    be the part of \(l2\)  exceeding \(min\_len\) . At least one among \(exc_1\)  and \(exc_2\)  will be an
+    be the part of \(l2\)  exceeding \(min\_len\). At least one among \(exc_1\)  and \(exc_2\)  will be an
     empty list and will provide no clauses.\\
-    \begin{equation}
+    \begin{equation*}
       gt(l1, l2) = at\_least\_one(exc_1) \lor ( all\_F(exc_2) \land gt\_same\_len(l1\_cut, l2\_cut))
-    \end{equation}
+    \end{equation*}
 
   \paragraph*{Greather than of numbers represented with the same quantity of bits}  \hfill \\
     The encoding used is the AND encoding with Common Subexpression Elimination. We slightly
     modified the implementation of \cite{Zhao} to exclude the equality.\\
-    Len \(n\)  be the length of the lists \(l1\) , \(l2\) .\\
+    Len \(n\)  be the length of the lists \(l1\) , \(l2\).\\
     In the case \(n = 1\) 
-    \begin{equation}
+    \begin{equation*}
       gt\_same\_len(l1, l2) = l1_0 \land \neg \ l2_0
-    \end{equation}\\
+    \end{equation*}\\
 
     Otherwise:\\
     Let \(k\)  be a list of boolean variables of length \(n-1\) 
-    \begin{equation}
+    \begin{equation*}
       first =  l1_0 \land \neg \ l2_0 %first
-    \end{equation}
+    \end{equation*}
     %
-    \begin{equation}
+    \begin{equation*}
       second = k_0 \Longleftrightarrow \neg \ (l1_0 \oplus l2_0) %second
-    \end{equation}
+    \end{equation*}
     %
-    \begin{equation}
+    \begin{equation*}
       third = \bigwedge_{0 < n-2} k_{i+1} \Longleftrightarrow k_i \land (\neg \ (l1_{i+1} \oplus l2_{i+1})) \ \ \forall i \in [0, n-3]
-    \end{equation}
+    \end{equation*}
     %
-    \begin{equation}
+    \begin{equation*}
       fourth = \bigvee_{0 \leq i < n-1} k_i \land (l1_{i+1} \land \neg \ l2_{i+1})  \ \ \forall i \in [0, n-2]
-    \end{equation}
-    \begin{equation}
+    \end{equation*}
+    \begin{equation*}
       gt\_same\_len(l1, l2) = first \lor (second \land third \land fourth)
-    \end{equation}
+    \end{equation*}
 
   \paragraph*{Less than} \hfill \\
-    \begin{equation}
+    \begin{equation*}
       lt(l1, l2) = gt(l2, l1) %; Notice the reverse order of the parameters
-    \end{equation}
+    \end{equation*}
     Notice the reverse order of the parameters\\
 
   \paragraph*{Less than or equal} \hfill \\
-    \begin{equation}
+    \begin{equation*}
       lte(l1, l2) = gte(l2, l1) %; Notice the reverse order of the parameters
-    \end{equation}
+    \end{equation*}
     Notice the reverse order of the parameters\\
 
   \paragraph*{Sum of two numbers} \hfill \\
     Padding is performed on the shortest list if need be.
     Let \(n\)  be the length of the lists, eventually padded. Let \(carry\)  be a list of boolean
-    variables of length \(n\) . \(carry_0\)  is set to \texttt{false}.  
-    \begin{equation}
+    variables of length \(n\). \(carry_0\)  is set to \texttt{false}.  
+    \begin{equation*}
       carry_{i+1} = ((l1_i \oplus l2_i) \land carry_i) \lor (l1_i \land l2_i) \ \ \forall i \in [0, n]
-    \end{equation}
-    \begin{equation}
+    \end{equation*}
+    \begin{equation*}
       sum\_b(l1, l2) = (l1_i \oplus l2_i) \oplus carry_i \  \ \forall i \in [0, n-1]
-  \end{equation}
+  \end{equation*}
 
   The result is a list that represents the sum of the numbers. \(carry_{n-1}\)  could be used to
   notify an overflow but we did  not use it because the domains size are designed to avoid this.\\
@@ -219,14 +219,14 @@
 \paragraph*{Subtraction of two numbers} \hfill \\
   Padding is performed on the shortest list if need be.
   Let \(n\)  be the length of the lists, eventually padded.
-  Let \(borr\)  be a list a list of boolean variables of length \(n\) . \(borr_0\)  is set to \texttt{false} 
-  \begin{equation}
+  Let \(borr\)  be a list a list of boolean variables of length \(n\). \(borr_0\)  is set to \texttt{false} 
+  \begin{equation*}
     sub\_b(l1, l2) = (l1_i \oplus l2_i) \oplus borr_i \ \ \forall i \in [0, n-1]
-  \end{equation}
-  \begin{equation}
+  \end{equation*}
+  \begin{equation*}
     borr_{i+1} = ((\neg \ (l1_i \oplus l2_i) \land borr_i) \lor (\neg \ l1_i \land \ \ l2_i)) \ \ 
       \forall i \in [0, n-1]
-  \end{equation}
+  \end{equation*}
 
   % symmetrical: calculates the symmetrical position of a coordinate wrt the boundary
   % Xsymm = end - (x - start + dx[i])
@@ -271,7 +271,7 @@
       \texttt\textbf{diffn(x, y, h, w)}\\
       The diff\_n constraint, defined in Section \ref{sec:shared_constraints}, is implemented
       as follows.
-      \begin{equation}
+      \begin{equation*}
           \begin{split}
               \bigwedge_{(i, j) \in CC}&=
               lte(sum\_b(x_i, widths_i), x_j) \lor \\
@@ -279,14 +279,14 @@
               &lte(sum\_b(x_j, widths_j), x_i) \lor \\
               &lte(sum\_b(y_j, heights_j), y_i)
           \end{split}
-      \end{equation}\\
+      \end{equation*}\\
 
     \paragraph*{Circuits must not be placed over the side of the board}
       The constraint is defined in Section \ref{sec:shared_constraints}. 
       For greater clarity the implementation of the constraint is provided:
-      \begin{equation}
+      \begin{equation*}
           \bigwedge_{c \in C} lte(x_c, sub_b(width, widths_c))
-      \end{equation}\\
+      \end{equation*}\\
 
     \paragraph*{cumulative\_x}
       Optionally we can impose a cumulative constraint along the horizontal axis, 
@@ -295,33 +295,31 @@
       \[cumulative\_x(y, heights, w, width, minw, idx) \]
       Where \(minw\) is \(\min_{i \in [0,nc]} w_i\) and \( w_{idx} 
       = \min_{i \in [0,nc]} w_i\)
-      %%% qui ci si può mettere l'implementazione di cumulative... volendo
+      %%% we could insert here the explanation of the implementation of the cumulative
+      %%% constraint with fzn_cumulative but it is not readable and the explanation in the general section is enough
       
-      %%% spiegazione di disjunctive che è usato nella spiegazione di cumulative
-      %%% disjunctive logic formula
-
-      %%% spiegazione di fzn\_cumulative: usato nella spiegazione di cumulative
-      %%%fzn\_cumulative logic formula
+      %%% we could insert here the explanation of the implementation of the disjunctive
+      %%% constrain but it is not readable and the explanation in the general section is enough
     
     \paragraph*{Symmetry breaking constraint}
       Optionally we can impose a constraint to break symmetries between circuits along
       the horizontal axis.
-      \begin{equation}
+      \begin{equation*}
         axial\_symmetry(x, w, width) = lte(x_i, sub\_b(sub\_b(width, x_i), w_i) \ \ \forall i \ in [0, nc]
-      \end{equation}
+      \end{equation*}
 
   \subsubsection{Dynamic constraints}  \label{subsec:SAT_dynamic_cons}
     Dynamic constraints are the constraint whose values change during the iteration. We
     need to update their limits when we perform the optimization. They are the constraints 
-    about the height of the board. We use z3.push() at the beginning of every loop and z3.pop()
+    about the height of the board. We use \(z3.push()\) at the beginning of every loop and z3.pop()
     at the end to avoid jamming the solver with out of date constraints.\\
 
     \paragraph*{Circuits must not be placed over the current limit of height}
     The constraint is defined in Section \ref{sec:shared_constraints}. 
     For greater clarity the implementation of the constraint is provided:
-      \begin{equation}
+      \begin{equation*}
           \bigwedge_{c \in C} lte(y_c, sub\_b(target\_makespan, heights_c))
-      \end{equation}
+      \end{equation*}
       With \(target\_makespan\) is intended the makespan that we are currently searching a solution for.
 
     \paragraph*{cumulative\_y}
@@ -332,14 +330,14 @@
     Where \(min\_h\) is \(\min_{i \in [0,nc]} h_i\), \( h_{idx} = \min_{i \in [0,nc]} h_i\) and 
     \(target\_makespan\) is the makespan that we are currently searching a solution for.
 
-    %%% qui ci si può mettere l'implementazione di cumulative... volendo
+    %%% same as above for the cumulative implementation
 
     \paragraph*{Symmetry breaking constraint}
     Optionally we can impose a constraint to break symmetries between circuits along the vertical axis.
     The constraint to be applied is:
-    \begin{equation}
+    \begin{equation*}
       axial\_symmetry(y, h, target\_makespan) = lte(y_i, sub\_b(sub\_b(target\_makespan, y_i)), h_i) \ \ \forall i \ in [0, nc]
-    \end{equation}
+    \end{equation*}
     With \(target\_makespan\) is intended the makespan that we are currently searching a solution for.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -347,20 +345,20 @@
 \subsection{Rotation}\label{subsec:SAT_rotation}
   We tackled the problem of rotating the circuit on the board by extending the base model. Every
   extention provided by the model for the rotations is presented in this Section.\\
-  \begin{equation}
+  \begin{equation*}
     domain\_size = \lceil \log_2 (\max_{0 \leq i < nc} (\max(x_i, y_i)) + 1) \rceil
-  \end{equation}
+  \end{equation*}
   When rotation is available all the items of \(h\) and \(w\) must have the same length.
   \(domain\_size \) is the number of bits that we use to represent every \(w_i\) and \(h_i\)\\
     \(is\_rotated_i\) = is \(c\_i\) rotated or not\\
   \(w\_b_i\) list of length \(domain\_size \) of booleans to represent the effective horizontal size of circuit \(i\)
-  \begin{equation}
+  \begin{equation*}
     w\_b_i = (is\_rotated_i \land w_i) \lor (\neg \ is\_rotated_i \land h_i) \ \ \forall i \in [0, domain\_size-1] 
-  \end{equation}
+  \end{equation*}
   \(h\_b_i\) list of length \(domain\_size \) of booleans to represent the effective vertical size of circuit \(i\)
-  \begin{equation}
+  \begin{equation*}
     h\_b_i = (is\_rotated_i \land h_i) \lor (\neg \ is\_rotated_i \land w_i) \ \ \forall i \in [0, domain\_size-1] 
-  \end{equation}  
+  \end{equation*}  
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -383,79 +381,123 @@
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
 \subsection{Results}\label{subsec:SAT_results}
-    \colorbox{BurntOrange}{TODO missing ...}
 
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/base_linear1.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing ...}
-      }
-      \label{fig:SAT_results_base_linear1}
-    \end{figure}
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/base_linear2.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing ...}
-      }
-      \label{fig:SAT_results_base_linear2}
-    \end{figure}
+  \paragraph{Hardware specifcations}
+    All the experiments for the SAT technology have been executed on a laptop computer running Linux Mint 20.3, Linux kernel 5.15
+    equipped with the following hardware:
+    \texttt{Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz, 16Gb Ram 2.4GHz}.
 
-    \colorbox{BurntOrange}{TODO missing ...}
+  \paragraph{Base model}
+    The results obtained with the Base model are in Figures [\ref{fig:SAT_results_base_linear1}, \ref{fig:SAT_results_base_linear2}]
+    for linear search and in Figures [\ref{fig:SAT_results_base_binary1}, \ref{fig:SAT_results_base_binary2}] for binary search.
 
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/base_binary1.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing ...}
-      }
-      \label{fig:SAT_results_base_binary1}
-    \end{figure}
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/base_binary2.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing ...}
-      }
-      \label{fig:SAT_results_base_binary2}
-    \end{figure}
+  \pagebreak
+  %
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/base_linear1.png}
+    \caption{
+      Results obtained with Base model - linear search - instances [1,20]
+    }
+    \label{fig:SAT_results_base_linear1}
+  \end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/base_linear2.png}
+    \caption{
+      Results obtained with Base model - linear search - instances [21,40]
+    }
+    \label{fig:SAT_results_base_linear2}
+  \end{figure}    
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/base_binary1.png}
+    \caption{
+      Results obtained with Base model - Binary search - instances [1,20]
+    }
+    \label{fig:SAT_results_base_binary1}
+  \end{figure}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/base_binary2.png}
+    \caption{
+      Results obtained with Base model - binary search - instances [21,40]
+    }
+    \label{fig:SAT_results_base_binary2}
+  \end{figure} 
+  
+  %
+
+  \paragraph{Rotation model}
+  The results obtained with the Rotation model are in Figures [\ref{fig:SAT_results_rotation_linear1}, \ref{fig:SAT_results_rotation_linear2}]
+  for linear search and in Figures [\ref{fig:SAT_results_rotation_binary1}, \ref{fig:SAT_results_rotation_binary2}] for binary search.
+  
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/rotation_linear1.png}
+    \caption{
+      Results obtained with Rotation model - linear search - instances [1,20]
+    }
+    \label{fig:SAT_results_rotation_linear1}
+  \end{figure}
+  %
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/rotation_linear2.png}
+    \caption{
+      Results obtained with Rotation model - linear search - instances [21,40]
+    }
+    \label{fig:SAT_results_rotation_linear2}
+  \end{figure}   
+  % 
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/rotation_binary1.png}
+    \caption{
+      Results obtained with Rotation model - binary search - instances [1,20]
+    }
+    \label{fig:SAT_results_rotation_binary1}
+  \end{figure}
+  %
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{04/results/rotation_binary2.png}
+    \caption{
+      Results obtained with Rotation model - binary search - instances [21,40]
+    }
+    \label{fig:SAT_results_rotation_binary2}
 
 
-    \colorbox{BurntOrange}{TODO missing ...}
 
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/rotation_linear1.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing ...}
-      }
-      \label{fig:SAT_results_rotation_linear1}
-    \end{figure}
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/rotation_linear2.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing ...}
-      }
-      \label{fig:SAT_results_rotation_linear2}
-    \end{figure}
+  \paragraph{Observations.}
+  \raggedright
+    We can see how all of the models are able to solve the large part
+    of the instances withint the 5 minutes time limit despite the modest
+    computation power provided. The linear complexity of the used
+    encodings is the key to the success of the model.\\
 
-    \colorbox{BurntOrange}{TODO missing ...}
+    The symmetry breaking is not of any help in this model because it adds
+    more clauses and more to be elaborated and satisfied.\\
+    The same holds for the implied cumulative constraint. Despite 
+    not introducing any new literal it nearly always has a slowing effect.\\
 
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/rotation_binary1.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing ...}
-      }
-      \label{fig:SAT_results_rotation_binary1}
-    \end{figure}
-    \begin{figure}[H]
-      \centering
-      \includegraphics[width=1\textwidth]{04/results/rotation_binary2.png}
-      \caption{
-        \colorbox{BurntOrange}{TODO missing ...}
-      }
-      \label{fig:SAT_results_rotation_binary2}
-    \end{figure}
+    It is interesting how the combination of the symmetry breaking constraints
+    and of the implied cumulative constraint obtains an overall performance 
+    very similar to the only cumulative constraint one.\\
+
+    In nearly all the solutions of the proposed instances the circuits can be
+    fitted in order to achieve a flat upper overll margin and no empty space 
+    is left between circuits. This is the reason why the \(min\_makespan\) nearly
+    always prove to be the final \(makespan\) of the solution.
+    In this circumstances a sequential search from the bottom to the top performs 
+    better than any other search strategy. In a more general view where empty spaces
+    can happen to be left in between circuits the binary search strategy can be
+    more effective than the linear one.\\
+
+    With no surprise the complexity of the problem arises much more faster when we
+    allow the circuits to rotate but the SAT model dedicate to the problem supported
+    well the effort.
+
+
+  \end{figure}

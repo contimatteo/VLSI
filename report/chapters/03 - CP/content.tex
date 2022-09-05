@@ -6,7 +6,6 @@ Starting from a base model following the constraints discussed in Section \ref{s
 we added: rotation variables $r_i$, symmetry breaking constraints and search strategies. We have a model
 for each combination of the previous elements.
 To test different behaviour of solvers we chose to run each model on both Chuffed and Gecode solvers.
-\colorbox{BurntOrange}{TODO: check last sentence}
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
@@ -22,7 +21,7 @@ This section is mainly needed to introduce constants related to \textit{virtual}
            & \ =\ |CC| = \frac{nc!}{2! \cdot (nc - 2)!} = \frac{nc \cdot (nc-1)}{2} \\
   n\_rvc\  & \ =\ n\_vc + nc                                                        \\
   VC       & \ =\ \{ c_i\ |\ i \in [1,n\_vc] \}                                     \\
-  VV       & \ =\ \{ (i,j)\ \in VC \times VC\ |\ i <j \}                             \\
+  VV       & \ =\ \{ (i,j)\ \in VC \times VC\ |\ i <j \}                            \\
   RVC      & \ =\ \{ c_i\ |\ i \in [1,n\_rvc] \}                                    \\
   % c_pairs &\ =\ [(i,j)\ |\ (i,j) \in CC]
 \end{align*}
@@ -55,8 +54,8 @@ work with the constraints already defined in Section \ref{sec:shared_constraints
 \end{align}
 
 where $vc\_x(vc_{i,j})$, $vc\_y(vc_{i,j})$, $vc\_width(vc_{i,j})$ and $vc\_height(vc_{i,j})$
-return respectively the $x_{vc_{i,j}}$, $y_{vc_{i,j}}$, $w_{vc_{i,j}}$ and $h_{vc_{i,j}}$ of 
-the \textit{virtual} circuit $vc_{i,j}$, while $r\_w(c)$ and $r\_h(c)$ check if circuit $c$ 
+return respectively the $x_{vc_{i,j}}$, $y_{vc_{i,j}}$, $w_{vc_{i,j}}$ and $h_{vc_{i,j}}$ of
+the \textit{virtual} circuit $vc_{i,j}$, while $r\_w(c)$ and $r\_h(c)$ check if circuit $c$
 is rotated and update coherently $w_c$ and $h_c$.
 
 \paragraph{Predicates}
@@ -89,13 +88,13 @@ is rotated and update coherently $w_c$ and $h_c$.
                                              & \nonumber                                                                                                                                                         \\
   \text{c\_eq\_dim\_sym}          \leftarrow & \ \bigwedge_{(c_1, c_2) \in CC} (w_{c_1} == w_{c_2} \land h_{c_1} == h_{c_2}) \rightarrow lex\_lesseq([x_{c_1}, y_{c_1}], [x_{c_2}, y_{c_2}])                     \\
                                              & \nonumber                                                                                                                                                         \\
-  \text{vc\_eq\_dim\_sym}         \leftarrow & \ \bigwedge_{(c, vc) \in C \times VC} \hspace{0.3cm} (\text{vc\_valid}(vc) \land w_{c} == w_{vc} \land h_{c} == h_{vc}) \rightarrow               \nonumber \\
-                                             & \hspace{2.2cm} \rightarrow lex\_lesseq([x_{c}, y_{c}], [x_{vc}, y_{vc}])                                                                                    \\
+  \text{vc\_eq\_dim\_sym}         \leftarrow & \ \bigwedge_{(c, vc) \in C \times VC} \hspace{0.3cm} (\text{vc\_valid}(vc) \land w_{c} == w_{vc} \land h_{c} == h_{vc}) \rightarrow               \nonumber       \\
+                                             & \hspace{2.2cm} \rightarrow lex\_lesseq([x_{c}, y_{c}], [x_{vc}, y_{vc}])                                                                                          \\
                                              & \nonumber                                                                                                                                                         \\
   \text{vv\_eq\_dim\_sym}         \leftarrow & \ \bigwedge_{(vc_1, vc_2) \in VV} (\text{vc\_valid}(vc_1) \land \text{vc\_valid}(vc_2) \land \neg (vc_{1x} == vc_{2x})\ \land                           \nonumber \\
                                              & \hspace{2cm} \land vc_{1w} == vc_{2w} \land vc_{1h} == vc_{2h} \land \nonumber                                                                                    \\
-                                             & \hspace{2cm} \land (|vc_{1x} - vc_{2x}| \geq vc_{1w} \lor  |vc_{1y} - vc_{2y}| \geq vc_{1h}))  \rightarrow              \nonumber                                                                                           \\
-                                             & \hspace{2cm} \rightarrow lex\_lesseq([vc_{1x}, vc_{1y}], [vc_{2x}, vc_{2y}])                                              \\
+                                             & \hspace{2cm} \land (|vc_{1x} - vc_{2x}| \geq vc_{1w} \lor  |vc_{1y} - vc_{2y}| \geq vc_{1h}))  \rightarrow              \nonumber                                 \\
+                                             & \hspace{2cm} \rightarrow lex\_lesseq([vc_{1x}, vc_{1y}], [vc_{2x}, vc_{2y}])                                                                                      \\
                                              & \nonumber                                                                                                                                                         \\
   \text{c\_x\_consec}(c_1, c_2)   \leftarrow & \hspace{0.5cm} x_{c_1} + w_{c_1} == x_{c_2} \lor x_{c_2} + w_{c_2} == x_{c_1}                                                                                     \\
   \text{c\_y\_consec}(c_1, c_2)   \leftarrow & \hspace{0.5cm} y_{c_1} + h_{c_1} == y_{c_2} \lor y_{c_2} + h_{c_2} == y_{c_1}                                                                                     \\
@@ -129,9 +128,7 @@ with the following simple symmetry breaking constraint:
   x_1 <= x_2 \land y_1 <= y_2
 \end{equation*}
 
-which is a simpler and incomplete versions of:
-\colorbox{BurntOrange}{TODO: do not like previous sentence}
-which is simpler and more efficient than
+which is a simpler version of:
 
 \begin{equation*}
   lex\_lesseq(x\_v, x\_v') \land lex\_lesseq(y\_v, y\_v')
@@ -141,13 +138,13 @@ where $x\_v$, $x\_v'$, $y\_v$, $y\_v'$ are defined in \ref{eq:specular_coord}.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsubsection{Rotation}
+\subsubsection{Rotation} \label{sec:CP_rotation}
 
-In order to introduce rotations to the model described in Section \ref{sec:CP_base} or any 
+In order to introduce rotations to the model described in Section \ref{sec:CP_base} or any
 of the following CP models, we need to add rotation variables $r_i$, functions \ref{eq:CP_r_w}, \ref{eq:CP_r_h}. We
 also need to modify already existing constraints substituting $w_c$ with $r\_w(c)$ and $h_c$ with $r\_h(c)$.
 
-\subsubsection{Symmetry}
+\subsubsection{Symmetry} \label{sec:CP_symmetry}
 
 As already discussed in Section \ref{sec:symmetries}, we decided to break only a few symmetries among all the ones we
 detected. The following are the constraints added to the models in order to deal with symmetries.\\
@@ -164,6 +161,9 @@ which obviously lead to a different solution, but with same \textit{makespan}:
 \begin{equation*}
   \text{c\_eq\_dim\_sym} \land \text{vc\_eq\_dim\_sym} \land \text{vv\_eq\_dim\_sym}
 \end{equation*}
+As demonstration of the inefficiency of \textit{virtual} circuit constraint, we will show 
+separately in the results [Section \ref{sec:CP_results}] a model with only \(c\_eq\_dim\_sym\)
+and a model with also \(vc\_eq\_dim\_sym\ \land vv\_eq\_dim\_sym\) (the last one will have "virtual" in the name).\\
 
 The case we simplified is the one figured in [Fig.\ref{fig:vc_specular_in}]: instead of applying
 lexicographic order to all \textit{real} circuits within a generic \textit{virtual} circuit, we
@@ -177,7 +177,7 @@ in order to have better understanding of the predicates above, recover Section \
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Search}
+\subsection{Search} \label{sec:CP_search}
 The performances of all the models are compared with and without the search strategy we selected.
 Actually in the input of all models the circuits are sorted in decreasing order according to their area,
 but then we also implemented a sequential search
@@ -197,49 +197,96 @@ list also have:
 
 To avoid getting stuck during the search of the solution we added also luby restart strategy
 \footnote[3]{https://www.minizinc.org/doc-2.5.5/en/mzn\_search.html\#restart},
-choosing empirically the value of parameter $scale$.
-\colorbox{BurntOrange}{TODO mettere una definizione di scale invece di un nome?}
-
-
+choosing empirically the value of parameter $scale$, where \(scale\) is an integer defining 
+after how many nodes to restart. For Luby restart the \textit{k-th} restart gets 
+\(scale \cdot L[k]\) where \(L[k]\) is the \textit{k-th} number in the Luby sequence.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
-\subsection{Results}
-  \colorbox{BurntOrange}{TODO missing ...}
+\subsection{Results} \label{sec:CP_results}
 
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{03/results/base1.png}
-    \caption{
-      \colorbox{BurntOrange}{TODO missing ...}
-    }
-    \label{fig:CP_results_base1}
-  \end{figure}
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{03/results/base2.png}
-    \caption{
-      \colorbox{BurntOrange}{TODO missing ...}
-    }
-    \label{fig:CP_results_base2}
-  \end{figure}
+\paragraph{Hardware specifcations}
+All the experiments for the CP technology have been executed on a laptop computer running Linux Mint 20.3, Linux kernel 5.15
+equipped with the following hardware:
+\texttt{Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz, 16Gb Ram 2.4GHz}.\\
 
-  \colorbox{BurntOrange}{TODO missing ...}
+The results obtained for the \(base\) models are plotted in the Figures [\ref{fig:CP_results_base1},\ref{fig:CP_results_base2}].
+The performances of the base model (Section \ref{sec:CP_base}) are compared with:
+\begin{itemize}
+  \item \textit{base search}: base model with search strategy described in Section \ref{sec:CP_search}
+  \item \textit{base symmetry}: base model with symmetry breaking constraints described in \ref{sec:CP_symmetry} (no \textit{virtual} circuits)
+  \item \textit{base search symmetry}: \textit{base symmetry} model with search strategy
+\end{itemize}
 
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{03/results/rotation1.png}
-    \caption{
-      \colorbox{BurntOrange}{TODO missing ...}
-    }
-    \label{fig:CP_results_rotation1}
-  \end{figure}
-  \begin{figure}[H]
-    \centering
-    \includegraphics[width=1\textwidth]{03/results/rotation2.png}
-    \caption{
-      \colorbox{BurntOrange}{TODO missing ...}
-    }
-    \label{fig:CP_results_rotation2}
-  \end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{03/results/base1.png}
+  \caption{
+    CP \(Base\) Model: comparison of time performance of \textit{base}, \textit{base search}, \textit{base symmetry} and \textit{base search symmetry} models
+    for the first 20 instances.
+  }
+  \label{fig:CP_results_base1}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{03/results/base2.png}
+  \caption{
+    CP \(Base\) Model: comparison of time performance of \textit{base}, \textit{base search}, \textit{base symmetry} and \textit{base search symmetry} models
+    for the first 20 instances.
+  }
+  \label{fig:CP_results_base2}
+\end{figure}
 
+The results are taken fixing the random seed, but should be taken in consideration that changing seed
+the solve time of the same model on the same instance may vary a lot. As consequence we will describe 
+only the most evident trends.\\
+
+The first 20 instances do not show any particular difference in performances between the models.
+We can already notice an increasing behaviour of solve time, but with some peaks for "random" instances showing 
+how the solve time does not depend only on the number of circuits to place. \\
+
+The secon 20 instances are not solved by all models, showing the first differences: the model solving 
+the most of the instances is \textit{base search} and if we compare \textit{base symmetry} with 
+\textit{base symmetry search} we have the proof that the search and restart strategies are quite effective.
+We can also notice that most of the time adding the symmetry breaking constraints that we defined in 
+Section \ref{sec:CP_symmetry} make the performances worse, confirming what already said.\\
+
+The results obtained for the \(rotation\) models are plotted in the Figures [\ref{fig:CP_results_rotation1},\ref{fig:CP_results_rotation2}].
+The performances of the rotation model (Section \ref{sec:CP_rotation}) are compared with:
+\begin{itemize}
+  \item \textit{rotation search}: rotation model with search strategy described in Section \ref{sec:CP_search}
+  \item \textit{rotation symmetry}: rotation model with symmetry breaking constraints described in \ref{sec:CP_symmetry} (no \textit{virtual} circuits)
+  \item \textit{rotation search symmetry}: \textit{rotation symmetry} model with search strategy
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{03/results/rotation1.png}
+  \caption{
+    CP \(rotation\) Model: comparison of time performance of \textit{rotation}, \textit{rotation search}, \textit{rotation symmetry} and \textit{rotation search symmetry} models
+    for the first 20 instances.
+  }
+  \label{fig:CP_results_rotation1}
+\end{figure}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=1\textwidth]{03/results/rotation2.png}
+  \caption{
+    CP \(rotation\) Model: comparison of time performance of \textit{rotation}, \textit{rotation search}, \textit{rotation symmetry} and \textit{rotation search symmetry} models
+    for the last 20 instances.
+  }
+  \label{fig:CP_results_rotation2}
+\end{figure}
+
+The results obtained for \textit{rotation} models are quite different from before: we still have an increasing solve 
+time with some exceptional instances, but the first main difference is the impact of search strategies. 
+While, with \textit{base} models, search strategies improved the efficiency, with \textit{rotation} model is the opposite.
+We were not expecting any significant impact from the search strategy for the boolean variables \(r_i\) since their domain 
+is highly limited and random search was not even implemented yet.
+After checking the solutions and seeing that most of the \textit{makespan} values (in \textit{base} models) match with our 
+definition of \textit{min\_makespan}, we may hazard that the dimensions of the circuits have been designed specifically for 
+the \textit{VLSI} problem without rotations.\\
+
+The second main difference from \textit{base} models is that in this case symmetry breaking constraint are more competitive. 
+Maybe \textit{base} model was too simple and adding more constraints (referring to the symmetry breaking constraints) to 
+compute was not balanced by the number of truncated solutions during the search.

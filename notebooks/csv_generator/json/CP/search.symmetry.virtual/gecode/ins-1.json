@@ -1,0 +1,57 @@
+{
+  "solution": {
+    "width": 8,
+    "n_circuits": 4,
+    "widths": [
+      5,
+      3,
+      5,
+      3
+    ],
+    "heights": [
+      5,
+      5,
+      3,
+      3
+    ],
+    "x": [
+      0,
+      5,
+      0,
+      5
+    ],
+    "y": [
+      0,
+      0,
+      5,
+      5
+    ],
+    "min_makespan": 8,
+    "max_makespan": 8,
+    "makespan": 8
+  },
+  "stats": {
+    "paths": 0,
+    "flatBoolVars": 710,
+    "flatIntVars": 109,
+    "flatBoolConstraints": 362,
+    "flatIntConstraints": 499,
+    "evaluatedReifiedConstraints": 430,
+    "flatTime": 0.0824375,
+    "initTime": 0.013112,
+    "solveTime": 0.003852,
+    "solutions": 1,
+    "variables": 820,
+    "propagators": 843,
+    "propagations": 2202,
+    "nodes": 5,
+    "failures": 0,
+    "restarts": 0,
+    "peakDepth": 4,
+    "nSolutions": 1
+  },
+  "TOTAL_TIME": 0.15,
+  "solver": "Gecode",
+  "model": "search.symmetry.virtual",
+  "data_file": "ins-1"
+}
