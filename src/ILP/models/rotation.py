@@ -88,7 +88,7 @@ class CplexModel(CplexBaseModel):
     def _get_min_h(self):
         return self._get_min_dim()
 
-    def _constraints(self, use_cumulative: bool):
+    def _constraints(self):
         var = self.variables
 
         width = var["width"]
@@ -111,7 +111,7 @@ class CplexModel(CplexBaseModel):
 
         x_constr = [x[c] + widths_b[c] <= width for c in CIRCUITS]
 
-        return super()._constraints(use_cumulative) + link_w + link_h + x_constr
+        return super()._constraints() + link_w + link_h + x_constr
 
     def _evaluate_solution(self, min_makespan, max_makespan):
         CIRCUITS = self.variables['CIRCUITS']
@@ -129,7 +129,3 @@ class CplexModel(CplexBaseModel):
         print(solution)
         return solution
 
-    # def solve(self, file_name: str, symmetry: bool, use_cumulative: bool) -> dict:
-    #     solution_dict = super().solve(file_name, symmetry, use_cumulative)
-    #     solution_dict['model'] = 'rotation'
-    #     return solution_dict

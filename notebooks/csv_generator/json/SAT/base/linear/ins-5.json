@@ -5,7 +5,7 @@
   "search": "linear",
   "symmetry": false,
   "cumulative": false,
-  "TOTAL_TIME": 0.05404806137084961,
+  "TOTAL_TIME": 0.11937308311462402,
   "stats": {
     "conflicts": 534,
     "decisions": 17466,
@@ -14,18 +14,17 @@
     "restarts": 5,
     "final checks": 1,
     "mk clause": 5817,
-    "mk clause binary": 3722,
     "del clause": 34,
     "minimized lits": 544,
     "num checks": 1,
     "mk bool var": 2813,
     "arith-make-feasible": 2,
     "arith-max-columns": 4,
-    "num allocs": 730411,
+    "num allocs": 748698,
     "rlimit count": 363397,
-    "max memory": 21.81,
-    "memory": 21.81,
-    "time": 0.029
+    "max memory": 21.44,
+    "memory": 21.44,
+    "time": 0.067
   },
   "solution": {
     "width": 12,
@@ -72,6 +71,16 @@
     ],
     "min_makespan": 12,
     "max_makespan": 17,
-    "makespan": 12
+    "makespan": 12,
+    "is_rotated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
   }
 }
