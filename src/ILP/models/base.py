@@ -26,12 +26,7 @@ class CplexModel(CplexDefaultModel):
 
         ###  define makespan boundaries
         _c_area_sum = sum([heights[c] * widths[c] for c in CIRCUITS])
-        ###  measure time needed for default solution
-        t0 = time.time()
         default_solution = compute_max_makespan(heights, widths, width)
-        time_default = int((time.time() - t0) * 1000)
-        ###  redefine solver timeout
-        self.solver_timeout -= time_default
 
         min_makespan = max(math.ceil(_c_area_sum / width), max(heights))
         max_makespan = default_solution["makespan"]
@@ -79,7 +74,7 @@ class CplexModel(CplexDefaultModel):
         idx = self.variables['heights'].index(min_h)
         return min_h, idx
 
-    def _constraints(self, use_cumulative: bool):
+    def _constraints(self):
         var = self.variables
 
         x = var["x"]
@@ -97,7 +92,8 @@ class CplexModel(CplexDefaultModel):
         min_h, idx = self._get_min_h()
 
         r = []
-        r += diffn(x, y, widths, heights, diffn_vars)
+        M = max(max_makespan, width) +1
+        r += diffn(x, y, widths, heights, diffn_vars, M)
 
         for c in CIRCUITS:
             r += [
@@ -105,24 +101,4 @@ class CplexModel(CplexDefaultModel):
                 y[c] + heights[c] <= makespan
             ]
 
-        # if use_cumulative:
-        #     r += [cumulative(y, heights, widths, width, min_w, idx)]
-        #     r += [cumulative(x, widths, heights, makespan, min_h, idx)]
-
         return r
-
-    # def _symmetries_breaking(self) -> List[LinearConstraint]:
-    #     var = self.variables
-
-    #     x = var["x"]
-    #     y = var["y"]
-    #     width = var["width"]
-    #     widths = var["widths"]
-    #     heights = var["heights"]
-    #     makespan = var["target_makespan"]
-
-    #     return [
-    #         # sym_bigger_circuit_origin(x, y, widths, heights),
-    #         axial_symmetry(x, widths, start=0, end=width),
-    #         axial_symmetry(y, heights, start=0, end=makespan)
-    #     ]

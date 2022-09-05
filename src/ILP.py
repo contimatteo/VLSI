@@ -72,7 +72,7 @@ def main(args):
 
     model = ModelClass(timeout=args.time)
     model.initialize(data_dict)
-    solutions_dict = model.solve(args.data, args.symmetry, args.cumulative)
+    solutions_dict = model.solve(args.data)
 
     assert solutions_dict is not None and isinstance(solutions_dict, dict)
 
@@ -82,8 +82,28 @@ def main(args):
 
     __store_solutions_dict(solutions_dict)
 
+    #
+
+def txt(args):
+    def __json_file_url() -> str:
+        file_sub_dir = args.model + "/" + "simplex"
+        return str(ILPStorage.json_file_url(args.data, file_sub_dir).resolve())
+
+    def __txt_file_url() -> str:
+        file_sub_dir = args.model + "/" + "simplex"
+        return str(ILPStorage.out_file_url(args.data, file_sub_dir).resolve())
+
+
+    with open(__json_file_url(), 'r', encoding="utf-8") as file:
+        json_data = json.load(file)
+    
+    if json_data['TOTAL_TIME'] < 300:
+        with open(__txt_file_url(), 'w', encoding="utf-8") as file:
+            file.write(solutions_dict_to_txt_file(json_data))
+            file.close()
 
 ###
 
 if __name__ == '__main__':
     main(parse_args())
+    # txt(parse_args())

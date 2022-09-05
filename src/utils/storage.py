@@ -29,7 +29,8 @@ class _Storage:
 
     def out_dir(self) -> Path:
         # return self._root_dir.joinpath("out/json")
-        return ROOT.joinpath("out").joinpath(self._root_dir_name)
+        # return ROOT.joinpath("out").joinpath(self._root_dir_name)
+        return self._root_dir.joinpath("out/txt")
 
     def json_dir(self) -> Path:
         return self._root_dir.joinpath("out/json")
