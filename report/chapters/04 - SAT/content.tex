@@ -385,12 +385,14 @@
   \paragraph{Hardware specifcations}
     All the experiments for the SAT technology have been executed on a laptop computer running Linux Mint 20.3, Linux kernel 5.15
     equipped with the following hardware:
-    \texttt{Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz, 16Gb Ram 2.4GHz}.\\
+    \texttt{Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz, 16Gb Ram 2.4GHz}.
 
   \paragraph{Base model}
     The results obtained with the Base model are in Figures [\ref{fig:SAT_results_base_linear1}, \ref{fig:SAT_results_base_linear2}]
-    for linear search; \ref{fig:SAT_results_base_binary1} \ref{fig:SAT_results_base_binary2} for binary search.
+    for linear search and in Figures [\ref{fig:SAT_results_base_binary1}, \ref{fig:SAT_results_base_binary2}] for binary search.
 
+  \pagebreak
+  %
   \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{04/results/base_linear1.png}
@@ -408,7 +410,6 @@
     \label{fig:SAT_results_base_linear2}
   \end{figure}    
 
-  \colorbox{BurntOrange}{TODO missing...} 
   \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{04/results/base_binary1.png}
@@ -430,7 +431,7 @@
 
   \paragraph{Rotation model}
   The results obtained with the Rotation model are in Figures [\ref{fig:SAT_results_rotation_linear1}, \ref{fig:SAT_results_rotation_linear2}]
-  for linear search; \ref{fig:SAT_results_rotation_binary1} \ref{fig:SAT_results_rotation_binary2} for binary search.
+  for linear search and in Figures [\ref{fig:SAT_results_rotation_binary1}, \ref{fig:SAT_results_rotation_binary2}] for binary search.
   
   \begin{figure}[H]
     \centering
@@ -440,7 +441,7 @@
     }
     \label{fig:SAT_results_rotation_linear1}
   \end{figure}
-
+  %
   \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{04/results/rotation_linear2.png}
@@ -448,8 +449,8 @@
       Results obtained with Rotation model - linear search - instances [21,40]
     }
     \label{fig:SAT_results_rotation_linear2}
-  \end{figure}    
-
+  \end{figure}   
+  % 
   \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{04/results/rotation_binary1.png}
@@ -458,7 +459,7 @@
     }
     \label{fig:SAT_results_rotation_binary1}
   \end{figure}
-
+  %
   \begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{04/results/rotation_binary2.png}
@@ -467,6 +468,36 @@
     }
     \label{fig:SAT_results_rotation_binary2}
 
-    %\paragraph{Conclusions}
+
+
+  \paragraph{Observations.}
+  \raggedright
+    We can see how all of the models are able to solve the large part
+    of the instances withint the 5 minutes time limit despite the modest
+    computation power provided. The linear complexity of the used
+    encodings is the key to the success of the model.\\
+
+    The symmetry breaking is not of any help in this model because it adds
+    more clauses and more to be elaborated and satisfied.\\
+    The same holds for the implied cumulative constraint. Despite 
+    not introducing any new literal it nearly always has a slowing effect.\\
+
+    It is interesting how the combination of the symmetry breaking constraints
+    and of the implied cumulative constraint obtains an overall performance 
+    very similar to the only cumulative constraint one.\\
+
+    In nearly all the solutions of the proposed instances the circuits can be
+    fitted in order to achieve a flat upper overll margin and no empty space 
+    is left between circuits. This is the reason why the \(min\_makespan\) nearly
+    always prove to be the final \(makespan\) of the solution.
+    In this circumstances a sequential search from the bottom to the top performs 
+    better than any other search strategy. In a more general view where empty spaces
+    can happen to be left in between circuits the binary search strategy can be
+    more effective than the linear one.\\
+
+    With no surprise the complexity of the problem arises much more faster when we
+    allow the circuits to rotate but the SAT model dedicate to the problem supported
+    well the effort.
+
 
   \end{figure}
