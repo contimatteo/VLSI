@@ -289,7 +289,14 @@ the \textit{VLSI} problem without rotations.\\
 
 The second main difference from \textit{base} models is that in this case symmetry breaking constraint are more competitive. 
 Maybe \textit{base} model was too simple and adding more constraints (referring to the symmetry breaking constraints) to 
-compute was not balanced by the number of truncated solutions during the search.
+compute was not balanced by the number of truncated solutions during the search.\\
+
+The comparisons between different solvers (Chuffed and Gecode) are plotted in the Figures [\ref{fig:CP_results_solver1},\ref{fig:CP_results_solver2}].
+The models we selected for the comparison are:
+\begin{itemize}
+  \item \textit{base}: base model described in Section \ref{sec:CP_base}
+  \item \textit{base search symmetry}: base model with search strategy (Section \ref{sec:CP_search}) and symmetry breaking constraints (Section \ref{sec:CP_symmetry}, no \textit{virtual} circuits)
+\end{itemize}
 
 \begin{figure}[H]
   \centering
@@ -308,6 +315,12 @@ compute was not balanced by the number of truncated solutions during the search.
   \label{fig:CP_results_solver2}
 \end{figure}
 
+For both the models, Chuffed is the one solving the higher number of instancess,
+most of the times with lower solver time.\\
+
+The following plot show how much slower becomes a model when also \textit{virtual}
+circuit are included in the symmetry breaking constraints, stopping us in implementing 
+constraints even more complex than the ones shown in Section \ref{sec:CP_symmetry}.
 
 \begin{figure}[H]
   \centering
